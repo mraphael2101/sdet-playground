@@ -1,7 +1,7 @@
-package com.company.gherkin_file_appender.unit_tests.utility.capabilities;
+package com.company.feature_file_appender.unit_tests.utility.capabilities;
 
 import org.junit.Test;
-import com.company.gherkin_file_appender.unit_tests.config.TestBase;
+import com.company.feature_file_appender.unit_tests.config.TestBase;
 
 import java.util.function.Predicate;
 

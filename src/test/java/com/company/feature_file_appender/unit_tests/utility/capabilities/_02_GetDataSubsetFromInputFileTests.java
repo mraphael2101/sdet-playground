@@ -1,6 +1,6 @@
-package com.company.gherkin_file_appender.unit_tests.utility.capabilities;
+package com.company.feature_file_appender.unit_tests.utility.capabilities;
 
-import com.company.gherkin_file_appender.unit_tests.config.TestBase;
+import com.company.feature_file_appender.unit_tests.config.TestBase;
 import org.junit.Test;
 
 import java.util.Arrays;

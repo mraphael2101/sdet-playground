@@ -53,11 +53,17 @@ class User {
         this.email = email;
     }
 
+    // This is not necessary. However, you can override hashcode algorithm and the better it is the faster the indexing
     @Override
     public int hashCode() {
-        return (int) name.hashCode() * email.hashCode();
+        return name.hashCode() * email.hashCode();
     }
 
+    /** Overriding equals is necessary as the default implementation of Java will consider
+     * that two objects are different even if they have the same values. The only exception
+     * to this rule is if you are utilising a String class which either has a single character
+     * or multiple chars which equals another string either by reassignment or by declaration/initialisation
+     * which will return true */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

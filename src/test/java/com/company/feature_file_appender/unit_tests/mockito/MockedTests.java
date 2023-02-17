@@ -1,9 +1,7 @@
-package com.company.gherkin_file_appender.unit_tests.mockito;
+package com.company.feature_file_appender.unit_tests.mockito;
 
-import com.company.gherkin_file_appender.unit_tests.config.TestBase_Mocked;
+import com.company.feature_file_appender.unit_tests.config.TestBase_Mocked;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.mockito.Mockito.*;
 

@@ -1,4 +1,4 @@
-package com.company.gherkin_file_appender.unit_tests.config.pojo.sample_data_tab;
+package com.company.feature_file_appender.unit_tests.config.pojo.sample_data_tab;
 
 public class SampleData {
 

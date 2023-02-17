@@ -1,4 +1,4 @@
-package com.company.gherkin_file_appender.interfaces;
+package com.company.feature_file_appender.interfaces;
 
 public interface FeatureFile_DataAppender {
 

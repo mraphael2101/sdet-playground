@@ -1,4 +1,4 @@
-package com.company.gherkin_file_appender.config;
+package com.company.feature_file_appender.config;
 
 import java.util.Arrays;
 

@@ -1,8 +1,7 @@
-package com.company.gherkin_file_appender.config;
+package com.company.feature_file_appender.config;
 
-import com.company.gherkin_file_appender.interfaces.FeatureFile_DataAppender;
+import com.company.feature_file_appender.interfaces.FeatureFile_DataAppender;
 import com.google.common.collect.Iterables;
-import org.apache.commons.lang.StringUtils;
 
 import java.io.*;
 import java.util.*;
