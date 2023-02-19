@@ -22,12 +22,10 @@ import java.util.stream.Stream;
 public class FeatureFileAnalyser_Prototype {
     private final String userDir = System.getProperty("user.dir");
     private final String inputFilePath = "/src/test/resources/features/";
-
-    private final TreeMap<String, List<? extends Object>> gherkinStepMetrics = new TreeMap<>();
-
-    private final List<String> distinctListOfGherkinSteps = new ArrayList<>();
-
+    private final TreeMap<String, List<? extends Object>> gherkinStepsCodeReuseMetrics = new TreeMap<>();
     private final List<String> listOfAllGherkinSteps = new ArrayList<>();
+    private int count = 0, countForStep = 0;
+    private List<String> distinctListOfGherkinSteps = null;
 
     private Stream<Path> walk(Path start, int maxDepth, FileVisitOption... options) throws IOException {
         return walk(start, Integer.MAX_VALUE, options);
@@ -43,7 +41,7 @@ public class FeatureFileAnalyser_Prototype {
 
     }
 
-    public void calculateCodeReuseAtBddLevel() {
+    private void readInStepsFromGherkinFiles() {
         List<Path> paths = null;
         Path path = Paths.get(userDir + inputFilePath);
         try {
@@ -52,39 +50,67 @@ public class FeatureFileAnalyser_Prototype {
             ex.printStackTrace();
         }
         String currentPathString = "";
+        String trimmedStringLine = "";
         int i = 0;
 
         try {
-            while (i < paths.size()) {
+            while (true) {
+                assert paths != null;
+                if (!(i < paths.size())) break;
                 currentPathString = paths.get(i).toString();
                 List<String> allLinesForSpecificFile = Files.readAllLines(Paths.get(currentPathString));
                 for (String line : allLinesForSpecificFile) {
-                    analyseGherkinSteps(line);
+                    trimmedStringLine = line.trim();
+                    if (trimmedStringLine.startsWith("Given") || trimmedStringLine.startsWith("When")
+                            || trimmedStringLine.startsWith("Then") || line.contains("And")) {
+                        listOfAllGherkinSteps.add(trimmedStringLine);
+                    }
                 }
                 i++;
             }
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
 
-        for(Map.Entry<String, List<? extends Object>> obj : gherkinStepMetrics.entrySet()) {
-            System.out.println(obj.getKey() + " " + obj.getValue());
+    public void calculateCodeReuseAtBddLevel() {
+        this.readInStepsFromGherkinFiles();
+        this.analyseGherkinSteps();
+        System.out.println(gherkinStepsCodeReuseMetrics);
+    }
+
+    private void analyseGherkinSteps() {
+        this.distinctListOfGherkinSteps = new ArrayList<>(new HashSet<>(listOfAllGherkinSteps));
+
+        for (String step : listOfAllGherkinSteps) {
+            if (distinctListOfGherkinSteps.contains(step)) {
+
+//               countForStep = (int) getCountForStep(step);
+
+
+
+                gherkinStepsCodeReuseMetrics.put(step, new ArrayList<>() {
+                    {
+                        add(0);
+                        add(true);
+                    }
+                });
+            }
         }
     }
 
-    private void analyseGherkinSteps(String line) {
-//        if (distinctListOfGherkinSteps) {
-//
-//            // add business logic
-//
-//            // for this one update the values or insert new record
-//            gherkinStepMetrics.put(line, new ArrayList<>(){ { add(3); add(true); } });
-//
-//            // for this one append value
-//            distinctListOfGherkinSteps.add(line);
-//
-//        }
+    public Map<String, List<? extends Object>> getGherkinStepsCodeReuseMetrics() {
+        return this.gherkinStepsCodeReuseMetrics;
+    }
 
+    private Object getCountForStep(String key) {
+        return gherkinStepsCodeReuseMetrics.get(key).get(0);
+    }
+
+    public void printSummary() {
+        for (Map.Entry<String, List<? extends Object>> obj : getGherkinStepsCodeReuseMetrics().entrySet()) {
+            System.out.println(obj.getKey() + " " + obj.getValue());
+        }
     }
 
 }
