@@ -27,6 +27,8 @@ public class FeatureFileAnalyser_Prototype {
 
     private final List<String> distinctListOfGherkinSteps = new ArrayList<>();
 
+    private final List<String> listOfAllGherkinSteps = new ArrayList<>();
+
     private Stream<Path> walk(Path start, int maxDepth, FileVisitOption... options) throws IOException {
         return walk(start, Integer.MAX_VALUE, options);
     }
