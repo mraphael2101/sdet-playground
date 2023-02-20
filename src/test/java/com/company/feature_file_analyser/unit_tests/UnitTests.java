@@ -8,7 +8,12 @@ public class UnitTests {
     FeatureFileAnalyser_Prototype prototype = new FeatureFileAnalyser_Prototype();
 
     @Test
-    public void populateMapWithGherkinMetricsTest() {
+    public void populateMapWithGherkinMetricsHappyPathTest() {  //TODO
         prototype.calculateCodeReuseAtBddLevel();
     }
+
+    @Test
+    public void gherkinIncludesDataDrivenStepsTest() {  //TODO
+    }
+
 }

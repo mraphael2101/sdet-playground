@@ -25,6 +25,8 @@ public class FeatureFileAnalyser_Prototype {
     private final TreeMap<String, List<? extends Object>> gherkinStepsCodeReuseMetrics = new TreeMap<>();
     private final List<String> listOfAllGherkinSteps = new ArrayList<>();
     private int count = 0, countForStep = 0;
+
+    private boolean dataDriven = false;
     private List<String> distinctListOfGherkinSteps = null;
 
     private Stream<Path> walk(Path start, int maxDepth, FileVisitOption... options) throws IOException {
@@ -74,25 +76,40 @@ public class FeatureFileAnalyser_Prototype {
     }
 
     public void calculateCodeReuseAtBddLevel() {
-        this.readInStepsFromGherkinFiles();
-        this.analyseGherkinSteps();
-        System.out.println(gherkinStepsCodeReuseMetrics);
+        readInStepsFromGherkinFiles();
+        analyseGherkinSteps();
+        printSummary();
     }
 
-    private void analyseGherkinSteps() {
-        this.distinctListOfGherkinSteps = new ArrayList<>(new HashSet<>(listOfAllGherkinSteps));
 
+    /***
+     * Method which populates the gherkinStepsCodeReuseMetrics Map based on the
+     * number of occurrences of the step across the different feature files, and
+     * whether the step is data-driven or not
+     * <pre>
+     * </pre>
+     * @return
+     */
+    private void analyseGherkinSteps() {
+        distinctListOfGherkinSteps = new ArrayList<>(new HashSet<>(listOfAllGherkinSteps));
+        for (int i = 0; i < distinctListOfGherkinSteps.size(); i++) {
+            gherkinStepsCodeReuseMetrics.put(distinctListOfGherkinSteps.get(i), new ArrayList<>() {
+                {
+                    add(0);
+                    add(false);
+                }
+            });
+        }
         for (String step : listOfAllGherkinSteps) {
             if (distinctListOfGherkinSteps.contains(step)) {
-
-//               countForStep = (int) getCountForStep(step);
-
-
-
+                countForStep = (int) getCountForStep(step);
+                if(step.contains("<") && step.contains(">")) {
+                    dataDriven = true;
+                }
                 gherkinStepsCodeReuseMetrics.put(step, new ArrayList<>() {
                     {
-                        add(0);
-                        add(true);
+                        add(countForStep + 1);
+                        add(dataDriven);
                     }
                 });
             }
