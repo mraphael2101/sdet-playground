@@ -10,10 +10,15 @@ public class UnitTests {
     @Test
     public void populateMapWithGherkinMetricsHappyPathTest() {  //TODO
         prototype.calculateCodeReuseAtBddLevel();
+        prototype.printSummary();
     }
 
     @Test
     public void gherkinIncludesDataDrivenStepsTest() {  //TODO
+        // Generate a Gherkin file with data-driven steps
+//        prototype.calculateCodeReuseAtBddLevel();
+//        prototype.printSummary();
+//        validate programmatically
     }
 
 }

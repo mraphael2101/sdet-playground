@@ -10,13 +10,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /* Algorithm version 0:
-*  1) Read-in all .feature files sequentially
-*  2) Append distinct gherkin statements to Map<String, object[]>
-      "Given...", Recurrence Count int, DataDriven  boolean
-       -> parameterised with "static" variable
-       -> data driven via table 1..* signified by "<angular brackets>"
-   3) After you have traversed through all files calculate the % of all steps that have
-      been reused based on the overall count of all steps
+*  1) Read-in all feature files sequentially
+*  2) TBU
+   3) TBU
 */
 
 public class FeatureFileAnalyser_Prototype {
@@ -78,7 +74,6 @@ public class FeatureFileAnalyser_Prototype {
     public void calculateCodeReuseAtBddLevel() {
         readInStepsFromGherkinFiles();
         analyseGherkinSteps();
-        printSummary();
     }
 
 
@@ -103,9 +98,7 @@ public class FeatureFileAnalyser_Prototype {
         for (String step : listOfAllGherkinSteps) {
             if (distinctListOfGherkinSteps.contains(step)) {
                 countForStep = (int) getCountForStep(step);
-                if(step.contains("<") && step.contains(">")) {
-                    dataDriven = true;
-                }
+                dataDriven = step.contains("<") && step.contains(">");
                 gherkinStepsCodeReuseMetrics.put(step, new ArrayList<>() {
                     {
                         add(countForStep + 1);
