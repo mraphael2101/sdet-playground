@@ -21,8 +21,12 @@ import java.util.stream.Stream;
 public class FeatureFileAnalyser_Prototype {
     private final String userDir = System.getProperty("user.dir");
     private final String inputFilePath = "/src/test/resources/features/";
+
+    private final List<String> listOfAllSteps = new ArrayList<>();
+
+    private List<String> distinctListOfGherkinSteps = null;
+
     private final TreeMap<String, List<? extends Object>> stepsReuseMetrics = new TreeMap<>();
-    private final List<String> listOfAllGherkinSteps = new ArrayList<>();
     private  int countForStep = 0;
 
     private boolean dataDriven = false;
@@ -63,7 +67,7 @@ public class FeatureFileAnalyser_Prototype {
                     trimmedStringLine = line.trim();
                     if (trimmedStringLine.startsWith("Given") || trimmedStringLine.startsWith("When")
                             || trimmedStringLine.startsWith("Then") || line.contains("And")) {
-                        listOfAllGherkinSteps.add(trimmedStringLine);
+                        listOfAllSteps.add(trimmedStringLine);
                     }
                 }
                 i++;
@@ -85,16 +89,17 @@ public class FeatureFileAnalyser_Prototype {
      * <pre></pre>
      */
     private void analyseGherkinSteps() {
-        List<String> distinctListOfGherkinSteps = new ArrayList<>(new HashSet<>(listOfAllGherkinSteps));
+        distinctListOfGherkinSteps = new ArrayList<>(new HashSet<>(listOfAllSteps));
         for (String distinctListOfGherkinStep : distinctListOfGherkinSteps) {
             stepsReuseMetrics.put(distinctListOfGherkinStep, new ArrayList<>() {
                 {
-                    add(0);
+                    // A first recurrence is considered when a step is encountered for the second time
+                    add(-1);
                     add(false);
                 }
             });
         }
-        for (String step : listOfAllGherkinSteps) {
+        for (String step : listOfAllSteps) {
             if (distinctListOfGherkinSteps.contains(step)) {
                 countForStep = (int) getStepReuseCount(step);
                 dataDriven = step.contains("<") && step.contains(">");
@@ -116,10 +121,25 @@ public class FeatureFileAnalyser_Prototype {
         return stepsReuseMetrics;
     }
 
-    public void printSummary() {
+    public void printLowLevelSummary() {
         for (Map.Entry<String, List<? extends Object>> obj : getStepsReuseMetrics().entrySet()) {
-            System.out.println(obj.getKey() + " " + obj.getValue());
+            System.out.println("Step { " + obj.getKey()
+                    + " } \nReuse Count { " + obj.getValue().get(0)
+                    + " } \nData-driven { " + obj.getValue().get(1)
+                    + " } \n");
         }
+    }
+
+    //TODO Fix bug 75%
+    public void printHighLevelSummary() {
+        int totalNoOfReusableSteps = 0;
+        for (Map.Entry<String, List<? extends Object>> obj : getStepsReuseMetrics().entrySet()) {
+            totalNoOfReusableSteps += (int) obj.getValue().get(0);
+        }
+        System.out.println("Total Number of Steps Reused in the Project { " + totalNoOfReusableSteps + " }");
+        System.out.println("Total Number of Distinct Steps in the Project { " + distinctListOfGherkinSteps.size() + " }");
+        System.out.println(totalNoOfReusableSteps / distinctListOfGherkinSteps.size() * 100
+                + " % Code Reuse was calculated for all BDD Steps");
     }
 
 }

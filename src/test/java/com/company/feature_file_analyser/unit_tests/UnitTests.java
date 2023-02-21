@@ -5,12 +5,15 @@ import org.junit.Test;
 
 public class UnitTests {
 
-    FeatureFileAnalyser_Prototype prototype = new FeatureFileAnalyser_Prototype();
+    private final FeatureFileAnalyser_Prototype prototype;
+
+    public UnitTests() {
+        prototype = new FeatureFileAnalyser_Prototype();
+        prototype.calculateCodeReuseAtBddLevel();
+    }
 
     @Test
     public void populateMapWithGherkinMetricsHappyPathTest() {  //TODO
-        prototype.calculateCodeReuseAtBddLevel();
-        prototype.printSummary();
     }
 
     @Test
@@ -19,6 +22,16 @@ public class UnitTests {
 //        prototype.calculateCodeReuseAtBddLevel();
 //        prototype.printSummary();
 //        validate programmatically
+    }
+
+    @Test
+    public void validateLowLevelSummaryTest() {     //TODO
+        prototype.printLowLevelSummary();
+    }
+
+    @Test
+    public void validateHighLevelSummaryTest() {    //TODO
+        prototype.printHighLevelSummary();
     }
 
 }
