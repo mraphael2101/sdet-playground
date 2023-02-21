@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 public class FeatureFileAnalyser_Prototype {
     private final String userDir = System.getProperty("user.dir");
     private final String inputFilePath = "/src/test/resources/features/";
-    private final TreeMap<String, List<? extends Object>> gherkinStepsCodeReuseMetrics = new TreeMap<>();
+    private final TreeMap<String, List<? extends Object>> stepsReuseMetrics = new TreeMap<>();
     private final List<String> listOfAllGherkinSteps = new ArrayList<>();
     private int count = 0, countForStep = 0;
 
@@ -78,19 +78,16 @@ public class FeatureFileAnalyser_Prototype {
         analyseGherkinSteps();
     }
 
-
-    /***
+    /**
      * Method which populates the gherkinStepsCodeReuseMetrics Map based on the
      * number of occurrences of the step across the different feature files, and
      * whether the step is data-driven or not
-     * <pre>
-     * </pre>
-     * @return
+     * <pre></pre>
      */
     private void analyseGherkinSteps() {
         List<String> distinctListOfGherkinSteps = new ArrayList<>(new HashSet<>(listOfAllGherkinSteps));
         for (int i = 0; i < distinctListOfGherkinSteps.size(); i++) {
-            gherkinStepsCodeReuseMetrics.put(distinctListOfGherkinSteps.get(i), new ArrayList<>() {
+            stepsReuseMetrics.put(distinctListOfGherkinSteps.get(i), new ArrayList<>() {
                 {
                     add(0);
                     add(false);
@@ -99,9 +96,9 @@ public class FeatureFileAnalyser_Prototype {
         }
         for (String step : listOfAllGherkinSteps) {
             if (distinctListOfGherkinSteps.contains(step)) {
-                countForStep = (int) getCountForStep(step);
+                countForStep = (int) getStepReuseCount(step);
                 dataDriven = step.contains("<") && step.contains(">");
-                gherkinStepsCodeReuseMetrics.put(step, new ArrayList<>() {
+                stepsReuseMetrics.put(step, new ArrayList<>() {
                     {
                         add(countForStep + 1);
                         add(dataDriven);
@@ -111,16 +108,16 @@ public class FeatureFileAnalyser_Prototype {
         }
     }
 
-    public Map<String, List<? extends Object>> getGherkinStepsCodeReuseMetrics() {
-        return this.gherkinStepsCodeReuseMetrics;
+    private Object getStepReuseCount(String key) {
+        return stepsReuseMetrics.get(key).get(0);
     }
 
-    private Object getCountForStep(String key) {
-        return gherkinStepsCodeReuseMetrics.get(key).get(0);
+    private Map<String, List<? extends Object>> getStepsReuseMetrics() {
+        return stepsReuseMetrics;
     }
 
     public void printSummary() {
-        for (Map.Entry<String, List<? extends Object>> obj : getGherkinStepsCodeReuseMetrics().entrySet()) {
+        for (Map.Entry<String, List<? extends Object>> obj : getStepsReuseMetrics().entrySet()) {
             System.out.println(obj.getKey() + " " + obj.getValue());
         }
     }
