@@ -9,7 +9,7 @@ Feature: Web Demo
     Given I have details of a 'new' user
     And my application opens
     When I fill in the form with user details
-    Then I fill in the form with user details <"some_value">
+    Then I fill in the form with user details <"column_4">
 
     Examples:
 

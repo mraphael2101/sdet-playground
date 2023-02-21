@@ -9,10 +9,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/* Algorithm version 0:
-*  1) Read-in all feature files sequentially
-*  2) TBU
-   3) TBU
+/* Algorithm:
+   a) List all the Feature files in the specified Path
+   b) Read-in all the feature files sequentially
+   c) Initialise gherkinStepsCodeReuseMetrics Map based on the distinctListOfGherkinSteps values
+   d) Traverse listOfAllGherkinSteps and update gherkinStepsCodeReuseMetrics Map based on the
+      number of recurrences, and if the step is data-driven (low-level summary)
+   e) Calculate and print the high-level summary of code reuse at a Feature File level
 */
 
 public class FeatureFileAnalyser_Prototype {
@@ -23,7 +26,6 @@ public class FeatureFileAnalyser_Prototype {
     private int count = 0, countForStep = 0;
 
     private boolean dataDriven = false;
-    private List<String> distinctListOfGherkinSteps = null;
 
     private Stream<Path> walk(Path start, int maxDepth, FileVisitOption... options) throws IOException {
         return walk(start, Integer.MAX_VALUE, options);
@@ -86,7 +88,7 @@ public class FeatureFileAnalyser_Prototype {
      * @return
      */
     private void analyseGherkinSteps() {
-        distinctListOfGherkinSteps = new ArrayList<>(new HashSet<>(listOfAllGherkinSteps));
+        List<String> distinctListOfGherkinSteps = new ArrayList<>(new HashSet<>(listOfAllGherkinSteps));
         for (int i = 0; i < distinctListOfGherkinSteps.size(); i++) {
             gherkinStepsCodeReuseMetrics.put(distinctListOfGherkinSteps.get(i), new ArrayList<>() {
                 {
