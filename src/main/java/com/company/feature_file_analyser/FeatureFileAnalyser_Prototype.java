@@ -23,7 +23,7 @@ public class FeatureFileAnalyser_Prototype {
     private final String inputFilePath = "/src/test/resources/features/";
     private final TreeMap<String, List<? extends Object>> stepsReuseMetrics = new TreeMap<>();
     private final List<String> listOfAllGherkinSteps = new ArrayList<>();
-    private int count = 0, countForStep = 0;
+    private  int countForStep = 0;
 
     private boolean dataDriven = false;
 
@@ -86,8 +86,8 @@ public class FeatureFileAnalyser_Prototype {
      */
     private void analyseGherkinSteps() {
         List<String> distinctListOfGherkinSteps = new ArrayList<>(new HashSet<>(listOfAllGherkinSteps));
-        for (int i = 0; i < distinctListOfGherkinSteps.size(); i++) {
-            stepsReuseMetrics.put(distinctListOfGherkinSteps.get(i), new ArrayList<>() {
+        for (String distinctListOfGherkinStep : distinctListOfGherkinSteps) {
+            stepsReuseMetrics.put(distinctListOfGherkinStep, new ArrayList<>() {
                 {
                     add(0);
                     add(false);
