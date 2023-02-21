@@ -16,6 +16,13 @@ import java.util.stream.Stream;
    d) Traverse listOfAllGherkinSteps and update gherkinStepsCodeReuseMetrics Map based on the
       number of recurrences, and if the step is data-driven (low-level summary)
    e) Calculate and print the high-level summary of code reuse at a Feature File level
+   Ideas ->
+     - Detect the version of Cucumber
+     - Reusability classification based on formula
+        a) Code Reusability is Moderate
+        b) Code Reusability is Excellent
+     - Data-driven using the predefined value from the step definition
+     - Complexity based on the no of lines of code in a SD method
 */
 
 public class FeatureFileAnalyser_Prototype {
