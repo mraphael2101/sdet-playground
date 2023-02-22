@@ -34,4 +34,9 @@ public class UnitTests {
         prototype.printHighLevelSummary();
     }
 
+    @Test
+    public void validateSummaryWithThresholdsTest() {    //TODO
+        prototype.printSummaryWithThresholds();
+    }
+
 }

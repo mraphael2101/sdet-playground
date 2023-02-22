@@ -12,8 +12,8 @@ import java.util.stream.Stream;
 /* Algorithm:
    a) List all the Feature files in the specified Path
    b) Read-in all the feature files sequentially
-   c) Initialise gherkinStepsCodeReuseMetrics Map based on the distinctListOfGherkinSteps values
-   d) Traverse listOfAllGherkinSteps and update gherkinStepsCodeReuseMetrics Map based on the
+   c) Initialise stepsCodeReuseMetrics Map based on the distinctListOfSteps values
+   d) Traverse listOfAllSteps and update stepsCodeReuseMetrics Map based on the
       number of recurrences, and if the step is data-driven (low-level summary)
    e) Calculate and print the high-level summary of code reuse at a Feature File level
    Ideas ->
@@ -35,6 +35,8 @@ public class FeatureFileAnalyser_Prototype {
 
     private final TreeMap<String, List<? extends Object>> stepsReuseMetrics = new TreeMap<>();
     private  int countForStep = 0;
+
+    private int totalNoOfSteps = 0;
 
     private boolean dataDriven = false;
 
@@ -79,6 +81,7 @@ public class FeatureFileAnalyser_Prototype {
                 }
                 i++;
             }
+            totalNoOfSteps = listOfAllSteps.size();
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -137,16 +140,21 @@ public class FeatureFileAnalyser_Prototype {
         }
     }
 
-    //TODO Fix bug 75%
+    //TODO decide how the count should impact the calculation
     public void printHighLevelSummary() {
-        int totalNoOfReusableSteps = 0;
+        float totalNoOfReusableSteps = 0;
+        float percentage = 0;
         for (Map.Entry<String, List<? extends Object>> obj : getStepsReuseMetrics().entrySet()) {
             totalNoOfReusableSteps += (int) obj.getValue().get(0);
         }
-        System.out.println("Total Number of Steps Reused in the Project { " + totalNoOfReusableSteps + " }");
-        System.out.println("Total Number of Distinct Steps in the Project { " + distinctListOfGherkinSteps.size() + " }");
-        System.out.println(totalNoOfReusableSteps / distinctListOfGherkinSteps.size() * 100
-                + " % Code Reuse was calculated for all BDD Steps");
+        System.out.println("Total Number of Steps Reused in the Project { " + (int) totalNoOfReusableSteps + " }");
+        System.out.println("Total Number of Steps in the Project { " + totalNoOfSteps + " }");
+        percentage = totalNoOfReusableSteps / totalNoOfSteps * 100;
+        System.out.println(String.format("%.2f", percentage) + "% Code Reuse was calculated for all BDD Steps");
+    }
+
+    public void printSummaryWithThresholds() {
+
     }
 
 }

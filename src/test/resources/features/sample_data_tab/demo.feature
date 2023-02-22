@@ -10,6 +10,7 @@ Feature: Web Demo
     And my application opens
     When I fill in the form with user details
     Then I fill in the form with user details <"column_4">
+    And I click on the Clear button
 
     Examples:
 
