@@ -17,11 +17,7 @@ public class UnitTests {
     }
 
     @Test
-    public void gherkinIncludesDataDrivenStepsTest() {  //TODO
-        // Generate a Gherkin file with data-driven steps
-//        prototype.calculateCodeReuseAtBddLevel();
-//        prototype.printSummary();
-//        validate programmatically
+    public void isStepDataDrivenTest() {  //TODO
     }
 
     @Test
@@ -35,7 +31,7 @@ public class UnitTests {
     }
 
     @Test
-    public void validateSummaryWithThresholdsTest() {    //TODO
+    public void validateThresholdsSummaryTest() {   //TODO
         prototype.printSummaryWithThresholds();
     }
 
