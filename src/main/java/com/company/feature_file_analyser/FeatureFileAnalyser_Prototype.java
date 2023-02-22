@@ -109,6 +109,7 @@ public class FeatureFileAnalyser_Prototype {
                 }
             });
         }
+        //TODO after first iteration then plus 1
         for (String step : listOfAllSteps) {
             if (distinctListOfGherkinSteps.contains(step)) {
                 countForStep = (int) getStepReuseCount(step);
@@ -131,6 +132,10 @@ public class FeatureFileAnalyser_Prototype {
         return stepsReuseMetrics;
     }
 
+    /**
+     * Method which summarises the level of code reuse at a lower-level.
+     * For each Gherkin Line, the Reuse Count is printed and whether the step is Data-driven.
+     */
     public void printLowLevelSummary() {
         for (Map.Entry<String, List<? extends Object>> obj : getStepsReuseMetrics().entrySet()) {
             System.out.println("Step { " + obj.getKey()
@@ -140,7 +145,12 @@ public class FeatureFileAnalyser_Prototype {
         }
     }
 
-    //TODO decide how the count should impact the calculation
+
+    /**
+     * Method which calculates and summarises the level of code reuse at a higher-level.
+     * The calculation is based on the formula:
+     * totalNoOfReusableSteps / (totalNoOfSteps - totalNoOfReusableSteps) * 100
+     */
     public void printHighLevelSummary() {
         float totalNoOfReusableSteps = 0;
         float percentage = 0;
@@ -149,12 +159,11 @@ public class FeatureFileAnalyser_Prototype {
         }
         System.out.println("Total Number of Steps Reused in the Project { " + (int) totalNoOfReusableSteps + " }");
         System.out.println("Total Number of Steps in the Project { " + totalNoOfSteps + " }");
-        percentage = totalNoOfReusableSteps / totalNoOfSteps * 100;
-        System.out.println(String.format("%.2f", percentage) + "% Code Reuse was calculated for all BDD Steps");
+        percentage = totalNoOfReusableSteps / (totalNoOfSteps - totalNoOfReusableSteps) * 100;
+        System.out.println("Code Reuse calculated for all BDD Steps { " + String.format("%.2f", percentage) + " % }");
     }
 
     public void printSummaryWithThresholds() {
-
     }
 
 }
