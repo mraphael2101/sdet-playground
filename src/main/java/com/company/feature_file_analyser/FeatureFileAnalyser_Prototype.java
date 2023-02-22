@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 
 public class FeatureFileAnalyser_Prototype {
     private final String userDir = System.getProperty("user.dir");
-    private final String inputFilePath = "/src/test/resources/features/";
+    private final String inputFilePath = "/src/test/resources/feature_file_analyser/features/";
 
     private final List<String> listOfAllSteps = new ArrayList<>();
 

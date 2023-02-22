@@ -617,7 +617,7 @@ public class AppendDataToFeatureFile_Utility implements FeatureFile_DataAppender
     }
 
     public String getPartialInputFilePath() {
-        String PARTIAL_INPUT_FILE_PATH = "\\src\\test\\resources\\input_data\\";
+        String PARTIAL_INPUT_FILE_PATH = "\\src\\test\\resources\\feature_file_appender\\input_data\\";
         if (System.getProperty("os.name").contains("Windows")) {
             return PARTIAL_INPUT_FILE_PATH;
         } else {
@@ -626,7 +626,8 @@ public class AppendDataToFeatureFile_Utility implements FeatureFile_DataAppender
     }
 
     public String getPartialOutputFilePath() {
-        String PARTIAL_OUTPUT_FILE_PATH = "\\src\\test\\resources\\features\\" + getExcelTab() + "\\";
+        String PARTIAL_OUTPUT_FILE_PATH = "\\src\\test\\resources\\feature_file_appender\\features\\"
+                + getExcelTab() + "\\";
         if (System.getProperty("os.name").contains("Windows")) {
             return PARTIAL_OUTPUT_FILE_PATH;
         } else {
