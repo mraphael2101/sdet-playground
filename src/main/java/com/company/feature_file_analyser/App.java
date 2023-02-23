@@ -1,6 +1,6 @@
 package com.company.feature_file_analyser;
 
-public class Main {
+public class App {
 
     private static FeatureFileAnalyser_Prototype prototype;
 

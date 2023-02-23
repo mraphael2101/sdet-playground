@@ -13,10 +13,6 @@ public class UnitTests {
     }
 
     @Test
-    public void populateMapWithGherkinMetricsHappyPathTest() {  //TODO
-    }
-
-    @Test
     public void isStepDataDrivenTest() {  //TODO
     }
 

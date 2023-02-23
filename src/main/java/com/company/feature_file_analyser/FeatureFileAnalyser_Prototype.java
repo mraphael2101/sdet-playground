@@ -150,6 +150,7 @@ public class FeatureFileAnalyser_Prototype {
      * Method which calculates and summarises the level of code reuse at a higher-level.
      * The calculation is based on the formula:
      * totalNoOfReusableSteps / (totalNoOfSteps - totalNoOfReusableSteps) * 100
+     * i.e. Informs us about the level of Reuse for one or more times
      */
     public void printHighLevelSummary() {
         float totalNoOfReusableSteps = 0;
@@ -157,10 +158,11 @@ public class FeatureFileAnalyser_Prototype {
         for (Map.Entry<String, List<? extends Object>> obj : getStepsReuseMetrics().entrySet()) {
             totalNoOfReusableSteps += (int) obj.getValue().get(0);
         }
-        System.out.println("Total Number of Steps Reused in the Project { " + (int) totalNoOfReusableSteps + " }");
-        System.out.println("Total Number of Steps in the Project { " + totalNoOfSteps + " }");
+        System.out.println("Total Number of Distinct Steps in the Project { " + distinctListOfGherkinSteps.size() + " }");
+        System.out.println("Total Number of Steps in the Project including Duplicates { " + totalNoOfSteps + " }");
+        System.out.println("Total Number of Steps Reused one or more times { " + (int) totalNoOfReusableSteps + " }");
         percentage = totalNoOfReusableSteps / (totalNoOfSteps - totalNoOfReusableSteps) * 100;
-        System.out.println("Code Reuse calculated for all BDD Steps { " + String.format("%.2f", percentage) + " % }");
+        System.out.println("Code Reuse calculated for all BDD Steps { " + String.format("%.0f", percentage) + " % }");
     }
 
     public void printSummaryWithThresholds() {
