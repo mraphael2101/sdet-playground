@@ -150,7 +150,8 @@ public class FeatureFileAnalyser_Prototype {
      * Method which calculates and summarises the level of code reuse at a higher-level.
      * The calculation is based on the formula:
      * totalNoOfReusableSteps / (totalNoOfSteps - totalNoOfReusableSteps) * 100
-     * i.e. Informs us about the level of Reuse for one or more times
+     * i.e. It informs us of the overall level of Code Reuse based on analysing if each
+     * step was reused at least once or more
      */
     public void printHighLevelSummary() {
         float totalNoOfReusableSteps = 0;

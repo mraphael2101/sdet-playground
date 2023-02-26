@@ -1,6 +1,6 @@
-package com.company.feature_file_appender.unit_tests.mockito;
+package com.company.feature_file_data_appender.unit_tests.mockito;
 
-import com.company.feature_file_appender.unit_tests.config.TestBase_Mocked;
+import com.company.feature_file_data_appender.unit_tests.config.TestBase_Mocked;
 import org.junit.Test;
 
 import static org.mockito.Mockito.*;

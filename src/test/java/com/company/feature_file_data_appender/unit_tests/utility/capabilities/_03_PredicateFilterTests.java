@@ -1,7 +1,7 @@
-package com.company.feature_file_appender.unit_tests.utility.capabilities;
+package com.company.feature_file_data_appender.unit_tests.utility.capabilities;
 
-import com.company.feature_file_appender.config.AppendDataToFeatureFile_Utility;
-import com.company.feature_file_appender.config.ResultSelection;
+import com.company.feature_file_data_appender.config.AppendDataToFeatureFile_Utility;
+import com.company.feature_file_data_appender.config.ResultSelection;
 import org.junit.Before;
 import org.junit.Test;
 

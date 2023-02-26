@@ -1,6 +1,6 @@
-package com.company.feature_file_appender.config;
+package com.company.feature_file_data_appender.config;
 
-import com.company.feature_file_appender.interfaces.FeatureFile_DataAppender;
+import com.company.feature_file_data_appender.interfaces.FeatureFile_DataAppender;
 import com.google.common.collect.Iterables;
 
 import java.io.*;
