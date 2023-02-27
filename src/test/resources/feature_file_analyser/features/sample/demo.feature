@@ -7,6 +7,7 @@ Feature: Web Demo
   @wip
   Scenario Outline: Sample scenario
     Given I have details of a 'new' user
+    And I have launched a 'Chrome' browser
     And my application opens
     When I fill in the form with user details
     Then I fill in the form with user details <"column_4">

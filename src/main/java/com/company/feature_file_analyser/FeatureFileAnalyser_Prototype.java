@@ -9,20 +9,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/* Algorithm:
+/* Algorithm
    a) List all the Feature files in the specified Path
    b) Read-in all the feature files sequentially
    c) Initialise stepsCodeReuseMetrics Map based on the distinctListOfSteps values
    d) Traverse listOfAllSteps and update stepsCodeReuseMetrics Map based on the
       number of recurrences, and if the step is data-driven (low-level summary)
-   e) Calculate and print the high-level summary of code reuse at a Feature File level
-   Ideas ->
-     - Detect the version of Cucumber
-     - Reusability classification based on formula
-        a) Code Reusability is Moderate
-        b) Code Reusability is Excellent
-     - Data-driven using the predefined value from the step definition
-     - Complexity based on the no of lines of code in a SD method
+   e) Count the total number of steps that were not reused one or more times
+   f) Print Low-level Summary
+   g) Print High-level Summary
+   h) Print Summary based on Thresholds
 */
 
 public class FeatureFileAnalyser_Prototype {
@@ -34,9 +30,13 @@ public class FeatureFileAnalyser_Prototype {
     private List<String> distinctListOfGherkinSteps = null;
 
     private final TreeMap<String, List<? extends Object>> stepsReuseMetrics = new TreeMap<>();
-    private  int countForStep = 0;
+    private  int totalNoOfReusedSteps = 0;
+
+    private int totalNoOfStepsWithoutReuse = 0;
 
     private int totalNoOfSteps = 0;
+
+    private int totalNumberOfDataDrivenSteps = 0;
 
     private boolean dataDriven = false;
 
@@ -109,17 +109,29 @@ public class FeatureFileAnalyser_Prototype {
                 }
             });
         }
-        //TODO after first iteration then plus 1
+
         for (String step : listOfAllSteps) {
             if (distinctListOfGherkinSteps.contains(step)) {
-                countForStep = (int) getStepReuseCount(step);
-                dataDriven = step.contains("<") && step.contains(">");
+                totalNoOfReusedSteps = (int) getStepReuseCount(step);
+                dataDriven = (step.contains("<") && step.contains(">"))
+                        || step.chars().filter(ch -> ch == '\'').count() == 2;
                 stepsReuseMetrics.put(step, new ArrayList<>() {
                     {
-                        add(countForStep + 1);
+                        add(totalNoOfReusedSteps + 1);
                         add(dataDriven);
                     }
                 });
+            }
+        }
+
+        for (Map.Entry<String, List<? extends Object>> obj : getStepsReuseMetrics().entrySet()) {
+            // Increment the counter everytime you identify a reuse count of 0 for a given step
+            if((int) obj.getValue().get(0) == 0) {
+                ++totalNoOfStepsWithoutReuse;
+            }
+            // Increment the counter everytime you identify a step that is data-driven
+            if((boolean) obj.getValue().get(1)) {
+                ++totalNumberOfDataDrivenSteps;
             }
         }
     }
@@ -162,8 +174,10 @@ public class FeatureFileAnalyser_Prototype {
         System.out.println("Total Number of Distinct Steps in the Project { " + distinctListOfGherkinSteps.size() + " }");
         System.out.println("Total Number of Steps in the Project including Duplicates { " + totalNoOfSteps + " }");
         System.out.println("Total Number of Steps Reused one or more times { " + (int) totalNoOfReusableSteps + " }");
+        System.out.println("Total Number of Steps Not Reused one or more times { " + totalNoOfStepsWithoutReuse + " }");
+        System.out.println("Total Number of Distinct Data Driven Steps { " + totalNumberOfDataDrivenSteps + " }");
         percentage = totalNoOfReusableSteps / (totalNoOfSteps - totalNoOfReusableSteps) * 100;
-        System.out.println("Code Reuse calculated for all BDD Steps { " + String.format("%.0f", percentage) + " % }");
+        System.out.println("Level of Overall Code Reuse based on a Step Recurrence of one or more times { " + String.format("%.0f", percentage) + " % }");
     }
 
     public void printSummaryWithThresholds() {
