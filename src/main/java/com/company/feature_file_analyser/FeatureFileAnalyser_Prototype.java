@@ -103,9 +103,9 @@ public class FeatureFileAnalyser_Prototype {
         for (String distinctListOfGherkinStep : distinctListOfGherkinSteps) {
             stepsReuseMetrics.put(distinctListOfGherkinStep, new ArrayList<>() {
                 {
-                    // A first recurrence is considered when a step is encountered for the second time
-                    add(-1);
+                    add(-1);    // 1st recurrence is considered when a step is encountered for the second time
                     add(false);
+                    add("Step Type");
                 }
             });
         }
@@ -119,6 +119,7 @@ public class FeatureFileAnalyser_Prototype {
                     {
                         add(totalNoOfReusedSteps + 1);
                         add(dataDriven);
+                        add(step.substring(0, step.indexOf(' ')));  // Step type
                     }
                 });
             }
@@ -151,6 +152,7 @@ public class FeatureFileAnalyser_Prototype {
     public void printLowLevelSummary() {
         for (Map.Entry<String, List<? extends Object>> obj : getStepsReuseMetrics().entrySet()) {
             System.out.println("Step { " + obj.getKey()
+                    + " } \nStep Type { " + obj.getValue().get(2)
                     + " } \nReuse Count { " + obj.getValue().get(0)
                     + " } \nData-driven { " + obj.getValue().get(1)
                     + " } \n");
@@ -172,7 +174,7 @@ public class FeatureFileAnalyser_Prototype {
             totalNoOfReusableSteps += (int) obj.getValue().get(0);
         }
         System.out.println("Total Number of Distinct Steps in the Project { " + distinctListOfGherkinSteps.size() + " }");
-        System.out.println("Total Number of Steps in the Project including Duplicates { " + totalNoOfSteps + " }");
+        System.out.println("Total Number of Steps in the Project { " + totalNoOfSteps + " }");
         System.out.println("Total Number of Steps Reused one or more times { " + (int) totalNoOfReusableSteps + " }");
         System.out.println("Total Number of Steps Not Reused one or more times { " + totalNoOfStepsWithoutReuse + " }");
         System.out.println("Total Number of Distinct Data Driven Steps { " + totalNumberOfDataDrivenSteps + " }");
@@ -181,6 +183,13 @@ public class FeatureFileAnalyser_Prototype {
     }
 
     public void printSummaryWithThresholds() {
+        System.out.println("Steps Reused < 10 times { " + " }");
+        System.out.println("Steps Reused 10 to 20 times { " + " }");
+        System.out.println("Steps Reused 20 to 50 times { " + " }");
+        System.out.println("Steps Reused 50 to 100 times { " + " }");
+        System.out.println("Steps Reused 100 to 150 times { " + " }");
+        System.out.println("Steps Reused 150 to 200 times { " + " }");
+        System.out.println("Steps Reused > 200 times { " + " }");
     }
 
 }
