@@ -9,6 +9,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.company.feature_file_analyser.Frequency.*;
+
 /* Algorithm
    a) List all the Feature files in the specified Path
    b) Read-in all the feature files sequentially
@@ -30,13 +32,15 @@ public class FeatureFileAnalyser_Prototype {
     private List<String> distinctListOfGherkinSteps = null;
 
     private final TreeMap<String, List<? extends Object>> stepsReuseMetrics = new TreeMap<>();
-    private  int totalNoOfReusedSteps = 0;
+    private int totalNoOfReusedSteps = 0;
 
     private int totalNoOfStepsWithoutReuse = 0;
 
     private int totalNoOfSteps = 0;
 
     private int totalNumberOfDataDrivenSteps = 0;
+
+    private int stepReuseCount = 0;
 
     private boolean dataDriven = false;
 
@@ -127,11 +131,11 @@ public class FeatureFileAnalyser_Prototype {
 
         for (Map.Entry<String, List<? extends Object>> obj : getStepsReuseMetrics().entrySet()) {
             // Increment the counter everytime you identify a reuse count of 0 for a given step
-            if((int) obj.getValue().get(0) == 0) {
+            if ((int) obj.getValue().get(0) == 0) {
                 ++totalNoOfStepsWithoutReuse;
             }
             // Increment the counter everytime you identify a step that is data-driven
-            if((boolean) obj.getValue().get(1)) {
+            if ((boolean) obj.getValue().get(1)) {
                 ++totalNumberOfDataDrivenSteps;
             }
         }
@@ -159,7 +163,6 @@ public class FeatureFileAnalyser_Prototype {
         }
     }
 
-
     /**
      * Method which calculates and summarises the level of code reuse at a higher-level.
      * The calculation is based on the formula:
@@ -183,13 +186,39 @@ public class FeatureFileAnalyser_Prototype {
     }
 
     public void printSummaryWithThresholds() {
-        System.out.println("Steps Reused < 10 times { " + " }");
-        System.out.println("Steps Reused 10 to 20 times { " + " }");
-        System.out.println("Steps Reused 20 to 50 times { " + " }");
-        System.out.println("Steps Reused 50 to 100 times { " + " }");
-        System.out.println("Steps Reused 100 to 150 times { " + " }");
-        System.out.println("Steps Reused 150 to 200 times { " + " }");
-        System.out.println("Steps Reused > 200 times { " + " }");
+        int lessThanTenCounter = 0;
+        int tenToTwentyCounter = 0;
+        int twentyToFiftyCounter = 0;
+        int fiftyToHundredCounter = 0;
+        int oneHundredToOneFiftyCounter = 0;
+        int oneHundredFiftyToTwoHundredCounter = 0;
+        int moreThanTwoHundredCounter = 0;
+        for (Map.Entry<String, List<? extends Object>> obj : getStepsReuseMetrics().entrySet()) {
+            stepReuseCount = (int) obj.getValue().get(0);
+            if(stepReuseCount != 0) {
+                if(stepReuseCount < TEN)
+                    lessThanTenCounter += 1;
+                else if(stepReuseCount >= TEN && stepReuseCount <= TWENTY)
+                    tenToTwentyCounter += 1;
+                else if(stepReuseCount >= TWENTY && stepReuseCount <= FIFTY)
+                    twentyToFiftyCounter += 1;
+                else if(stepReuseCount >= FIFTY && stepReuseCount <= ONE_HUNDRED)
+                    fiftyToHundredCounter += 1;
+                else if(stepReuseCount >= ONE_HUNDRED && stepReuseCount <= ONE_HUNDRED_AND_FIFTY)
+                    oneHundredToOneFiftyCounter += 1;
+                else if(stepReuseCount >= ONE_HUNDRED_AND_FIFTY && stepReuseCount <= TWO_HUNDRED)
+                    oneHundredFiftyToTwoHundredCounter += 1;
+                else {
+                    moreThanTwoHundredCounter += 1;
+                }
+            }
+        }
+        System.out.println("Steps Reused < 10 times { " + lessThanTenCounter + " }");
+        System.out.println("Steps Reused 10 to 20 times { " + tenToTwentyCounter + " }");
+        System.out.println("Steps Reused 20 to 50 times { " + twentyToFiftyCounter + " }");
+        System.out.println("Steps Reused 50 to 100 times { " + fiftyToHundredCounter + " }");
+        System.out.println("Steps Reused 100 to 150 times { " + oneHundredToOneFiftyCounter + " }");
+        System.out.println("Steps Reused 150 to 200 times { " + oneHundredFiftyToTwoHundredCounter + " }");
+        System.out.println("Steps Reused > 200 times { " + moreThanTwoHundredCounter + " }");
     }
-
 }
