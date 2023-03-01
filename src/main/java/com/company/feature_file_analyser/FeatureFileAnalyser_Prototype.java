@@ -1,5 +1,8 @@
 package com.company.feature_file_analyser;
 
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
+
 import java.io.IOException;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
@@ -9,14 +12,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.company.feature_file_analyser.Frequency.*;
+import static com.company.feature_file_analyser.config.Frequency.*;
 
 /* Algorithm
    a) List all the Feature files in the specified Path
    b) Read-in all the feature files sequentially
    c) Initialise stepsCodeReuseMetrics Map based on the distinctListOfSteps values
    d) Traverse listOfAllSteps and update stepsCodeReuseMetrics Map based on the
-      number of recurrences, and if the step is data-driven (low-level summary)
+      number of recurrences, and if the step is data-driven
    e) Count the total number of steps that were not reused one or more times
    f) Print Low-level Summary
    g) Print High-level Summary
@@ -25,13 +28,15 @@ import static com.company.feature_file_analyser.Frequency.*;
 
 public class FeatureFileAnalyser_Prototype {
     private final String userDir = System.getProperty("user.dir");
-    private final String inputFilePath = "/src/test/resources/feature_file_analyser/features/";
-
-    private final List<String> listOfAllSteps = new ArrayList<>();
+    private String inputFilePath = "to be defined";
 
     private List<String> distinctListOfGherkinSteps = null;
 
-    private final TreeMap<String, List<? extends Object>> stepsReuseMetrics = new TreeMap<>();
+    private final TreeMap<String, Integer> filePathsDataTableRowCountsMap = new TreeMap<>();
+
+    private final Multimap<String, List<? extends Object>> allStepsMetaMultimap = LinkedHashMultimap.create();
+
+    private final TreeMap<String, List<? extends Object>> stepsReuseMetricsMap = new TreeMap<>();
     private int totalNoOfReusedSteps = 0;
 
     private int totalNoOfStepsWithoutReuse = 0;
@@ -42,7 +47,13 @@ public class FeatureFileAnalyser_Prototype {
 
     private int stepReuseCount = 0;
 
-    private boolean dataDriven = false;
+    private final List<Object> stepFilePaths = new ArrayList<>();
+
+    private boolean isDataDriven = false;
+
+    private int dataTableRowCount = 0;
+
+    private float percentage = 0;
 
     private Stream<Path> walk(Path start, int maxDepth, FileVisitOption... options) throws IOException {
         return walk(start, Integer.MAX_VALUE, options);
@@ -58,7 +69,48 @@ public class FeatureFileAnalyser_Prototype {
 
     }
 
-    private void readInStepsFromGherkinFiles() {
+    public FeatureFileAnalyser_Prototype(String inputFilePath) {
+        this.inputFilePath = inputFilePath;
+    }
+
+    public void readDataTableRowCountFromFeatureFiles() {
+        List<Path> paths = null;
+        Path path = Paths.get(userDir + inputFilePath);
+        try {
+            paths = listFiles(path);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        String currentPathString = "";
+        int i = 0;
+
+        try {
+            while (true) {
+                assert paths != null;
+                if (!(i < paths.size())) break;
+                currentPathString = paths.get(i).toString();
+                List<String> allLinesOfSpecificFile = Files.readAllLines(Paths.get(currentPathString));
+
+                for (String line : allLinesOfSpecificFile) {
+                    if (line.chars().filter(ch -> ch == '|').count() >= 2) {
+                        //Read in the number of data table rows excluding the header
+                        dataTableRowCount++;
+                    }
+                }
+
+                if (dataTableRowCount > 0) {
+                    filePathsDataTableRowCountsMap.put(currentPathString, dataTableRowCount - 1);
+                } else {
+                    filePathsDataTableRowCountsMap.put(currentPathString, 0);
+                }
+                i++;
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void readStepsFromFeatureFiles() {
         List<Path> paths = null;
         Path path = Paths.get(userDir + inputFilePath);
         try {
@@ -68,32 +120,44 @@ public class FeatureFileAnalyser_Prototype {
         }
         String currentPathString = "";
         String trimmedStringLine = "";
-        int i = 0;
+        int i = 0, j = -1;
 
         try {
             while (true) {
                 assert paths != null;
                 if (!(i < paths.size())) break;
                 currentPathString = paths.get(i).toString();
-                List<String> allLinesForSpecificFile = Files.readAllLines(Paths.get(currentPathString));
-                for (String line : allLinesForSpecificFile) {
+                List<String> allLinesOfSpecificFile = Files.readAllLines(Paths.get(currentPathString));
+                for (String line : allLinesOfSpecificFile) {
                     trimmedStringLine = line.trim();
                     if (trimmedStringLine.startsWith("Given") || trimmedStringLine.startsWith("When")
                             || trimmedStringLine.startsWith("Then") || line.contains("And")) {
-                        listOfAllSteps.add(trimmedStringLine);
+                        String finalCurrentPathString = currentPathString;
+                        allStepsMetaMultimap.put(trimmedStringLine, new ArrayList<>() {
+                            {
+                                add(finalCurrentPathString);
+                                add(-1); // data table rows count initialised to -1 to exclude header row
+                            }
+                        });
                     }
                 }
                 i++;
             }
-            totalNoOfSteps = listOfAllSteps.size();
+            totalNoOfSteps = allStepsMetaMultimap.size();
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
 
     public void calculateCodeReuseAtBddLevel() {
-        readInStepsFromGherkinFiles();
+        readStepsFromFeatureFiles();
+        readDataTableRowCountFromFeatureFiles();
         analyseGherkinSteps();
+    }
+
+
+    //TODO
+    private void analyseBackgroundKeywordImpactOnFileSteps() {
     }
 
     /**
@@ -103,58 +167,86 @@ public class FeatureFileAnalyser_Prototype {
      * <pre></pre>
      */
     private void analyseGherkinSteps() {
-        distinctListOfGherkinSteps = new ArrayList<>(new HashSet<>(listOfAllSteps));
-        for (String distinctListOfGherkinStep : distinctListOfGherkinSteps) {
-            stepsReuseMetrics.put(distinctListOfGherkinStep, new ArrayList<>() {
+        distinctListOfGherkinSteps = new ArrayList<>(new HashSet<>(allStepsMetaMultimap.keySet()));
+
+        for (String step : distinctListOfGherkinSteps) {
+            stepsReuseMetricsMap.put(step, new ArrayList<>() {
                 {
-                    add(-1);    // 1st recurrence is considered when a step is encountered for the second time
+                    add(-1);    // step reuse count (1st recurrence is considered when a step is encountered for the second time)
                     add(false);
                     add("Step Type");
+                    if (allStepsMetaMultimap.get(step).size() > 1) {
+                        for (int i = 0; i < allStepsMetaMultimap.get(step).size(); i++) {
+                            add("File Name in which the Step is identified");
+                        }
+                    }
+                    add(0); // overall summed data table row count for the different feature files
                 }
             });
         }
 
-        for (String step : listOfAllSteps) {
+        for (String step : allStepsMetaMultimap.keys()) {
             if (distinctListOfGherkinSteps.contains(step)) {
                 totalNoOfReusedSteps = (int) getStepReuseCount(step);
-                dataDriven = (step.contains("<") && step.contains(">"))
+                isDataDriven = (step.contains("<") && step.contains(">"))
                         || step.chars().filter(ch -> ch == '\'').count() == 2;
-                stepsReuseMetrics.put(step, new ArrayList<>() {
+                for (int i = 0; i < allStepsMetaMultimap.get(step).size(); i++) {
+                    stepFilePaths.add(allStepsMetaMultimap.get(step).toArray()[i]);
+                }
+                stepsReuseMetricsMap.put(step, new ArrayList<>() {
                     {
                         add(totalNoOfReusedSteps + 1);
-                        add(dataDriven);
+                        add(isDataDriven);
                         add(step.substring(0, step.indexOf(' ')));  // Step type
+                        int i = 0;
+                        while (i < allStepsMetaMultimap.get(step).size()) {
+                            add(stepFilePaths.get(i));
+                            i++;
+                        }
+                        add(getFilePathsDataTableRowCountsMap());   //TODO in-progress
                     }
                 });
             }
         }
 
-        for (Map.Entry<String, List<? extends Object>> obj : getStepsReuseMetrics().entrySet()) {
-            // Increment the counter everytime you identify a reuse count of 0 for a given step
+        for (Map.Entry<String, List<? extends Object>> obj : getStepsReuseMetricsMap().entrySet()) {
+            // Increment the counter everytime a reuse count of 0 is identified for a given step
             if ((int) obj.getValue().get(0) == 0) {
                 ++totalNoOfStepsWithoutReuse;
             }
-            // Increment the counter everytime you identify a step that is data-driven
+            // Increment the counter everytime a step is identified to be data-driven
             if ((boolean) obj.getValue().get(1)) {
                 ++totalNumberOfDataDrivenSteps;
             }
         }
     }
 
-    private Object getStepReuseCount(String key) {
-        return stepsReuseMetrics.get(key).get(0);
+    private int sumOverallDataTableRowCountAcrossFeatureFiles(String path) {
+        //TODO In progress
+        //        getFilePathsDataTableRowCountsMap().get("");
+        return 0;
     }
 
-    private Map<String, List<? extends Object>> getStepsReuseMetrics() {
-        return stepsReuseMetrics;
+    private Object getStepReuseCount(String key) {
+        return this.stepsReuseMetricsMap.get(key).get(0);
     }
+
+    private Map<String, List<? extends Object>> getStepsReuseMetricsMap() {
+        return this.stepsReuseMetricsMap;
+    }
+
+    private TreeMap<String, Integer> getFilePathsDataTableRowCountsMap() {
+        return this.filePathsDataTableRowCountsMap;
+    }
+
 
     /**
      * Method which summarises the level of code reuse at a lower-level.
      * For each Gherkin Line, the Reuse Count is printed and whether the step is Data-driven.
      */
     public void printLowLevelSummary() {
-        for (Map.Entry<String, List<? extends Object>> obj : getStepsReuseMetrics().entrySet()) {
+        System.out.println("Low Level Summary\n-----------------------------------");
+        for (Map.Entry<String, List<? extends Object>> obj : getStepsReuseMetricsMap().entrySet()) {
             System.out.println("Step { " + obj.getKey()
                     + " } \nStep Type { " + obj.getValue().get(2)
                     + " } \nReuse Count { " + obj.getValue().get(0)
@@ -172,10 +264,10 @@ public class FeatureFileAnalyser_Prototype {
      */
     public void printHighLevelSummary() {
         float totalNoOfReusableSteps = 0;
-        float percentage = 0;
-        for (Map.Entry<String, List<? extends Object>> obj : getStepsReuseMetrics().entrySet()) {
+        for (Map.Entry<String, List<? extends Object>> obj : getStepsReuseMetricsMap().entrySet()) {
             totalNoOfReusableSteps += (int) obj.getValue().get(0);
         }
+        System.out.println("High Level Summary\n-----------------------------------");
         System.out.println("Total Number of Distinct Steps in the Project { " + distinctListOfGherkinSteps.size() + " }");
         System.out.println("Total Number of Steps in the Project { " + totalNoOfSteps + " }");
         System.out.println("Total Number of Steps Reused one or more times { " + (int) totalNoOfReusableSteps + " }");
@@ -193,26 +285,27 @@ public class FeatureFileAnalyser_Prototype {
         int oneHundredToOneFiftyCounter = 0;
         int oneHundredFiftyToTwoHundredCounter = 0;
         int moreThanTwoHundredCounter = 0;
-        for (Map.Entry<String, List<? extends Object>> obj : getStepsReuseMetrics().entrySet()) {
+        for (Map.Entry<String, List<? extends Object>> obj : getStepsReuseMetricsMap().entrySet()) {
             stepReuseCount = (int) obj.getValue().get(0);
-            if(stepReuseCount != 0) {
-                if(stepReuseCount < TEN)
+            if (stepReuseCount != 0) {
+                if (stepReuseCount < TEN)
                     lessThanTenCounter += 1;
-                else if(stepReuseCount >= TEN && stepReuseCount <= TWENTY)
+                else if (stepReuseCount >= TEN && stepReuseCount <= TWENTY)
                     tenToTwentyCounter += 1;
-                else if(stepReuseCount >= TWENTY && stepReuseCount <= FIFTY)
+                else if (stepReuseCount >= TWENTY && stepReuseCount <= FIFTY)
                     twentyToFiftyCounter += 1;
-                else if(stepReuseCount >= FIFTY && stepReuseCount <= ONE_HUNDRED)
+                else if (stepReuseCount >= FIFTY && stepReuseCount <= ONE_HUNDRED)
                     fiftyToHundredCounter += 1;
-                else if(stepReuseCount >= ONE_HUNDRED && stepReuseCount <= ONE_HUNDRED_AND_FIFTY)
+                else if (stepReuseCount >= ONE_HUNDRED && stepReuseCount <= ONE_HUNDRED_AND_FIFTY)
                     oneHundredToOneFiftyCounter += 1;
-                else if(stepReuseCount >= ONE_HUNDRED_AND_FIFTY && stepReuseCount <= TWO_HUNDRED)
+                else if (stepReuseCount >= ONE_HUNDRED_AND_FIFTY && stepReuseCount <= TWO_HUNDRED)
                     oneHundredFiftyToTwoHundredCounter += 1;
                 else {
                     moreThanTwoHundredCounter += 1;
                 }
             }
         }
+        System.out.println("\nSummary based on Thresholds\n-----------------------------------");
         System.out.println("Steps Reused < 10 times { " + lessThanTenCounter + " }");
         System.out.println("Steps Reused 10 to 20 times { " + tenToTwentyCounter + " }");
         System.out.println("Steps Reused 20 to 50 times { " + twentyToFiftyCounter + " }");
@@ -220,5 +313,22 @@ public class FeatureFileAnalyser_Prototype {
         System.out.println("Steps Reused 100 to 150 times { " + oneHundredToOneFiftyCounter + " }");
         System.out.println("Steps Reused 150 to 200 times { " + oneHundredFiftyToTwoHundredCounter + " }");
         System.out.println("Steps Reused > 200 times { " + moreThanTwoHundredCounter + " }");
+    }
+
+    public void printCodeReuseLevelClassification() {
+        System.out.println("\n-----------------------------------");
+        if (percentage <= 40) {
+            System.out.println("The Overall Level of Code Reuse is Poor");
+        }
+        if (percentage > 40 && percentage < 60) {
+            System.out.println("The Overall Level of Code Reuse is Average");
+        }
+        if (percentage >= 60 && percentage < 75) {
+            System.out.println("The Overall Level of Code Reuse is Good");
+        }
+        if (percentage >= 75) {
+            System.out.println("The Overall Level of Code Reuse is Excellent");
+        }
+
     }
 }

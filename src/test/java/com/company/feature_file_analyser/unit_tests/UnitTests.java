@@ -8,12 +8,21 @@ public class UnitTests {
     private final FeatureFileAnalyser_Prototype prototype;
 
     public UnitTests() {
-        prototype = new FeatureFileAnalyser_Prototype();
+        prototype = new FeatureFileAnalyser_Prototype("/src/test/resources/feature_file_analyser/features/");
         prototype.calculateCodeReuseAtBddLevel();
     }
 
     @Test
+    public void backgroundKeywordTest() {  //TODO
+    }
+
+    @Test
     public void isStepDataDrivenTest() {  //TODO
+//        prototype.readDataTableRowCountFromFeatureFiles();
+    }
+
+    @Test
+    public void validateDataDrivenCountForParameterisedStepTest() {  //TODO
     }
 
     @Test
@@ -29,6 +38,11 @@ public class UnitTests {
     @Test
     public void validateThresholdsSummaryTest() {   //TODO
         prototype.printSummaryWithThresholds();
+    }
+
+    @Test
+    public void validateCodeReuseLevelClassificationTest() {   //TODO
+        prototype.printCodeReuseLevelClassification();
     }
 
 }

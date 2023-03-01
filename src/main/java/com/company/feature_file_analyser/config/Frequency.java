@@ -1,4 +1,4 @@
-package com.company.feature_file_analyser;
+package com.company.feature_file_analyser.config;
 
 public class Frequency {
 
