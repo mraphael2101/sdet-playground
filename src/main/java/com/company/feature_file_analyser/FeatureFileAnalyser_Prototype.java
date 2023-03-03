@@ -1,5 +1,7 @@
 package com.company.feature_file_analyser;
 
+import com.company.feature_file_analyser.custom_types.Gen;
+import com.company.feature_file_analyser.custom_types.StepMeta;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 
@@ -29,6 +31,10 @@ import static com.company.feature_file_analyser.config.Frequency.*;
 public class FeatureFileAnalyser_Prototype {
     private final String userDir = System.getProperty("user.dir");
     private String inputFilePath = "to be defined";
+
+    private List<StepMeta> stepMetaList = new ArrayList<>();
+
+//    private Gen<StepMeta> stepMetaGen = new Gen<>();
 
     private List<String> distinctListOfGherkinSteps = null;
 
@@ -133,12 +139,19 @@ public class FeatureFileAnalyser_Prototype {
                     if (trimmedStringLine.startsWith("Given") || trimmedStringLine.startsWith("When")
                             || trimmedStringLine.startsWith("Then") || line.contains("And")) {
                         String finalCurrentPathString = currentPathString;
-                        allStepsMetaMultimap.put(trimmedStringLine, new ArrayList<>() {
-                            {
-                                add(finalCurrentPathString);
-                                add(-1); // data table rows count initialised to -1 to exclude header row
-                            }
-                        });
+//                        allStepsMetaMultimap.put(trimmedStringLine, new ArrayList<>() {
+//                            {
+//                                add(finalCurrentPathString);
+//                                add(-1); // data table rows count initialised to -1 to exclude header row
+//                            }
+//                        });
+                        StepMeta stepMeta = new StepMeta();
+                        Gen<StepMeta> genStepMeta = new Gen<StepMeta>(stepMeta);
+
+                        stepMeta.setStepName(trimmedStringLine);
+                        stepMeta.setFilePaths(finalCurrentPathString);
+                        stepMeta.setStepReuseCount(stepMeta.getStepReuseCount() + 1);
+                        stepMetaList.add(stepMeta);
                     }
                 }
                 i++;
@@ -152,7 +165,7 @@ public class FeatureFileAnalyser_Prototype {
     public void calculateCodeReuseAtBddLevel() {
         readStepsFromFeatureFiles();
         readDataTableRowCountFromFeatureFiles();
-        analyseGherkinSteps();
+        analyseSteps();
     }
 
 
@@ -166,7 +179,62 @@ public class FeatureFileAnalyser_Prototype {
      * whether the step is data-driven or not
      * <pre></pre>
      */
-    private void analyseGherkinSteps() {
+//    private void analyseSteps() {
+//        distinctListOfGherkinSteps = new ArrayList<>(new HashSet<>(allStepsMetaMultimap.keySet()));
+//
+//        for (String step : distinctListOfGherkinSteps) {
+//            stepsReuseMetricsMap.put(step, new ArrayList<>() {
+//                {
+//                    add(-1);    // step reuse count (1st recurrence is considered when a step is encountered for the second time)
+//                    add(false);
+//                    add("Step Type");
+//                    if (allStepsMetaMultimap.get(step).size() > 1) {
+//                        for (int i = 0; i < allStepsMetaMultimap.get(step).size(); i++) {
+//                            add("File Name in which the Step is identified");
+//                        }
+//                    }
+//                    add(0); // overall summed data table row count for the different feature files
+//                }
+//            });
+//        }
+//
+//        for (String step : allStepsMetaMultimap.keys()) {
+//            if (distinctListOfGherkinSteps.contains(step)) {
+//                totalNoOfReusedSteps = (int) getStepReuseCount(step);
+//                isDataDriven = (step.contains("<") && step.contains(">"))
+//                        || step.chars().filter(ch -> ch == '\'').count() == 2;
+//                for (int i = 0; i < allStepsMetaMultimap.get(step).size(); i++) {
+//                    stepFilePaths.add(allStepsMetaMultimap.get(step).toArray()[i]);
+//                }
+//                stepsReuseMetricsMap.put(step, new ArrayList<>() {
+//                    {
+//                        add(totalNoOfReusedSteps + 1);
+//                        add(isDataDriven);
+//                        add(step.substring(0, step.indexOf(' ')));  // Step type
+//                        int i = 0;
+//                        while (i < allStepsMetaMultimap.get(step).size()) {
+//                            add(stepFilePaths.get(i));
+//                            i++;
+//                        }
+//                        add(getFilePathsDataTableRowCountsMap());   //TODO in-progress
+//                    }
+//                });
+//            }
+//        }
+//
+//        for (Map.Entry<String, List<? extends Object>> obj : getStepsReuseMetricsMap().entrySet()) {
+//            // Increment the counter everytime a reuse count of 0 is identified for a given step
+//            if ((int) obj.getValue().get(0) == 0) {
+//                ++totalNoOfStepsWithoutReuse;
+//            }
+//            // Increment the counter everytime a step is identified to be data-driven
+//            if ((boolean) obj.getValue().get(1)) {
+//                ++totalNumberOfDataDrivenSteps;
+//            }
+//        }
+//    }
+
+    private void analyseSteps() {
         distinctListOfGherkinSteps = new ArrayList<>(new HashSet<>(allStepsMetaMultimap.keySet()));
 
         for (String step : distinctListOfGherkinSteps) {
