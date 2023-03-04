@@ -34,9 +34,9 @@ public class FeatureFileAnalyser_Prototype {
 
     private final String userDir = System.getProperty("user.dir");
 
-    private final StepMeta stepMeta = new StepMeta();
+    private StepMeta stepMeta = null;
 
-    private final GenericType<StepMeta> stepMetaGen = new GenericType<>(stepMeta);
+    private GenericType<StepMeta> genTypeStepMeta = null;
 
     private final List<StepMeta> listAllStepsMeta = new ArrayList<>();
 
@@ -142,9 +142,9 @@ public class FeatureFileAnalyser_Prototype {
                     trimmedStringLine = line.trim();
                     if (trimmedStringLine.startsWith("Given") || trimmedStringLine.startsWith("When")
                             || trimmedStringLine.startsWith("Then") || line.contains("And")) {
-                        StepMeta stepMeta = new StepMeta();
-                        GenericType<StepMeta> genStepMeta = new GenericType<>(stepMeta);
-                        StepMeta sm = genStepMeta.getObj();
+                        stepMeta = new StepMeta();
+                        genTypeStepMeta = new GenericType<StepMeta>(stepMeta);
+                        StepMeta sm = genTypeStepMeta.getObj();
                         sm.setStepName(trimmedStringLine);
                         sm.setFilePaths(currentPathString);
                         listAllStepsMeta.add(sm);
@@ -335,15 +335,14 @@ public class FeatureFileAnalyser_Prototype {
         if (percentage <= 40) {
             System.out.println("The Overall Level of Code Reuse is Poor");
         }
-        if (percentage > 40 && percentage < 60) {
+        else if (percentage > 40 && percentage < 60) {
             System.out.println("The Overall Level of Code Reuse is Average");
         }
-        if (percentage >= 60 && percentage < 75) {
+        else if (percentage >= 60 && percentage < 75) {
             System.out.println("The Overall Level of Code Reuse is Good");
         }
-        if (percentage >= 75) {
+        else  {
             System.out.println("The Overall Level of Code Reuse is Excellent");
         }
-
     }
 }
