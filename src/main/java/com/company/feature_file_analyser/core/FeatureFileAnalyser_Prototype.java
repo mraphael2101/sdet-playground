@@ -30,7 +30,7 @@ import static com.company.feature_file_analyser.config.Constants.Frequency.*;
 
 public class FeatureFileAnalyser_Prototype {
 
-    private String inputFilePath = "to be specified at runtime";
+    private String inputFilePath = "To be specified at Runtime";
 
     private final String userDir = System.getProperty("user.dir");
 
@@ -38,15 +38,15 @@ public class FeatureFileAnalyser_Prototype {
 
     private GenericType<StepMeta> genTypeStepMeta = null;
 
-    private final List<StepMeta> listAllStepsMeta = new ArrayList<>();
+    private final List<StepMeta> listOfAllStepsMeta = new ArrayList<>();
 
-    private final List<String> distinctListOfGherkinSteps = null;
+    private Set<String>  listOfDistinctStepNames = null;
 
     private final TreeMap<String, Integer> filePathsDataTableRowCountsMap = new TreeMap<>();
 
     private final Multimap<String, List<? extends Object>> allStepsMetaMultimap = LinkedHashMultimap.create();
 
-    private final TreeMap<String, List<? extends Object>> stepsReuseMetricsMap = new TreeMap<>();
+    private final TreeMap<String, List<? extends Object>> overallStepMetricsMap = new TreeMap<>();
     private int totalNoOfReusedSteps = 0;
 
     private int totalNoOfStepsWithoutReuse = 0;
@@ -147,12 +147,12 @@ public class FeatureFileAnalyser_Prototype {
                         StepMeta sm = genTypeStepMeta.getObj();
                         sm.setStepName(trimmedStringLine);
                         sm.setFilePaths(currentPathString);
-                        listAllStepsMeta.add(sm);
+                        listOfAllStepsMeta.add(sm);
                     }
                 }
                 i++;
             }
-            totalNoOfSteps = listAllStepsMeta.size();
+            totalNoOfSteps = listOfAllStepsMeta.size();
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -177,13 +177,16 @@ public class FeatureFileAnalyser_Prototype {
      */
 
     private void analyseSteps() {
+        //TODO Perhaps there is a better way of doing this
+        // ArrayList<String> strList = (ArrayList<String>)(ArrayList<?>)(listOfAllStepsMeta);
+        List<String> tempList = new ArrayList<>();
+        for (StepMeta stepMeta : listOfAllStepsMeta) {
+            tempList.add(stepMeta.getStepName());
+        }
+        listOfDistinctStepNames  = new HashSet<String>(tempList);
 
-//        distinctListOfGherkinSteps = new ArrayList<>(Arrays.stream(new HashSet<>(listAllStepsMeta)));
-        ArrayList<String> strList = (ArrayList<String>)(ArrayList<?>)(listAllStepsMeta);
-        //TODO You are here
-
-        for (String step : distinctListOfGherkinSteps) {
-            stepsReuseMetricsMap.put(step, new ArrayList<>() {
+        for (String step : listOfDistinctStepNames) {
+            overallStepMetricsMap.put(step, new ArrayList<>() {
                 {
                     add(-1);    // step reuse count (1st recurrence is considered when a step is encountered for the second time)
                     add(false);
@@ -199,14 +202,14 @@ public class FeatureFileAnalyser_Prototype {
         }
 
         for (String step : allStepsMetaMultimap.keys()) {
-            if (distinctListOfGherkinSteps.contains(step)) {
+            if (listOfDistinctStepNames.contains(step)) {
                 totalNoOfReusedSteps = (int) getStepReuseCount(step);
                 isDataDriven = (step.contains("<") && step.contains(">"))
                         || step.chars().filter(ch -> ch == '\'').count() == 2;
                 for (int i = 0; i < allStepsMetaMultimap.get(step).size(); i++) {
                     stepFilePaths.add(allStepsMetaMultimap.get(step).toArray()[i]);
                 }
-                stepsReuseMetricsMap.put(step, new ArrayList<>() {
+                overallStepMetricsMap.put(step, new ArrayList<>() {
                     {
                         add(totalNoOfReusedSteps + 1);
                         add(isDataDriven);
@@ -224,7 +227,7 @@ public class FeatureFileAnalyser_Prototype {
             }
         }
 
-        for (Map.Entry<String, List<? extends Object>> obj : getStepsReuseMetricsMap().entrySet()) {
+        for (Map.Entry<String, List<? extends Object>> obj : getOverallStepMetricsMap().entrySet()) {
             // Increment the counter everytime a reuse count of 0 is identified for a given step
             if ((int) obj.getValue().get(0) == 0) {
                 ++totalNoOfStepsWithoutReuse;
@@ -243,11 +246,11 @@ public class FeatureFileAnalyser_Prototype {
     }
 
     private Object getStepReuseCount(String key) {
-        return this.stepsReuseMetricsMap.get(key).get(0);
+        return this.overallStepMetricsMap.get(key).get(0);
     }
 
-    private Map<String, List<? extends Object>> getStepsReuseMetricsMap() {
-        return this.stepsReuseMetricsMap;
+    private Map<String, List<? extends Object>> getOverallStepMetricsMap() {
+        return this.overallStepMetricsMap;
     }
 
     private TreeMap<String, Integer> getFilePathsDataTableRowCountsMap() {
@@ -261,7 +264,7 @@ public class FeatureFileAnalyser_Prototype {
      */
     public void printLowLevelSummary() {
         System.out.println("Low Level Summary\n-----------------------------------");
-        for (Map.Entry<String, List<? extends Object>> obj : getStepsReuseMetricsMap().entrySet()) {
+        for (Map.Entry<String, List<? extends Object>> obj : getOverallStepMetricsMap().entrySet()) {
             System.out.println("Step { " + obj.getKey()
                     + " } \nStep Type { " + obj.getValue().get(2)
                     + " } \nReuse Count { " + obj.getValue().get(0)
@@ -279,11 +282,11 @@ public class FeatureFileAnalyser_Prototype {
      */
     public void printHighLevelSummary() {
         float totalNoOfReusableSteps = 0;
-        for (Map.Entry<String, List<? extends Object>> obj : getStepsReuseMetricsMap().entrySet()) {
+        for (Map.Entry<String, List<? extends Object>> obj : getOverallStepMetricsMap().entrySet()) {
             totalNoOfReusableSteps += (int) obj.getValue().get(0);
         }
         System.out.println("High Level Summary\n-----------------------------------");
-        System.out.println("Total Number of Distinct Steps in the Project { " + distinctListOfGherkinSteps.size() + " }");
+        System.out.println("Total Number of Distinct Steps in the Project { " + listOfDistinctStepNames.size() + " }");
         System.out.println("Total Number of Steps in the Project { " + totalNoOfSteps + " }");
         System.out.println("Total Number of Steps Reused one or more times { " + (int) totalNoOfReusableSteps + " }");
         System.out.println("Total Number of Steps Not Reused one or more times { " + totalNoOfStepsWithoutReuse + " }");
@@ -300,7 +303,7 @@ public class FeatureFileAnalyser_Prototype {
         int oneHundredToOneFiftyCounter = 0;
         int oneHundredFiftyToTwoHundredCounter = 0;
         int moreThanTwoHundredCounter = 0;
-        for (Map.Entry<String, List<? extends Object>> obj : getStepsReuseMetricsMap().entrySet()) {
+        for (Map.Entry<String, List<? extends Object>> obj : getOverallStepMetricsMap().entrySet()) {
             stepReuseCount = (int) obj.getValue().get(0);
             if (stepReuseCount != 0) {
                 if (stepReuseCount < TEN)
