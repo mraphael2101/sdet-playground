@@ -29,16 +29,18 @@ import static com.company.feature_file_analyser.config.Constants.Frequency.*;
 */
 
 public class FeatureFileAnalyser_Prototype {
-    private final String userDir = System.getProperty("user.dir");
+
     private String inputFilePath = "to be specified at runtime";
+
+    private final String userDir = System.getProperty("user.dir");
 
     private final StepMeta stepMeta = new StepMeta();
 
-    private GenericType<StepMeta> stepMetaGen = new GenericType<>(stepMeta);
+    private final GenericType<StepMeta> stepMetaGen = new GenericType<>(stepMeta);
 
     private final List<StepMeta> listAllStepsMeta = new ArrayList<>();
 
-    private List<String> distinctListOfGherkinSteps = null;
+    private final List<String> distinctListOfGherkinSteps = null;
 
     private final TreeMap<String, Integer> filePathsDataTableRowCountsMap = new TreeMap<>();
 
