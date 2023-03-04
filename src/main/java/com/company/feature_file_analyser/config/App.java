@@ -1,6 +1,6 @@
 package com.company.feature_file_analyser.config;
 
-import com.company.feature_file_analyser.FeatureFileAnalyser_Prototype;
+import com.company.feature_file_analyser.core.FeatureFileAnalyser_Prototype;
 
 public class App {
 

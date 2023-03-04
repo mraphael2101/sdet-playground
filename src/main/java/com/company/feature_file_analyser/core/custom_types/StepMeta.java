@@ -1,4 +1,4 @@
-package com.company.feature_file_analyser.custom_types;
+package com.company.feature_file_analyser.core.custom_types;
 
 import java.util.ArrayList;
 import java.util.List;

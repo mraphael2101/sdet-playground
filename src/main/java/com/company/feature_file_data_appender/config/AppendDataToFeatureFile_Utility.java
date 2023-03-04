@@ -1,6 +1,6 @@
 package com.company.feature_file_data_appender.config;
 
-import com.company.feature_file_data_appender.interfaces.FeatureFile_DataAppender;
+import com.company.feature_file_data_appender.interfaces.AppendDataProcess;
 import com.google.common.collect.Iterables;
 
 import java.io.*;
@@ -11,7 +11,7 @@ import static java.util.Arrays.copyOf;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 
-public class AppendDataToFeatureFile_Utility implements FeatureFile_DataAppender {
+public class AppendDataToFeatureFile_Utility implements AppendDataProcess {
     private boolean cleanseSwitch;
     private String fileName = "";
     private String excelTab = "";

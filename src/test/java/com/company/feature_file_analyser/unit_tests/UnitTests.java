@@ -1,6 +1,6 @@
 package com.company.feature_file_analyser.unit_tests;
 
-import com.company.feature_file_analyser.FeatureFileAnalyser_Prototype;
+import com.company.feature_file_analyser.core.FeatureFileAnalyser_Prototype;
 import org.junit.Test;
 
 public class UnitTests {

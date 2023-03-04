@@ -1,14 +1,14 @@
-package com.company.feature_file_analyser.custom_types;
+package com.company.feature_file_analyser.core.custom_types;
 
-public class Gen<T> {
+public class GenericType<T> {
 
     T obj;
 
-    public Gen(T o) {
+    public GenericType(T o) {
         obj = o;
     }
 
-    T getObj() {
+    public T getObj() {
         return this.obj;
     }
 

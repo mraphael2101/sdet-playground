@@ -1,6 +1,6 @@
 package com.company.feature_file_data_appender.interfaces;
 
-public interface FeatureFile_DataAppender {
+public interface AppendDataProcess {
 
     String[][] readCleanseDataSourceFileInto2DArray(String fileName, boolean cleanseSwitch);
 
