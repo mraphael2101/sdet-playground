@@ -1,0 +1,5 @@
+
+// returns the actual two objects
+//        var result = listOfAllStepsMetaData.stream()
+//                .filter(s -> s.getStepName().equalsIgnoreCase(listOfDistinctStepNames.toArray()[0].toString()))
+//                .collect(Collectors.toList());
