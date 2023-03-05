@@ -1,8 +1,6 @@
 package com.company.feature_file_analyser.core.custom_types;
 
 import java.util.TreeMap;
-import static com.company.feature_file_analyser.core.FeatureFileAnalyser_Prototype.*;
-
 
 public class StepMetaData {
 
