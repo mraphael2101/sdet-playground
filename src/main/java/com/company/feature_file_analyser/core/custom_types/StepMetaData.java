@@ -6,14 +6,25 @@ public class StepMetaData {
 
     private final TreeMap<String, Integer> filePathsDataTableRowCountsMap = new TreeMap<>();
 
+    private final TreeMap<String, Integer> filePathsScenarioCountsMap = new TreeMap<>();
     private String stepName = "";
 
     private String stepType = "";
+
+    private boolean isBackground = false;
 
     private boolean isDataDriven = false;
     private boolean isDataTableDriven = false;
 
     private long dataTableRowCount = 0;
+
+    public TreeMap<String, Integer> getFilePathsScenarioCountsMap() {
+        return this.filePathsScenarioCountsMap;
+    }
+
+    public void setFilePathsScenarioCountsMap(String key, int value) {
+        this.filePathsScenarioCountsMap.put(key, value);
+    }
 
     public TreeMap<String, Integer> getFilePathsDataTableRowCountsMap() {
         return this.filePathsDataTableRowCountsMap;
@@ -61,5 +72,13 @@ public class StepMetaData {
 
     public void setDataDriven(boolean dataDriven) {
         isDataDriven = dataDriven;
+    }
+
+    public boolean isBackground() {
+        return isBackground;
+    }
+
+    public void setBackground(boolean background) {
+        isBackground = background;
     }
 }

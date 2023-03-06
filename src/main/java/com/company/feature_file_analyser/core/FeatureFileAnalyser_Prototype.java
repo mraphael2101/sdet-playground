@@ -2,8 +2,6 @@ package com.company.feature_file_analyser.core;
 
 import com.company.feature_file_analyser.core.custom_types.GenericType;
 import com.company.feature_file_analyser.core.custom_types.StepMetaData;
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
 
 import java.io.IOException;
 import java.nio.file.FileVisitOption;
@@ -32,13 +30,11 @@ public class FeatureFileAnalyser_Prototype {
 
     private final String userDir = System.getProperty("user.dir");
 
-    List<String> tempList = new ArrayList<>();
+    private final List<String> listTempString = new ArrayList<>();
 
     private final List<StepMetaData> listOfAllStepsMetaData = new ArrayList<>();
 
 //    private final Multimap<String, List<? extends Object>> allStepsMetaMultimap = LinkedHashMultimap.create();
-    private final TreeMap<String, List<? extends Object>> overallStepMetricsMap = new TreeMap<>();
-    private final List<Object> stepFilePaths = new ArrayList<>();
     private String inputFilePath = "To be specified at Runtime";
     private StepMetaData stepMetaData = null;
     private GenericType<StepMetaData> genTypeStepMeta = null;
@@ -53,6 +49,12 @@ public class FeatureFileAnalyser_Prototype {
 
     private boolean isDataDriven = false;
     private boolean isDataTableDriven = false;
+
+    private boolean isBackground = false;
+
+    private boolean isScenario = false;
+
+    private int scenarioRecurrenceCount = 0;
 
     private int dataTableRowCount = 0;
 
@@ -76,7 +78,7 @@ public class FeatureFileAnalyser_Prototype {
 
     }
 
-    public void readDataTableRowCountFromFeatureFiles() {
+    public void readDataTableRowCount() {
         List<Path> paths = null;
         Path path = Paths.get(userDir + inputFilePath);
         try {
@@ -99,8 +101,8 @@ public class FeatureFileAnalyser_Prototype {
                         dataTableRowCount++;
                     }
                 }
-                // After reading in file rowcount is updated for DT
 
+                // Update the file data table rowcount in List<StepMetaData>
                 for (StepMetaData step : listOfAllStepsMetaData) {
                     if (step.getFilePathsDataTableRowCountsMap().containsKey(currentPathString)) {
                         if (dataTableRowCount > 0) {
@@ -119,7 +121,7 @@ public class FeatureFileAnalyser_Prototype {
         }
     }
 
-    private void readStepsFromFeatureFiles() {
+    private void readSteps() {
         List<Path> paths = null;
         Path path = Paths.get(userDir + inputFilePath);
         try {
@@ -130,6 +132,7 @@ public class FeatureFileAnalyser_Prototype {
         String currentPathString = "";
         String trimmedStringLine = "";
         int i = 0;
+        int rowIndex = 1;
 
         try {
             while (true) {
@@ -137,21 +140,51 @@ public class FeatureFileAnalyser_Prototype {
                 if (!(i < paths.size())) break;
                 currentPathString = paths.get(i).toString();
                 List<String> allLinesOfSpecificFile = Files.readAllLines(Paths.get(currentPathString));
+                int noOfRowsInFile = allLinesOfSpecificFile.size();
                 for (String line : allLinesOfSpecificFile) {
                     trimmedStringLine = line.trim();
+
+                    if (trimmedStringLine.startsWith("Background")) {
+                        isBackground = true;
+                    }
+                    if (trimmedStringLine.contains("Scenario")) {
+                        isScenario = true;
+                        isBackground = false;
+                        scenarioRecurrenceCount += 1;
+                    }
                     if (trimmedStringLine.startsWith("Given") || trimmedStringLine.startsWith("When")
                             || trimmedStringLine.startsWith("Then") || line.contains("And")) {
+
                         stepMetaData = new StepMetaData();
                         genTypeStepMeta = new GenericType<StepMetaData>(stepMetaData);
                         StepMetaData smd = genTypeStepMeta.getObj();
+
                         smd.setStepName(trimmedStringLine);
                         smd.setFilePathsDataTableRowCountsMap(currentPathString, 0);
                         int index = trimmedStringLine.indexOf(" ");
                         smd.setStepType(trimmedStringLine.substring(0, index));
+                        if(!isScenario) {
+                            smd.setBackground(isBackground);
+                        }
                         listOfAllStepsMetaData.add(smd);
                     }
+                    if(rowIndex == noOfRowsInFile) {
+                        //TODO for each step update path and scenario recurrence
+                        // you cant know scenario recurrence value until reaching EOF
+//
+//                        for(StepMetaData step : listOfAllStepsMetaData) {
+//                            for (Map.Entry<String, Integer> entry : step.getFilePathsDataTableRowCountsMap().entrySet()) {
+//                                step.setFilePathsScenarioCountsMap(entry.getKey(), scenarioRecurrenceCount);
+//                            }
+//                        }
+                    }
+                    rowIndex++;
                 }
                 i++;
+                rowIndex = 1;
+                isBackground = false;
+                isScenario = false;
+                scenarioRecurrenceCount = 0;
             }
             totalNoOfSteps = listOfAllStepsMetaData.size();
         } catch (IOException ex) {
@@ -160,25 +193,20 @@ public class FeatureFileAnalyser_Prototype {
     }
 
     public void calculateCodeReuseAtBddLevel() {
-        readStepsFromFeatureFiles();
-        readDataTableRowCountFromFeatureFiles();
+        readSteps();
+        readDataTableRowCount();
         analyseSteps();
+        System.out.println("here");
     }
 
-
-    /**
-     * Method which populates the gherkinStepsCodeReuseMetrics Map based on the
-     * number of occurrences of the step across the different feature files, and
-     * whether the step is data-driven or not
-     * <pre></pre>
-     */
     private void analyseSteps() {
-        tempList.clear();
+        listTempString.clear();
+
         for (StepMetaData step : listOfAllStepsMetaData) {
-            tempList.add(step.getStepName());
+            listTempString.add(step.getStepName());
         }
 
-        listOfDistinctStepNames = new HashSet<String>(tempList);
+        listOfDistinctStepNames = new HashSet<String>(listTempString);
 
         for (StepMetaData step : listOfAllStepsMetaData) {
             if (listOfDistinctStepNames.contains(step.getStepName())) {
@@ -200,8 +228,15 @@ public class FeatureFileAnalyser_Prototype {
 
     }
 
-//    private void sumBackgroundKeywordForAllAffectedReusableStep() {
-//    }
+    private void calculateImpactOfBackgroundKeyword() {
+        //TODO for each step that isBackground
+        // multiply 1 x no of occurrences of scenario keyword
+
+//        long count = listOfAllStepsMetaData.stream().distinct()
+//                .filter(StepMetaData::isBackground)
+//                .count();
+
+    }
 
     private void sumDataTableRowCountForReusableStep(String stepName) {
         List<StepMetaData> filteredObjList = listOfAllStepsMetaData.stream()
@@ -229,11 +264,11 @@ public class FeatureFileAnalyser_Prototype {
         List<StepMetaData> filteredObjList = listOfAllStepsMetaData.stream()
                 .filter(StepMetaData::isDataDriven)
                 .toList();
-        tempList.clear();
+        listTempString.clear();
         for(StepMetaData step : filteredObjList) {
-            tempList.add(step.getStepName());
+            listTempString.add(step.getStepName());
         }
-        Set<String> distinctStep = new HashSet<>(tempList);
+        Set<String> distinctStep = new HashSet<>(listTempString);
         return distinctStep.size();
     }
 
@@ -241,11 +276,11 @@ public class FeatureFileAnalyser_Prototype {
         List<StepMetaData> filteredObjList = listOfAllStepsMetaData.stream()
                 .filter(StepMetaData::isDataTableDriven)
                 .toList();
-        tempList.clear();
+        listTempString.clear();
         for(StepMetaData step : filteredObjList) {
-            tempList.add(step.getStepName());
+            listTempString.add(step.getStepName());
         }
-        Set<String> distinctStep = new HashSet<>(tempList);
+        Set<String> distinctStep = new HashSet<>(listTempString);
         return distinctStep.size();
     }
 
