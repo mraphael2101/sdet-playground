@@ -11,6 +11,9 @@ public class StepMetaData {
     private String stepType = "";
 
     private boolean isDataDriven = false;
+    private boolean isDataTableDriven = false;
+
+    private long dataTableRowCount = 0;
 
     public TreeMap<String, Integer> getFilePathsDataTableRowCountsMap() {
         return this.filePathsDataTableRowCountsMap;
@@ -36,12 +39,27 @@ public class StepMetaData {
         this.stepType = stepType;
     }
 
+    public boolean isDataTableDriven() {
+        return this.isDataTableDriven;
+    }
+
+    public void setDataTableDriven(boolean flag) {
+        this.isDataTableDriven = flag;
+    }
+
+    public long getDataTableRowCount() {
+        return this.dataTableRowCount;
+    }
+
+    public void setDataTableRowCount(long dataTableRowCount) {
+        this.dataTableRowCount = dataTableRowCount;
+    }
+
     public boolean isDataDriven() {
-        return this.isDataDriven;
+        return isDataDriven;
     }
 
-    public void setDataDriven(boolean flag) {
-        this.isDataDriven = flag;
+    public void setDataDriven(boolean dataDriven) {
+        isDataDriven = dataDriven;
     }
-
 }

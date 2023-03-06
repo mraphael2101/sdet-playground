@@ -15,3 +15,7 @@ Feature: Web Demo
 
     Examples:
 
+      |column_1|column_2|column_3|column_4|
+      |Val A   |Val B   |Val C   |Val D   |
+      |Val W   |Val X   |Val Y   |Val Z   |
+      |Val 1   |Val 2   |Val 3   |Val 4   |
