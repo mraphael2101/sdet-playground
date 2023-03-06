@@ -12,8 +12,6 @@ public class StepMetaData {
 
     private boolean isDataDriven = false;
 
-    private int stepReuseCount = 0;
-
     public TreeMap<String, Integer> getFilePathsDataTableRowCountsMap() {
         return this.filePathsDataTableRowCountsMap;
     }
@@ -44,18 +42,6 @@ public class StepMetaData {
 
     public void setDataDriven(boolean flag) {
         this.isDataDriven = flag;
-    }
-
-    public int getStepReuseCount() {
-        return this.stepReuseCount;
-    }
-
-    public void decrementStepReuseCount() {
-        this.stepReuseCount -= 1;
-    }
-
-    public void incrementStepReuseCount() {
-        this.stepReuseCount += 1;
     }
 
 }
