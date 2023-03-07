@@ -12,14 +12,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.company.feature_file_analyser.config.Constants.Frequency.*;
+import static com.company.feature_file_analyser.config.constants.Frequency.*;
 
 /* Algorithm
    a) List all the Feature files in the specified Path
    b) Read-in all the feature files sequentially
-   c) Initialise stepsCodeReuseMetrics Map based on the distinctListOfSteps values
-   d) Traverse listOfAllSteps and update stepsCodeReuseMetrics Map based on the
-      number of recurrences, and if the step is data-driven
+
+    TBU after refactor
+
    e) Count the total number of steps that were not reused one or more times
    f) Print Low-level Summary
    g) Print High-level Summary
@@ -32,13 +32,16 @@ public class FeatureFileAnalyser_Prototype {
 
     private final List<String> listTempString = new ArrayList<>();
 
+    private Set<String> setOfDistinctPathsString = null;
+
     private final List<StepMetaData> listOfAllStepsMetaData = new ArrayList<>();
+
 
 //    private final Multimap<String, List<? extends Object>> allStepsMetaMultimap = LinkedHashMultimap.create();
     private String inputFilePath = "To be specified at Runtime";
     private StepMetaData stepMetaData = null;
     private GenericType<StepMetaData> genTypeStepMeta = null;
-    private Set<String> listOfDistinctStepNames = null;
+    private Set<String> setOfDistinctStepNames = null;
     private int totalNoOfReusedSteps = 0;
     private int totalNoOfStepsWithoutReuse = 0;
     private int totalNoOfSteps = 0;
@@ -86,9 +89,9 @@ public class FeatureFileAnalyser_Prototype {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        listTempString.clear();
         String currentPathString = "";
         int i = 0;
-
         try {
             while (true) {
                 assert paths != null;
@@ -112,10 +115,13 @@ public class FeatureFileAnalyser_Prototype {
                             step.setFilePathsDataTableRowCountsMap(currentPathString, 0);
                         }
                     }
+                    step.setDataTableRowCount(step.getFirstFilePathValue());
+                    listTempString.add(currentPathString);
                 }
                 i++;
                 dataTableRowCount = 0;  // Reset the count for the next file
             }
+            setOfDistinctPathsString = new HashSet<>(listTempString);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -171,7 +177,6 @@ public class FeatureFileAnalyser_Prototype {
                     if(rowIndex == noOfRowsInFile) {
                         //TODO for each step update path and scenario recurrence
                         // you cant know scenario recurrence value until reaching EOF
-//
 //                        for(StepMetaData step : listOfAllStepsMetaData) {
 //                            for (Map.Entry<String, Integer> entry : step.getFilePathsDataTableRowCountsMap().entrySet()) {
 //                                step.setFilePathsScenarioCountsMap(entry.getKey(), scenarioRecurrenceCount);
@@ -196,7 +201,6 @@ public class FeatureFileAnalyser_Prototype {
         readSteps();
         readDataTableRowCount();
         analyseSteps();
-        System.out.println("here");
     }
 
     private void analyseSteps() {
@@ -206,10 +210,10 @@ public class FeatureFileAnalyser_Prototype {
             listTempString.add(step.getStepName());
         }
 
-        listOfDistinctStepNames = new HashSet<String>(listTempString);
+        setOfDistinctStepNames = new HashSet<String>(listTempString);
 
         for (StepMetaData step : listOfAllStepsMetaData) {
-            if (listOfDistinctStepNames.contains(step.getStepName())) {
+            if (setOfDistinctStepNames.contains(step.getStepName())) {
                 isDataDriven = (step.getStepName().chars().filter(ch -> ch == '\'').count() == 2);
                 step.setDataDriven(isDataDriven);
                 isDataTableDriven = (step.getStepName().contains("<") && step.getStepName().contains(">"));
@@ -217,44 +221,46 @@ public class FeatureFileAnalyser_Prototype {
             }
         }
 
-        for (int i = 0; i < listOfDistinctStepNames.size(); i++) {
-            totalNoOfReusedSteps += countStepRecurrences(listOfDistinctStepNames.toArray()[i].toString());
-            totalNoOfStepsWithoutReuse += countStepRecurrencesWithoutReuse(listOfDistinctStepNames.toArray()[i].toString());
-            sumDataTableRowCountForReusableStep(listOfDistinctStepNames.toArray()[i].toString());
+        for (int i = 0; i < setOfDistinctStepNames.size(); i++) {
+            totalNoOfReusedSteps += countStepRecurrences(setOfDistinctStepNames.toArray()[i].toString());
+            totalNoOfStepsWithoutReuse += countStepRecurrencesWithoutReuse(setOfDistinctStepNames.toArray()[i].toString());
+            sumDataTableRowCountForReusableStep(setOfDistinctStepNames.toArray()[i].toString());
         }
 
         totalNoOfDataDrivenSteps += countStepDataDrivenRecurrences();
         totalNoOfDataTableDrivenSteps += countStepDataTableDrivenRecurrences();
-
     }
 
     private void calculateImpactOfBackgroundKeyword() {
         //TODO for each step that isBackground
         // multiply 1 x no of occurrences of scenario keyword
 
-//        long count = listOfAllStepsMetaData.stream().distinct()
-//                .filter(StepMetaData::isBackground)
-//                .count();
+        long count = listOfAllStepsMetaData.stream().distinct()
+                .filter(StepMetaData::isBackground)
+                .count();
 
     }
 
+
+
+    //Only increment if the path is encountered once in the distinct list of paths
     private void sumDataTableRowCountForReusableStep(String stepName) {
         List<StepMetaData> filteredObjList = listOfAllStepsMetaData.stream()
                 .filter(s -> s.getStepName().equalsIgnoreCase(stepName))
                 .toList();
-        long count = 0;
-        for (StepMetaData step : filteredObjList) {
-            if(step.isDataTableDriven()) {
-                for (Map.Entry<String, Integer> entry : step.getFilePathsDataTableRowCountsMap().entrySet()) {
-                    count += entry.getValue();
-                }
-            }
+        int count = 0;
+        Map<String, Boolean> pathEncounteredMap = new HashMap<>();
+
+        for (String distinctPath : setOfDistinctPathsString) {
+            pathEncounteredMap.put(distinctPath, false);
         }
 
-        for (StepMetaData step : filteredObjList) {
-            if(step.isDataTableDriven()) {
-                for (Map.Entry<String, Integer> entry : step.getFilePathsDataTableRowCountsMap().entrySet()) {
-                    step.setDataTableRowCount(count);
+        for (String distinctPath : setOfDistinctPathsString) {
+            for (StepMetaData step : filteredObjList) {
+                if(step.getFilePathsForStep().contains(distinctPath) && step.isDataTableDriven()
+                        && !pathEncounteredMap.get(distinctPath)) {
+                    pathEncounteredMap.put(distinctPath, true);
+                    count += step.getDataTableRowCount();
                 }
             }
         }
@@ -328,8 +334,10 @@ public class FeatureFileAnalyser_Prototype {
                     + " } \nStep Type { " + step.getStepType()
                     + " } \nReuse Count { " + countStepRecurrences(step.getStepName())
                     + " } \nData-driven { " + step.isDataDriven()
-                    + " } \nData Table driven { " + step.isDataTableDriven()
-                    + " } \n");
+                    + " } \nData Table driven { " + step.isDataTableDriven() +" }");
+            if(step.isDataTableDriven()) {
+                System.out.print("Data Table driven row count { " + step.getDataTableRowCount() + " }\n");
+            }
         }
     }
 
@@ -342,7 +350,7 @@ public class FeatureFileAnalyser_Prototype {
      */
     public void printHighLevelSummary() {
         System.out.println("High Level Summary\n-----------------------------------");
-        System.out.println("Total Number of Distinct Steps in the Project { " + listOfDistinctStepNames.size() + " }");
+        System.out.println("Total Number of Distinct Steps in the Project { " + setOfDistinctStepNames.size() + " }");
         System.out.println("Total Number of Distinct Data Driven Steps in the Project { " + countDistinctStepDataDrivenRecurrences() + " }");
         System.out.println("Total Number of Distinct Data-table Driven Steps in the Project { " + countDistinctStepDataTableDrivenRecurrences() + " }");
         System.out.println("Total Number of Steps in the Project { " + totalNoOfSteps + " }");
@@ -363,7 +371,7 @@ public class FeatureFileAnalyser_Prototype {
         int oneHundredFiftyToTwoHundredCounter = 0;
         int moreThanTwoHundredCounter = 0;
 
-        for (String distinctStepName : listOfDistinctStepNames) {
+        for (String distinctStepName : setOfDistinctStepNames) {
             stepReuseCount = countStepRecurrences(distinctStepName);
             if (stepReuseCount != 0) {
                 if (stepReuseCount < TEN)

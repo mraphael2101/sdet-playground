@@ -1,4 +1,4 @@
-package com.company.feature_file_analyser.config.Constants;
+package com.company.feature_file_analyser.config.constants;
 
 public class Frequency {
 

@@ -1,6 +1,6 @@
 package com.company.feature_file_analyser.core.custom_types;
 
-import java.util.TreeMap;
+import java.util.*;
 
 public class StepMetaData {
 
@@ -17,6 +17,27 @@ public class StepMetaData {
     private boolean isDataTableDriven = false;
 
     private long dataTableRowCount = 0;
+
+    public Set<String> getFilePathsForStep() {
+        Set<String> setPaths = new HashSet<>();
+        for(String path : filePathsDataTableRowCountsMap.keySet()) {
+            setPaths.add(path);
+        }
+        return setPaths;
+    }
+
+    public Set<Integer> getFilePathValuesForStep() {
+        Set<Integer> setCounts = new HashSet<>();
+        for(Integer count : filePathsDataTableRowCountsMap.values()) {
+            setCounts.add(count);
+        }
+        return setCounts;
+    }
+
+    public int getFirstFilePathValue() {
+        Optional<Integer> value = filePathsDataTableRowCountsMap.values().stream().findFirst();
+        return value.orElse(0);
+    }
 
     public TreeMap<String, Integer> getFilePathsScenarioCountsMap() {
         return this.filePathsScenarioCountsMap;
