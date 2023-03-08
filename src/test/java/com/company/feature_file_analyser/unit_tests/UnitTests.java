@@ -18,7 +18,6 @@ public class UnitTests {
 
     @Test
     public void isStepDataDrivenTest() {  //TODO
-//        prototype.readDataTableRowCountFromFeatureFiles();
     }
 
     @Test

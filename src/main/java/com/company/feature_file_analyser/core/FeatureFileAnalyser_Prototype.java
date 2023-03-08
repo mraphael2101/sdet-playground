@@ -31,17 +31,16 @@ public class FeatureFileAnalyser_Prototype {
     private final String userDir = System.getProperty("user.dir");
 
     private final List<String> listTempString = new ArrayList<>();
-
+    private final List<StepMetaData> listOfAllStepsMetaData = new ArrayList<>();
     private Set<String> setOfDistinctPathsString = null;
 
-    private final List<StepMetaData> listOfAllStepsMetaData = new ArrayList<>();
-
-
-//    private final Multimap<String, List<? extends Object>> allStepsMetaMultimap = LinkedHashMultimap.create();
+    //    private final Multimap<String, List<? extends Object>> allStepsMetaMultimap = LinkedHashMultimap.create();
     private String inputFilePath = "To be specified at Runtime";
     private StepMetaData stepMetaData = null;
     private GenericType<StepMetaData> genTypeStepMeta = null;
     private Set<String> setOfDistinctStepNames = null;
+
+    private List<String> listOfDistinctDataTableDrivenStepNames = new ArrayList<>();
     private int totalNoOfReusedSteps = 0;
     private int totalNoOfStepsWithoutReuse = 0;
     private int totalNoOfSteps = 0;
@@ -81,7 +80,7 @@ public class FeatureFileAnalyser_Prototype {
 
     }
 
-    public void readDataTableRowCount() {
+    public void readDataTableRowCounts() {
         List<Path> paths = null;
         Path path = Paths.get(userDir + inputFilePath);
         try {
@@ -115,7 +114,7 @@ public class FeatureFileAnalyser_Prototype {
                             step.setFilePathsDataTableRowCountsMap(currentPathString, 0);
                         }
                     }
-                    step.setDataTableRowCount(step.getFirstFilePathValue());
+                    step.setDataTableRowCount(step.getFilePathDataTableDrivenCountForStep());
                     listTempString.add(currentPathString);
                 }
                 i++;
@@ -169,12 +168,12 @@ public class FeatureFileAnalyser_Prototype {
                         smd.setFilePathsDataTableRowCountsMap(currentPathString, 0);
                         int index = trimmedStringLine.indexOf(" ");
                         smd.setStepType(trimmedStringLine.substring(0, index));
-                        if(!isScenario) {
+                        if (!isScenario) {
                             smd.setBackground(isBackground);
                         }
                         listOfAllStepsMetaData.add(smd);
                     }
-                    if(rowIndex == noOfRowsInFile) {
+                    if (rowIndex == noOfRowsInFile) {
                         //TODO for each step update path and scenario recurrence
                         // you cant know scenario recurrence value until reaching EOF
 //                        for(StepMetaData step : listOfAllStepsMetaData) {
@@ -199,8 +198,9 @@ public class FeatureFileAnalyser_Prototype {
 
     public void calculateCodeReuseAtBddLevel() {
         readSteps();
-        readDataTableRowCount();
+        readDataTableRowCounts();
         analyseSteps();
+        System.out.println("here");
     }
 
     private void analyseSteps() {
@@ -209,7 +209,6 @@ public class FeatureFileAnalyser_Prototype {
         for (StepMetaData step : listOfAllStepsMetaData) {
             listTempString.add(step.getStepName());
         }
-
         setOfDistinctStepNames = new HashSet<String>(listTempString);
 
         for (StepMetaData step : listOfAllStepsMetaData) {
@@ -224,87 +223,110 @@ public class FeatureFileAnalyser_Prototype {
         for (int i = 0; i < setOfDistinctStepNames.size(); i++) {
             totalNoOfReusedSteps += countStepRecurrences(setOfDistinctStepNames.toArray()[i].toString());
             totalNoOfStepsWithoutReuse += countStepRecurrencesWithoutReuse(setOfDistinctStepNames.toArray()[i].toString());
-            sumDataTableRowCountForReusableStep(setOfDistinctStepNames.toArray()[i].toString());
         }
 
-        totalNoOfDataDrivenSteps += countStepDataDrivenRecurrences();
-        totalNoOfDataTableDrivenSteps += countStepDataTableDrivenRecurrences();
+        totalNoOfDataDrivenSteps += countAllStepDataDrivenRecurrences();
+        totalNoOfDataTableDrivenSteps += countAllStepDataTableDrivenRecurrences();
+        sumDataTableDrivenRowCountAcrossFilesForAllParameterisedSteps();
     }
 
+    //TODO
     private void calculateImpactOfBackgroundKeyword() {
         //TODO for each step that isBackground
         // multiply 1 x no of occurrences of scenario keyword
-
         long count = listOfAllStepsMetaData.stream().distinct()
                 .filter(StepMetaData::isBackground)
                 .count();
-
     }
 
+    private Map<String, Integer> sumDataTableDrivenRowCountAcrossFilesForAllParameterisedSteps() {
+        int count = 0, i = 0;
+        TreeMap<String, Integer> mapResults = new TreeMap<>();
+        TreeMap<String, Integer> mapPathsEncountered = new TreeMap<>();
 
+        for(StepMetaData step: getStepMetaDataListIfDataTableDriven()){
+            listOfDistinctDataTableDrivenStepNames.add(step.getStepName());
+        }
 
-    //Only increment if the path is encountered once in the distinct list of paths
-    private void sumDataTableRowCountForReusableStep(String stepName) {
+        for (String distinctDataTableDrivenStep : listOfDistinctDataTableDrivenStepNames) {
+            mapPathsEncountered.put(distinctDataTableDrivenStep, 0);
+        }
+
+        for (StepMetaData step : getStepMetaDataListIfDataTableDriven()) {
+            long recurrences = countSpecificStepDataTableDrivenRecurrences(step.getStepName());
+
+            if (mapPathsEncountered.get(step.getStepName()) == 0) {
+                count = 0;
+                i = 0;
+            }
+            if (mapPathsEncountered.get(step.getStepName()) <= recurrences) {
+                mapPathsEncountered.put(step.getStepName(), ++i);
+                count += step.getDataTableRowCount();
+                mapResults.put(step.getStepName(), count);
+            }
+        }
+        return mapResults;
+    }
+
+    private int sumDataTableDrivenRowCountAcrossFilesForSingleParameterisedStep(String stepName) {
         List<StepMetaData> filteredObjList = listOfAllStepsMetaData.stream()
                 .filter(s -> s.getStepName().equalsIgnoreCase(stepName))
                 .toList();
         int count = 0;
-        Map<String, Boolean> pathEncounteredMap = new HashMap<>();
-
-        for (String distinctPath : setOfDistinctPathsString) {
-            pathEncounteredMap.put(distinctPath, false);
-        }
-
-        for (String distinctPath : setOfDistinctPathsString) {
-            for (StepMetaData step : filteredObjList) {
-                if(step.getFilePathsForStep().contains(distinctPath) && step.isDataTableDriven()
-                        && !pathEncounteredMap.get(distinctPath)) {
-                    pathEncounteredMap.put(distinctPath, true);
-                    count += step.getDataTableRowCount();
-                }
+        for (StepMetaData step : filteredObjList) {
+            if (step.isDataTableDriven()) {
+                count += step.getFilePathDataTableDrivenCountForStep();
             }
         }
+        return count;
     }
 
-    private int countDistinctStepDataDrivenRecurrences() {
+    private int countAllDistinctStepDataDrivenRecurrences() {
         List<StepMetaData> filteredObjList = listOfAllStepsMetaData.stream()
                 .filter(StepMetaData::isDataDriven)
                 .toList();
         listTempString.clear();
-        for(StepMetaData step : filteredObjList) {
+        for (StepMetaData step : filteredObjList) {
             listTempString.add(step.getStepName());
         }
         Set<String> distinctStep = new HashSet<>(listTempString);
         return distinctStep.size();
     }
 
-    private int countDistinctStepDataTableDrivenRecurrences() {
+    private int countAllDistinctStepDataTableDrivenRecurrences() {
         List<StepMetaData> filteredObjList = listOfAllStepsMetaData.stream()
                 .filter(StepMetaData::isDataTableDriven)
                 .toList();
         listTempString.clear();
-        for(StepMetaData step : filteredObjList) {
+        for (StepMetaData step : filteredObjList) {
             listTempString.add(step.getStepName());
         }
         Set<String> distinctStep = new HashSet<>(listTempString);
         return distinctStep.size();
     }
 
-    private long countStepDataDrivenRecurrences() {
-        return listOfAllStepsMetaData.stream().distinct()
+    private long countAllStepDataDrivenRecurrences() {
+        return listOfAllStepsMetaData.stream()
                 .filter(StepMetaData::isDataDriven)
                 .count();
     }
 
-    private long countStepDataTableDrivenRecurrences() {
+    private long countSpecificStepDataTableDrivenRecurrences(String stepName) {
+        return listOfAllStepsMetaData.stream()
+                .filter(StepMetaData::isDataTableDriven)
+                .filter(s -> s.getStepName().equalsIgnoreCase(stepName))
+                .count();
+    }
+
+    private long countAllStepDataTableDrivenRecurrences() {
         return listOfAllStepsMetaData.stream()
                 .filter(StepMetaData::isDataTableDriven)
                 .count();
     }
 
-    private long countStepRecurrencesWithoutReuse(String step) {
+    private long countStepRecurrencesWithoutReuse(String stepName) {
         long count = listOfAllStepsMetaData.stream()
-                .filter(s -> s.getStepName().equalsIgnoreCase(step))
+                .filter(s -> s.getStepName().equalsIgnoreCase(stepName))
                 .count();
         // Increment the counter everytime only one recurrence is identified
         if (count == 1) return 1;
@@ -322,22 +344,33 @@ public class FeatureFileAnalyser_Prototype {
         return count;
     }
 
+    private List<StepMetaData> getStepMetaDataListIfDataTableDriven() {
+        return listOfAllStepsMetaData.stream()
+                .filter(StepMetaData::isDataTableDriven)
+                .toList();
+    }
+
 
     /**
      * Method which summarises the level of code reuse at a lower-level.
      * For each Gherkin Line, the Reuse Count is printed and whether the step is Data-driven.
      */
     public void printLowLevelSummary() {
-        System.out.println("Low Level Summary\n-----------------------------------");
+        System.out.println("Low Level Summary\n-------------------------------------------------------------------------");
         for (StepMetaData step : listOfAllStepsMetaData) {
             System.out.println("Step { " + step.getStepName()
+                    + " } \nFile Path { " + step.getFilePathWhereStepWasIdentified()
                     + " } \nStep Type { " + step.getStepType()
-                    + " } \nReuse Count { " + countStepRecurrences(step.getStepName())
-                    + " } \nData-driven { " + step.isDataDriven()
-                    + " } \nData Table driven { " + step.isDataTableDriven() +" }");
-            if(step.isDataTableDriven()) {
-                System.out.print("Data Table driven row count { " + step.getDataTableRowCount() + " }\n");
+                    + " } \nStep Recurrence Count { " + countStepRecurrences(step.getStepName())
+                    + " } \nStep Data driven { " + step.isDataDriven()
+                    + " } \nStep DataTable driven { " + step.isDataTableDriven() + " }");
+
+            if (step.isDataTableDriven()) {
+                System.out.print("Step DataTable driven Row Count in File { " + step.getDataTableRowCount() + " }\n");
+                System.out.print("Step DataTable driven Row Count across Files { "
+                        + sumDataTableDrivenRowCountAcrossFilesForSingleParameterisedStep(step.getStepName()) + " }\n");
             }
+            System.out.println("-------------------------------------------------------------------------");
         }
     }
 
@@ -351,15 +384,15 @@ public class FeatureFileAnalyser_Prototype {
     public void printHighLevelSummary() {
         System.out.println("High Level Summary\n-----------------------------------");
         System.out.println("Total Number of Distinct Steps in the Project { " + setOfDistinctStepNames.size() + " }");
-        System.out.println("Total Number of Distinct Data Driven Steps in the Project { " + countDistinctStepDataDrivenRecurrences() + " }");
-        System.out.println("Total Number of Distinct Data-table Driven Steps in the Project { " + countDistinctStepDataTableDrivenRecurrences() + " }");
+        System.out.println("Total Number of Distinct Data Driven Steps in the Project { " + countAllDistinctStepDataDrivenRecurrences() + " }");
+        System.out.println("Total Number of Distinct DataTable Driven Steps in the Project { " + countAllDistinctStepDataTableDrivenRecurrences() + " }");
         System.out.println("Total Number of Steps in the Project { " + totalNoOfSteps + " }");
         System.out.println("Total Number of Steps Reused one or more times { " + totalNoOfReusedSteps + " }");
         System.out.println("Total Number of Steps Not Reused one or more times { " + totalNoOfStepsWithoutReuse + " }");
         System.out.println("Total Number of Data Driven Steps { " + totalNoOfDataDrivenSteps + " }");
-        System.out.println("Total Number of Data Table Driven Steps { " + totalNoOfDataTableDrivenSteps + " }");
-        percentage = (float) totalNoOfReusedSteps / (totalNoOfSteps - totalNoOfReusedSteps) * 100;
-        System.out.println("Level of Overall Code Reuse based on a Step Recurrence of one or more times { " + String.format("%.0f", percentage) + " % }");
+        System.out.println("Total Number of DataTable Driven Steps { " + totalNoOfDataTableDrivenSteps + " }");
+//        percentage = (float) totalNoOfReusedSteps / (totalNoOfSteps - totalNoOfReusedSteps) * 100;
+//        System.out.println("Level of Overall Code Reuse based on a Step Recurrence of one or more times { " + String.format("%.0f", percentage) + " % }");
     }
 
     public void printSummaryWithThresholds() {
