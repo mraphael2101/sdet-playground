@@ -391,6 +391,12 @@ public class FeatureFileAnalyser_Prototype {
         System.out.println("Total Number of Steps Not Reused one or more times { " + totalNoOfStepsWithoutReuse + " }");
         System.out.println("Total Number of Data Driven Steps { " + totalNoOfDataDrivenSteps + " }");
         System.out.println("Total Number of DataTable Driven Steps { " + totalNoOfDataTableDrivenSteps + " }");
+
+        for(Map.Entry<String, Integer> entry : sumDataTableDrivenRowCountAcrossFilesForAllParameterisedSteps().entrySet()) {
+            System.out.println(entry.getKey() + " -> DataTable Driven Reuse { " + entry.getValue() + " }");
+        }
+
+
 //        percentage = (float) totalNoOfReusedSteps / (totalNoOfSteps - totalNoOfReusedSteps) * 100;
 //        System.out.println("Level of Overall Code Reuse based on a Step Recurrence of one or more times { " + String.format("%.0f", percentage) + " % }");
     }
