@@ -1,16 +1,14 @@
 package com.company.feature_file_analyser.config;
 
-import com.company.feature_file_analyser.core.FeatureFileAnalyser_Prototype;
+import com.company.feature_file_analyser.core.FeatureFilesAnalyser_Prototype;
 
 public class App {
 
-    private static FeatureFileAnalyser_Prototype prototype;
-
+    private static FeatureFilesAnalyser_Prototype prototype;
+    private static String filePath = "/src/test/resources/feature_file_analyser/features/test_data_set_2";
     public static void main(String [] args) {
-        prototype = new FeatureFileAnalyser_Prototype("/src/test/resources/feature_file_analyser/features/");
-
-        prototype.calculateCodeReuseAtBddLevel();
-
+        prototype = new FeatureFilesAnalyser_Prototype(filePath);
+        prototype.calculateCodeReuseAtAcceptanceTestLevel();
         prototype.printLowLevelSummary();
         prototype.printHighLevelSummary();
         prototype.printSummaryWithThresholds();

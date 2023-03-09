@@ -6,21 +6,16 @@ import java.util.TreeMap;
 public class StepMetaData {
 
     private final TreeMap<String, Integer> filePathsDataTableRowCountsMap = new TreeMap<>();
-
     private final TreeMap<String, Integer> filePathsScenarioCountsMap = new TreeMap<>();
+    private final TreeMap<String, Integer> filePathsScenarioOutlineCountsMap = new TreeMap<>();
     private String stepName = "";
-
     private String stepType = "";
-
     private boolean isBackground = false;
-
     private boolean isDataDriven = false;
     private boolean isDataTableDriven = false;
-
-
-
     private long dataTableRowCount = 0;
-
+    private int scenarioRecurrenceCount = 0;
+    private int scenarioOutlineRecurrenceCount = 0;
     public String getFilePathWhereStepWasIdentified() {
         Optional<String> key = Optional.ofNullable(filePathsDataTableRowCountsMap.firstKey());
         return key.orElse("Something has gone wrong");
@@ -37,6 +32,14 @@ public class StepMetaData {
 
     public void setFilePathsScenarioCountsMap(String key, int value) {
         this.filePathsScenarioCountsMap.put(key, value);
+    }
+
+    public TreeMap<String, Integer> getFilePathsScenarioOutlineCountsMap() {
+        return this.filePathsScenarioOutlineCountsMap;
+    }
+
+    public void setFilePathsScenarioOutlineCountsMap(String key, int value) {
+        this.filePathsScenarioOutlineCountsMap.put(key, value);
     }
 
     public TreeMap<String, Integer> getFilePathsDataTableRowCountsMap() {
@@ -93,5 +96,21 @@ public class StepMetaData {
 
     public void setBackground(boolean background) {
         isBackground = background;
+    }
+
+    public int getScenarioRecurrenceCount() {
+        return scenarioRecurrenceCount;
+    }
+
+    public void setScenarioRecurrenceCount(int scenarioRecurrenceCount) {
+        this.scenarioRecurrenceCount = scenarioRecurrenceCount;
+    }
+
+    public int getScenarioOutlineRecurrenceCount() {
+        return scenarioOutlineRecurrenceCount;
+    }
+
+    public void setScenarioOutlineRecurrenceCount(int scenarioOutlineRecurrenceCount) {
+        this.scenarioOutlineRecurrenceCount = scenarioOutlineRecurrenceCount;
     }
 }

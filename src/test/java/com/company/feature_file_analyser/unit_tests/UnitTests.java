@@ -1,15 +1,15 @@
 package com.company.feature_file_analyser.unit_tests;
 
-import com.company.feature_file_analyser.core.FeatureFileAnalyser_Prototype;
+import com.company.feature_file_analyser.core.FeatureFilesAnalyser_Prototype;
 import org.junit.Test;
 
 public class UnitTests {
 
-    private final FeatureFileAnalyser_Prototype prototype;
+    private final FeatureFilesAnalyser_Prototype prototype;
 
     public UnitTests() {
-        prototype = new FeatureFileAnalyser_Prototype("/src/test/resources/feature_file_analyser/features/");
-        prototype.calculateCodeReuseAtBddLevel();
+        prototype = new FeatureFilesAnalyser_Prototype("/src/test/resources/feature_file_analyser/features/");
+        prototype.calculateCodeReuseAtAcceptanceTestLevel();
     }
 
     @Test

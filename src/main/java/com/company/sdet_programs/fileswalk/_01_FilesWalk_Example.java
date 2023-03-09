@@ -31,7 +31,6 @@ public class _01_FilesWalk_Example {
                     .collect(Collectors.toList());
         }
         return result;
-
     }
 
 }
