@@ -200,7 +200,6 @@ public class FeatureFileAnalyser_Prototype {
         readSteps();
         readDataTableRowCounts();
         analyseSteps();
-        System.out.println("here");
     }
 
     private void analyseSteps() {
@@ -391,10 +390,13 @@ public class FeatureFileAnalyser_Prototype {
         System.out.println("Total Number of Steps Not Reused one or more times { " + totalNoOfStepsWithoutReuse + " }");
         System.out.println("Total Number of Data Driven Steps { " + totalNoOfDataDrivenSteps + " }");
         System.out.println("Total Number of DataTable Driven Steps { " + totalNoOfDataTableDrivenSteps + " }");
-
-        for(Map.Entry<String, Integer> entry : sumDataTableDrivenRowCountAcrossFilesForAllParameterisedSteps().entrySet()) {
-            System.out.println(entry.getKey() + " -> DataTable Driven Reuse { " + entry.getValue() + " }");
+        if(totalNoOfDataDrivenSteps > 0) {
+            System.out.println("DataTable Driven Reuse for Specific Steps");
+            for(Map.Entry<String, Integer> entry : sumDataTableDrivenRowCountAcrossFilesForAllParameterisedSteps().entrySet()) {
+                System.out.println("DataTable Driven Reuse { " + entry.getKey() + " { " + entry.getValue() + " } }");
+            }
         }
+
 
 
 //        percentage = (float) totalNoOfReusedSteps / (totalNoOfSteps - totalNoOfReusedSteps) * 100;
