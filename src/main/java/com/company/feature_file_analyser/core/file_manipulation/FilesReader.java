@@ -2,6 +2,7 @@ package com.company.feature_file_analyser.core.file_manipulation;
 
 import com.company.feature_file_analyser.core.custom_types.GenericType;
 import com.company.feature_file_analyser.core.custom_types.StepMetaData;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.file.FileVisitOption;
@@ -12,6 +13,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Slf4j
 public class FilesReader {
     private final String userDir = System.getProperty("user.dir");
     private String inputFilePath = "To be specified at Runtime";
@@ -96,7 +98,6 @@ public class FilesReader {
                     if(step.getFilePathsScenarioOutlineCountsMap().containsKey(currentPathString)) {
                         step.setFilePathsScenarioOutlineCountsMap(currentPathString, scenarioOutlineRecurrenceCount);
                     }
-                    step.setDataTableRowCount(step.getFilePathDataTableDrivenCountForStep());
                     listTempString.add(currentPathString);
                 }
                 i++;

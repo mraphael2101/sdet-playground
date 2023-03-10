@@ -2,6 +2,7 @@ package com.company.feature_file_analyser.core;
 
 import com.company.feature_file_analyser.core.custom_types.StepMetaData;
 import com.company.feature_file_analyser.core.file_manipulation.FilesReader;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 
@@ -18,7 +19,7 @@ import static com.company.feature_file_analyser.config.constants.Frequency.*;
    g) Print High-level Summary
    h) Print Summary based on Thresholds
 */
-
+@Slf4j
 public class FeatureFilesAnalyser_Prototype extends FilesReader {
 
     //private final Multimap<String, List<? extends Object>> allStepsMetaMultimap = LinkedHashMultimap.create();
@@ -38,6 +39,7 @@ public class FeatureFilesAnalyser_Prototype extends FilesReader {
         readKeywordsAndParameters();
         readDataTableRowCounts();
         analyseData();
+        log.info("Project data successfully analysed");
     }
 
     private void analyseData() {
@@ -97,7 +99,7 @@ public class FeatureFilesAnalyser_Prototype extends FilesReader {
             }
             if (mapPathsEncountered.get(step.getStepName()) <= recurrences) {
                 mapPathsEncountered.put(step.getStepName(), ++i);
-                count += step.getDataTableRowCount();
+                count += step.getFilePathDataTableDrivenCountForStep();
                 mapResults.put(step.getStepName(), count);
             }
         }
@@ -186,10 +188,6 @@ public class FeatureFilesAnalyser_Prototype extends FilesReader {
                 .toList();
     }
 
-    /**
-     * Method which summarises the level of code reuse at a lower-level.
-     * For each Gherkin Line, the Reuse Count is printed and whether the step is Data-driven.
-     */
     public void printLowLevelSummary() {
         System.out.println("Low Level Summary\n-------------------------------------------------------------------------");
         for (StepMetaData step : listOfAllStepsMetaData) {
@@ -201,7 +199,7 @@ public class FeatureFilesAnalyser_Prototype extends FilesReader {
                     + " } \nStep DataTable driven { " + step.isDataTableDriven() + " }");
 
             if (step.isDataTableDriven()) {
-                System.out.print("Step DataTable driven Row Count in File { " + step.getDataTableRowCount() + " }\n");
+                System.out.print("Step DataTable driven Row Count in File { " + step.getFilePathDataTableDrivenCountForStep() + " }\n");
                 System.out.print("Step DataTable driven Row Count across Files { "
                         + sumDataTableDrivenRowCountAcrossFilesForSingleParameterisedStep(step.getStepName()) + " }\n");
             }
@@ -209,13 +207,6 @@ public class FeatureFilesAnalyser_Prototype extends FilesReader {
         }
     }
 
-    /**
-     * Method which calculates and summarises the level of code reuse at a higher-level.
-     * The calculation is based on the formula:
-     * totalNoOfReusableSteps / (totalNoOfSteps - totalNoOfReusableSteps) * 100
-     * i.e. It informs us of the overall level of Code Reuse based on analysing if each
-     * step was reused at least once or more
-     */
     public void printHighLevelSummary() {
         System.out.println("High Level Summary\n-----------------------------------");
         System.out.println("Total Number of Distinct Steps in the Project { " + setOfDistinctStepNames.size() + " }");

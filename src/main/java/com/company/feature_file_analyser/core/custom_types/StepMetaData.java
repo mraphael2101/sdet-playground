@@ -1,116 +1,50 @@
 package com.company.feature_file_analyser.core.custom_types;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Optional;
 import java.util.TreeMap;
 
+@Slf4j
 public class StepMetaData {
-
+    @Getter
     private final TreeMap<String, Integer> filePathsDataTableRowCountsMap = new TreeMap<>();
+    @Getter
     private final TreeMap<String, Integer> filePathsScenarioCountsMap = new TreeMap<>();
+    @Getter
     private final TreeMap<String, Integer> filePathsScenarioOutlineCountsMap = new TreeMap<>();
+    @Getter @Setter
     private String stepName = "";
+    @Getter @Setter
     private String stepType = "";
+    @Getter @Setter
     private boolean isBackground = false;
+    @Getter @Setter
     private boolean isDataDriven = false;
+    @Getter @Setter
     private boolean isDataTableDriven = false;
-    private long dataTableRowCount = 0;
+    @Getter @Setter
     private int scenarioRecurrenceCount = 0;
+    @Getter @Setter
     private int scenarioOutlineRecurrenceCount = 0;
     public String getFilePathWhereStepWasIdentified() {
         Optional<String> key = Optional.ofNullable(filePathsDataTableRowCountsMap.firstKey());
         return key.orElse("Something has gone wrong");
     }
-
     public int getFilePathDataTableDrivenCountForStep() {
         Optional<Integer> value = filePathsDataTableRowCountsMap.values().stream().findFirst();
         return value.orElse(0);
     }
-
-    public TreeMap<String, Integer> getFilePathsScenarioCountsMap() {
-        return this.filePathsScenarioCountsMap;
-    }
-
     public void setFilePathsScenarioCountsMap(String key, int value) {
         this.filePathsScenarioCountsMap.put(key, value);
     }
-
-    public TreeMap<String, Integer> getFilePathsScenarioOutlineCountsMap() {
-        return this.filePathsScenarioOutlineCountsMap;
-    }
-
     public void setFilePathsScenarioOutlineCountsMap(String key, int value) {
         this.filePathsScenarioOutlineCountsMap.put(key, value);
     }
-
-    public TreeMap<String, Integer> getFilePathsDataTableRowCountsMap() {
-        return this.filePathsDataTableRowCountsMap;
-    }
-
     public void setFilePathsDataTableRowCountsMap(String key, int value) {
         this.filePathsDataTableRowCountsMap.put(key, value);
     }
 
-    public String getStepName() {
-        return this.stepName;
-    }
-
-    public void setStepName(String stepName) {
-        this.stepName = stepName;
-    }
-
-    public String getStepType() {
-        return this.stepType;
-    }
-
-    public void setStepType(String stepType) {
-        this.stepType = stepType;
-    }
-
-    public boolean isDataTableDriven() {
-        return this.isDataTableDriven;
-    }
-
-    public void setDataTableDriven(boolean flag) {
-        this.isDataTableDriven = flag;
-    }
-
-    public long getDataTableRowCount() {
-        return this.dataTableRowCount;
-    }
-
-    public void setDataTableRowCount(long dataTableRowCount) {
-        this.dataTableRowCount = dataTableRowCount;
-    }
-
-    public boolean isDataDriven() {
-        return isDataDriven;
-    }
-
-    public void setDataDriven(boolean dataDriven) {
-        isDataDriven = dataDriven;
-    }
-
-    public boolean isBackground() {
-        return isBackground;
-    }
-
-    public void setBackground(boolean background) {
-        isBackground = background;
-    }
-
-    public int getScenarioRecurrenceCount() {
-        return scenarioRecurrenceCount;
-    }
-
-    public void setScenarioRecurrenceCount(int scenarioRecurrenceCount) {
-        this.scenarioRecurrenceCount = scenarioRecurrenceCount;
-    }
-
-    public int getScenarioOutlineRecurrenceCount() {
-        return scenarioOutlineRecurrenceCount;
-    }
-
-    public void setScenarioOutlineRecurrenceCount(int scenarioOutlineRecurrenceCount) {
-        this.scenarioOutlineRecurrenceCount = scenarioOutlineRecurrenceCount;
-    }
 }
