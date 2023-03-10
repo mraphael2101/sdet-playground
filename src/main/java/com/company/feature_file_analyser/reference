@@ -1,0 +1,13 @@
+    public String getFilePathOfStep() {
+        Optional<String> key = Optional.ofNullable(filePathsDataTableRowCountsMap.firstKey());
+        return key.orElse("Something has gone wrong");
+    }
+
+    public int getFilePathDataTableDrivenCountForStep() {
+        Optional<Integer> value = filePathsDataTableRowCountsMap.values().stream().findFirst();
+        return value.orElse(0);
+    }
+
+    public void setFilePathsDataTableRowCountsMap(String key, int value) {
+        this.filePathsDataTableRowCountsMap.put(key, value);
+    }
