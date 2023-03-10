@@ -13,10 +13,14 @@ public class Scenario {
     private String scenarioFilePath = "";
 
     @Getter
-    private final List<String> scenarioNames = new ArrayList<>();
+    @Setter
+    private String scenarioName = "";
 
-    public void addScenarioName(String name) {
-        this.scenarioNames.add(name);
+    @Getter
+    private final List<String> stepNames = new ArrayList<>();
+
+    public void addStepName(String name) {
+        this.stepNames.add(name);
     }
 
 }

@@ -13,13 +13,18 @@ public class ScenarioOutline {
     private String scenarioOutlineFilePath = "";
 
     @Getter
-    private final List<String> scenarioOutlineNames = new ArrayList<>();
+    @Setter
+    private String scenarioOutlineName = "";
+
+    @Getter
+    private final List<String> stepNames = new ArrayList<>();
 
     @Getter
     @Setter
-    private DataTable dataTable = null;
+    private DataTable dataTable = new DataTable();
 
-    public void addScenarioOutlineName(String name) {
-        this.scenarioOutlineNames.add(name);
+    public void addStepName(String name) {
+        this.stepNames.add(name);
     }
+
 }

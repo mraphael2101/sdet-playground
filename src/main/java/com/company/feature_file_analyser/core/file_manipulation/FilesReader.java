@@ -60,7 +60,7 @@ public class FilesReader {
         }
         String currentPathString = "";
         String trimmedStringLine = "";
-        int fileIndex = 0, rowIndex = 1, i = 0;
+        int fileIndex = 0, rowIndex = 1, spaceIndex = 0, i = 0;
 
         try {
             while (true) {
@@ -68,6 +68,7 @@ public class FilesReader {
                 if (!(fileIndex < paths.size())) break;
                 currentPathString = paths.get(fileIndex).toString();
                 List<String> allLinesOfSpecificFile = Files.readAllLines(Paths.get(currentPathString));
+
                 for (String line : allLinesOfSpecificFile) {
                     trimmedStringLine = line.trim();
 
@@ -86,9 +87,7 @@ public class FilesReader {
                         genTypeStep = new GenericType<Step>(step);
                         Step smd = genTypeStep.getObj();
                         smd.setStepName(trimmedStringLine);
-
-                        int index = trimmedStringLine.indexOf(" ");
-                        smd.setStepType(trimmedStringLine.substring(0, index));
+                        smd.setStepType(trimmedStringLine.substring(0, spaceIndex));
                         listOfAllSteps.add(smd);
                     }
                     rowIndex++;
@@ -112,7 +111,7 @@ public class FilesReader {
         }
         listTempString.clear();
         String currentPathString = "";
-        String trimmedStringLine = "";
+        String trimmedLine = "";
         int fileIndex = 0;
         try {
             while (true) {
@@ -121,40 +120,46 @@ public class FilesReader {
                 currentPathString = paths.get(fileIndex).toString();
                 List<String> allLinesOfSpecificFile = Files.readAllLines(Paths.get(currentPathString));
                 for (String line : allLinesOfSpecificFile) {
-                    trimmedStringLine = line.trim();
+                    trimmedLine = line.trim();
+                    int startIndex = trimmedLine.indexOf(":");
 
                     for(FeatureFile file : listOfAllFeatureFiles) {
                         if(file.getFilePath().equalsIgnoreCase(currentPathString)) {
 
-                            if(trimmedStringLine.contains("Scenario")) {
+                            if(!trimmedLine.contains("Scenario Outline:") && trimmedLine.contains("Scenario")) {
                                 Scenario scenario = new Scenario();
                                 scenario.setScenarioFilePath(currentPathString);
-                                scenario.addScenarioName(trimmedStringLine);
+                                scenario.setScenarioName(trimmedLine);
                                 file.incrementScenarioRecurrenceCount();
+                                file.addScenarioName(trimmedLine.substring(startIndex + 1));
                                 file.addScenario(scenario);
                             }
 
-                            if(trimmedStringLine.equals("Scenario Outline:")){
+                            if(!trimmedLine.contains("Scenario:") && trimmedLine.contains("Scenario Outline:")){
                                 ScenarioOutline outline = new ScenarioOutline();
                                 outline.setScenarioOutlineFilePath(currentPathString);
-                                outline.addScenarioOutlineName(trimmedStringLine);
+                                outline.setScenarioOutlineName(trimmedLine);
                                 file.incrementScenarioOutlineRecurrenceCount();
+                                file.addScenarioOutlineName(trimmedLine.substring(startIndex + 1));
                                 file.addScenarioOutline(outline);
                             }
                         }
 
-                        //TODO You are here
-                        for(Step step : listOfAllSteps) {
-                            if(file.getFilePath().equalsIgnoreCase(currentPathString)
-                                    && step.getStepName().equals(trimmedStringLine)) {
+//                        for(Step step : listOfAllSteps) {
+//                            if(file.getFilePath().equalsIgnoreCase(currentPathString)
+//                                    && step.getStepName().equals(trimmedLine)
+//                                    && file.getScenario("").contains()) {
+//
+//                                //remember that there are multiple steps in the same file that could be the same
+//                                //how to identify the right step object?
+//                                step.setBackground(true);
+//
+//
+//                            }
+//                        }
 
-                                //remember that there are multiple steps in the same file that could be the same
-                                //how to identify the right step object?
-                                step.setBackground(true);
 
 
-                            }
-                        }
 
 
 
@@ -167,7 +172,7 @@ public class FilesReader {
 
 
 
-//                    if (trimmedStringLine.startsWith("Background")) {
+//                    if (trimmedLine.startsWith("Background")) {
 //                        isBackground = true;
 //                    }
 //

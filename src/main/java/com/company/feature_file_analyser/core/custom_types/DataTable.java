@@ -10,7 +10,11 @@ public class DataTable {
 
     @Getter
     @Setter
-    private int numberOfRows = 0;
+    private int rowCount = 0;
+
+    @Getter
+    @Setter
+    private int columnCount = 0;
 
     @Getter
     @Setter
