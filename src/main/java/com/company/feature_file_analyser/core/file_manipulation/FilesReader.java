@@ -2,6 +2,7 @@ package com.company.feature_file_analyser.core.file_manipulation;
 
 import com.company.feature_file_analyser.core.custom_types.GenericType;
 import com.company.feature_file_analyser.core.custom_types.StepMetaData;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -20,7 +21,8 @@ public class FilesReader {
     protected final List<String> listTempString = new ArrayList<>();
     protected StepMetaData stepMetaData = null;
     protected GenericType<StepMetaData> genTypeStepMeta = null;
-    protected final List<StepMetaData> listOfAllStepsMetaData = new ArrayList<>();
+    @Getter
+    private final List<StepMetaData> listOfAllStepsMetaData = new ArrayList<>();
     protected Set<String> setOfDistinctPathsString = null;
     protected boolean isDataDriven = false;
     protected boolean isDataTableDriven = false;

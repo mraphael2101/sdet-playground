@@ -20,7 +20,7 @@ import static com.company.feature_file_analyser.config.constants.Frequency.*;
    h) Print Summary based on Thresholds
 */
 @Slf4j
-public class FeatureFilesAnalyser_Prototype extends FilesReader {
+public class Analyser extends FilesReader {
 
     //private final Multimap<String, List<? extends Object>> allStepsMetaMultimap = LinkedHashMultimap.create();
     private Set<String> setOfDistinctStepNames = null;
@@ -31,7 +31,7 @@ public class FeatureFilesAnalyser_Prototype extends FilesReader {
     private int totalNoOfDataTableDrivenSteps = 0;
     private float percentage = 0;
 
-    public FeatureFilesAnalyser_Prototype(String inputFilePath) {
+    public Analyser(String inputFilePath) {
         super(inputFilePath);
     }
 
@@ -45,12 +45,12 @@ public class FeatureFilesAnalyser_Prototype extends FilesReader {
     private void analyseData() {
         listTempString.clear();
 
-        for (StepMetaData step : listOfAllStepsMetaData) {
+        for (StepMetaData step : getListOfAllStepsMetaData()) {
             listTempString.add(step.getStepName());
         }
         setOfDistinctStepNames = new HashSet<String>(listTempString);
 
-        for (StepMetaData step : listOfAllStepsMetaData) {
+        for (StepMetaData step : getListOfAllStepsMetaData()) {
             if (setOfDistinctStepNames.contains(step.getStepName())) {
                 isDataDriven = (step.getStepName().chars().filter(ch -> ch == '\'').count() == 2
                         || step.getStepName().chars().filter(ch -> ch == '\"').count() == 2);
@@ -73,7 +73,7 @@ public class FeatureFilesAnalyser_Prototype extends FilesReader {
     private void calculateImpactOfBackgroundKeyword() {
         //TODO for each step that isBackground
         // multiply 1 x no of occurrences of scenario keyword
-        long count = listOfAllStepsMetaData.stream().distinct()
+        long count = getListOfAllStepsMetaData().stream().distinct()
                 .filter(StepMetaData::isBackground)
                 .count();
     }
@@ -107,7 +107,7 @@ public class FeatureFilesAnalyser_Prototype extends FilesReader {
     }
 
     private int sumDataTableDrivenRowCountAcrossFilesForSingleParameterisedStep(String stepName) {
-        List<StepMetaData> filteredObjList = listOfAllStepsMetaData.stream()
+        List<StepMetaData> filteredObjList = getListOfAllStepsMetaData().stream()
                 .filter(s -> s.getStepName().equalsIgnoreCase(stepName))
                 .toList();
         int count = 0;
@@ -120,7 +120,7 @@ public class FeatureFilesAnalyser_Prototype extends FilesReader {
     }
 
     private int countAllDistinctStepDataDrivenRecurrences() {
-        List<StepMetaData> filteredObjList = listOfAllStepsMetaData.stream()
+        List<StepMetaData> filteredObjList = getListOfAllStepsMetaData().stream()
                 .filter(StepMetaData::isDataDriven)
                 .toList();
         listTempString.clear();
@@ -132,7 +132,7 @@ public class FeatureFilesAnalyser_Prototype extends FilesReader {
     }
 
     private int countAllDistinctStepDataTableDrivenRecurrences() {
-        List<StepMetaData> filteredObjList = listOfAllStepsMetaData.stream()
+        List<StepMetaData> filteredObjList = getListOfAllStepsMetaData().stream()
                 .filter(StepMetaData::isDataTableDriven)
                 .toList();
         listTempString.clear();
@@ -144,26 +144,26 @@ public class FeatureFilesAnalyser_Prototype extends FilesReader {
     }
 
     private long countAllStepDataDrivenRecurrences() {
-        return listOfAllStepsMetaData.stream()
+        return getListOfAllStepsMetaData().stream()
                 .filter(StepMetaData::isDataDriven)
                 .count();
     }
 
     private long countSpecificStepDataTableDrivenRecurrences(String stepName) {
-        return listOfAllStepsMetaData.stream()
+        return getListOfAllStepsMetaData().stream()
                 .filter(StepMetaData::isDataTableDriven)
                 .filter(s -> s.getStepName().equalsIgnoreCase(stepName))
                 .count();
     }
 
     private long countAllStepDataTableDrivenRecurrences() {
-        return listOfAllStepsMetaData.stream()
+        return getListOfAllStepsMetaData().stream()
                 .filter(StepMetaData::isDataTableDriven)
                 .count();
     }
 
     private long countStepRecurrencesWithoutReuse(String stepName) {
-        long count = listOfAllStepsMetaData.stream()
+        long count = getListOfAllStepsMetaData().stream()
                 .filter(s -> s.getStepName().equalsIgnoreCase(stepName))
                 .count();
         // Increment the counter everytime only one recurrence is identified
@@ -172,7 +172,7 @@ public class FeatureFilesAnalyser_Prototype extends FilesReader {
     }
 
     private long countStepRecurrences(String step) {
-        long count = listOfAllStepsMetaData.stream()
+        long count = getListOfAllStepsMetaData().stream()
                 .filter(s -> s.getStepName().equalsIgnoreCase(step))
                 .count();
         // 1st recurrence is considered when a step is encountered more than once
@@ -183,14 +183,14 @@ public class FeatureFilesAnalyser_Prototype extends FilesReader {
     }
 
     private List<StepMetaData> getStepMetaDataListIfDataTableDriven() {
-        return listOfAllStepsMetaData.stream()
+        return getListOfAllStepsMetaData().stream()
                 .filter(StepMetaData::isDataTableDriven)
                 .toList();
     }
 
     public void printLowLevelSummary() {
         System.out.println("Low Level Summary\n-------------------------------------------------------------------------");
-        for (StepMetaData step : listOfAllStepsMetaData) {
+        for (StepMetaData step : getListOfAllStepsMetaData()) {
             System.out.println("Step { " + step.getStepName()
                     + " } \nFile Path { " + step.getFilePathWhereStepWasIdentified()
                     + " } \nStep Type { " + step.getStepType()
@@ -279,4 +279,5 @@ public class FeatureFilesAnalyser_Prototype extends FilesReader {
             System.out.println("The Overall Level of Code Reuse is Excellent");
         }
     }
+
 }
