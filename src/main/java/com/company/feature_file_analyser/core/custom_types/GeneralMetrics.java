@@ -70,7 +70,7 @@ public class GeneralMetrics {
 
     public void printHighLevelSummary() {
         System.out.println("High Level Summary\n-----------------------------------");
-        System.out.println("Total Number of Distinct Steps in the Project { " + setOfDistinctStepNames.size() + " }");
+//        System.out.println("Total Number of Distinct Steps in the Project { " + setOfDistinctStepNames.size() + " }");
 //        System.out.println("Total Number of Distinct Data Driven Steps in the Project { " + countAllDistinctStepDataDrivenRecurrences() + " }");
 //        System.out.println("Total Number of Distinct DataTable Driven Steps in the Project { " + countAllDistinctStepDataTableDrivenRecurrences() + " }");
         System.out.println("Total Number of Steps in the Project { " + totalNoOfSteps + " }");
@@ -97,7 +97,7 @@ public class GeneralMetrics {
         int oneHundredFiftyToTwoHundredCounter = 0;
         int moreThanTwoHundredCounter = 0;
 
-        for (String distinctStepName : setOfDistinctStepNames) {
+//        for (String distinctStepName : setOfDistinctStepNames) {
 //            stepReuseCount = countStepRecurrences(distinctStepName);
 //            if (stepReuseCount != 0) {
 //                if (stepReuseCount < TEN)
@@ -116,7 +116,7 @@ public class GeneralMetrics {
 //                    moreThanTwoHundredCounter += 1;
 //                }
 //            }
-        }
+//        }
         System.out.println("\nSummary based on Thresholds\n-----------------------------------");
         System.out.println("Steps Reused < 10 times { " + lessThanTenCounter + " }");
         System.out.println("Steps Reused 10 to 20 times { " + tenToTwentyCounter + " }");

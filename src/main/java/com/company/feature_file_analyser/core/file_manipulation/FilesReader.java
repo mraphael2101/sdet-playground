@@ -94,6 +94,7 @@ public class FilesReader {
                     rowIndex++;
                 }
                 fileIndex++;
+                rowIndex = 1;
             }
             metrics.setTotalNoOfSteps(listOfAllSteps.size());
         } catch (IOException ex) {
@@ -148,72 +149,22 @@ public class FilesReader {
                                 file.addScenarioOutline(outline);
                             }
                         }
-
-
-                        //Block to detect when isBackground not applicable
-//                        isScenario = true;
-//                        isBackground = false;
                     }
-
-
-//                    if (trimmedLine.startsWith("Background")) {
-//                        isBackground = true;
-//                    }
-//
-//
-//                    if (!isScenario) {
-//                        smd.setBackground(isBackground);
-//                    }
-//
-//
-//
-//                    if (line.chars().filter(ch -> ch == '|').count() >= 2) {
-//                        //Read in the number of data table rows excluding the header
-//                        dataTableRowCount++;
-//                    }
-                }
-
-                // Update the file data table rowcount in List<StepMetaData>
-                for (Step step : listOfAllSteps) {
-//                    if (step.getFilePathsDataTableRowCountsMap().containsKey(currentPathString)) {
-//                        if (dataTableRowCount > 0) {
-//                            // Exclude the header value
-//                            step.setFilePathsDataTableRowCountsMap(currentPathString, dataTableRowCount - 1);
-//                        } else {
-//                            step.setFilePathsDataTableRowCountsMap(currentPathString, 0);
-//                        }
-//                    }
-//                    if (step.getFilePathsScenarioCountsMap().containsKey(currentPathString)) {
-//                        step.setFilePathsScenarioCountsMap(currentPathString, scenarioRecurrenceCount);
-//                    }
-//                    if(step.getFilePathsScenarioOutlineCountsMap().containsKey(currentPathString)) {
-//                        step.setFilePathsScenarioOutlineCountsMap(currentPathString, scenarioOutlineRecurrenceCount);
-//                    }
-                    listTempString.add(currentPathString);
-
-
-//
-//                    for(FeatureFile file : listOfAllFeatureFiles) {
-//                        for (Map.Entry<String, Integer> entry : file.getFilePathsScenarioCountsMap().entrySet()) {
-//                            file.setFilePathsScenarioCountsMap(entry.getKey(), scenarioRecurrenceCount);
-//                        }
-//                        for (Map.Entry<String, Integer> entry : file.getFilePathsScenarioOutlineCountsMap().entrySet()) {
-//                            file.setFilePathsScenarioOutlineCountsMap(entry.getKey(), scenarioOutlineRecurrenceCount);
-//                        }
-//                    }
                     rowIndex++;
-
-
                 }
                 fileIndex++;
+                rowIndex = 1;
 //                dataTableRowCount = 0;  // Reset the count for the next file
 //                scenarioRecurrenceCount = 0;
 //                scenarioOutlineRecurrenceCount = 0;
 //                isBackground = false;
 //                isScenario = false;
 //                scenarioRecurrenceCount = 0;
+
             }
-            project.initialiseSetOfDistinctPathsString(listTempString);
+
+//            project.initialiseSetOfDistinctPathsString(listTempString);
+//            System.out.println("");
         } catch (IOException ex) {
             log.error("Exception encountered when reading in the Data Table Row Counts");
             ex.printStackTrace();
@@ -262,9 +213,25 @@ public class FilesReader {
                         }
                     }
 
+                    for (ScenarioOutline outline : featureFile.getListOfScenarioOutlines()) {
+                        System.out.println(outline.getName());
+                        System.out.println(outline.getFilePath());
+                        System.out.println(outline.getLineNumber());
+                        System.out.println(outline.getDataTable());
+                        System.out.println(outline.getStepNames());
+                    }
+
+                    for (Scenario scenario : featureFile.getListOfScenarios()) {
+                        System.out.println(scenario.getName());
+                        System.out.println(scenario.getFilePath());
+                        System.out.println(scenario.getLineNumber());
+                        System.out.println(scenario.getStepNames());
+                    }
+
                     rowIndex++;
                 }
                 fileIndex++;
+                rowIndex = 1;
             }
             metrics.setTotalNoOfSteps(listOfAllSteps.size());
         } catch (IOException ex) {
