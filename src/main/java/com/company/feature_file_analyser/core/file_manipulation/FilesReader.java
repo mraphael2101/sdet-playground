@@ -21,7 +21,7 @@ public class FilesReader {
     protected final List<String> listTempString = new ArrayList<>();
     private final String userDir = System.getProperty("user.dir");
     @Getter
-    protected GeneralMetrics metrics = null;
+    protected Metrics metrics = null;
     protected Step step = null;
     protected FeatureFile featureFile = null;
     protected GenericType<Step> genTypeStep = null;
@@ -31,8 +31,7 @@ public class FilesReader {
 
     public FilesReader(String inputFilePath) {
         this.inputFilePath = inputFilePath;
-        this.project = new Project();
-        this.metrics = new GeneralMetrics();
+        this.metrics = new Metrics();
     }
 
     private Stream<Path> walk(Path start, int maxDepth, FileVisitOption... options) throws IOException {
@@ -154,19 +153,10 @@ public class FilesReader {
                 }
                 fileIndex++;
                 rowIndex = 1;
-//                dataTableRowCount = 0;  // Reset the count for the next file
-//                scenarioRecurrenceCount = 0;
-//                scenarioOutlineRecurrenceCount = 0;
-//                isBackground = false;
-//                isScenario = false;
-//                scenarioRecurrenceCount = 0;
-
             }
-
-//            project.initialiseSetOfDistinctPathsString(listTempString);
-//            System.out.println("");
+            metrics.initialiseSetOfDistinctPathsString(listTempString);
         } catch (IOException ex) {
-            log.error("Exception encountered when reading in the Data Table Row Counts");
+            log.error("Exception encountered when...");
             ex.printStackTrace();
         }
     }

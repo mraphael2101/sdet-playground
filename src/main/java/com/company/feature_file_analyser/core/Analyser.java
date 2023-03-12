@@ -43,26 +43,21 @@ public class Analyser extends FilesReader {
         for (Step step : listOfAllSteps) {
             listTempString.add(step.getStepName());
         }
-//        setOfDistinctStepNames = new HashSet<String>(listTempString);
 
-//        for (Step step : getListOfAllSteps()) {
-//            if (setOfDistinctStepNames.contains(step.getStepName())) {
-//                isDataDriven = (step.getStepName().chars().filter(ch -> ch == '\'').count() == 2
-//                        || step.getStepName().chars().filter(ch -> ch == '\"').count() == 2);
-//                step.setDataDriven(isDataDriven);
-//                isDataTableDriven = (step.getStepName().contains("<") && step.getStepName().contains(">"));
-//                step.setDataTableDriven(isDataTableDriven);
-//            }
-//        }
+        metrics.setSetOfDistinctStepNames(new HashSet<String>(listTempString));
 
-//        for (int i = 0; i < setOfDistinctStepNames.size(); i++) {
-//            totalNoOfReusedSteps += countStepRecurrences(setOfDistinctStepNames.toArray()[i].toString());
-//            totalNoOfStepsWithoutReuse += countStepRecurrencesWithoutReuse(setOfDistinctStepNames.toArray()[i].toString());
-//        }
+        for (Step step : listOfAllSteps) {
+            if (metrics.getSetOfDistinctStepNames().contains(step.getStepName())) {
+                step.setDataDriven((step.getStepName().chars().filter(ch -> ch == '\'').count() == 2
+                        || step.getStepName().chars().filter(ch -> ch == '\"').count() == 2));
+                step.setDataTableDriven(step.getStepName().contains("<") && step.getStepName().contains(">"));
+            }
+        }
 
-//        totalNoOfDataDrivenSteps += countAllStepDataDrivenRecurrences();
-//        totalNoOfDataTableDrivenSteps += countAllStepDataTableDrivenRecurrences();
+        countOverallStepRecurrences();
+        countOverallStepRecurrencesWithoutReuse();
         sumDataTableDrivenRowCountAcrossFilesForAllParameterisedSteps();
+
     }
 
     private void calculateImpactOfBackgroundKeyword() {
@@ -157,7 +152,7 @@ public class Analyser extends FilesReader {
                 .count();
     }
 
-    private long countStepRecurrencesWithoutReuse(String stepName) {
+    private long countOverallStepRecurrencesWithoutReuse(String stepName) {
         long count = listOfAllSteps.stream()
                 .filter(s -> s.getStepName().equalsIgnoreCase(stepName))
                 .count();
@@ -166,13 +161,44 @@ public class Analyser extends FilesReader {
         else return 0;
     }
 
-    private long countStepRecurrences(String step) {
+    private long countOverallStepRecurrences(String step) {
         long count = listOfAllSteps.stream()
                 .filter(s -> s.getStepName().equalsIgnoreCase(step))
                 .count();
         // 1st recurrence is considered when a step is encountered more than once
-        if (count > 0) {
+        if (count > 1) {
             count -= 1;
+        }
+        return count;
+    }
+
+    private long countOverallStepRecurrencesWithoutReuse() {
+        long count = 0, result = 0;
+        for(String stepName : metrics.getSetOfDistinctStepNames()) {
+            count = listOfAllSteps.stream()
+                    .filter(s -> s.getStepName().equalsIgnoreCase(stepName))
+                    .count();
+            // Increment the counter everytime only one recurrence is identified
+            if (count == 1) {
+                result += 1;
+            }
+            else {
+                result += 0;
+            }
+        }
+        return result;
+    }
+
+    private long countOverallStepRecurrences() {
+        long count = 0;
+        for(String stepName : metrics.getSetOfDistinctStepNames()) {
+            count += listOfAllSteps.stream()
+                    .filter(s -> s.getStepName().equalsIgnoreCase(stepName))
+                    .count();
+            // 1st recurrence is considered when a step is encountered more than once
+            if (count > 1) {
+                count -= 1;
+            }
         }
         return count;
     }

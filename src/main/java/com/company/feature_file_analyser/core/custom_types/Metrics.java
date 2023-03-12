@@ -5,11 +5,18 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class GeneralMetrics {
+public class Metrics {
+
     @Getter
+    @Setter
+    private Set<String> setOfDistinctFilePaths = null;
+
+    @Getter
+    @Setter
     private Set<String> setOfDistinctStepNames = null;
 
     @Getter
@@ -38,6 +45,10 @@ public class GeneralMetrics {
     @Getter
     @Setter
     private long totalNoOfSteps = 0;
+
+    public void initialiseSetOfDistinctPathsString(List<String> value) {
+        this.setOfDistinctFilePaths = new HashSet<>(value);
+    }
 
     public void addDistinctDataTableDrivenStepName(String name) {
         this.listOfDistinctDataTableDrivenStepNames.add(name);
