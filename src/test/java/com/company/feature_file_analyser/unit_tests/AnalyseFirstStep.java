@@ -25,7 +25,8 @@ public class AnalyseFirstStep {
 
     @Test
     public void validateStepFilePathTest() {
-//        assertThat(firstStep.getFilePathOfStep(), containsString("demo_2.feature"));
+//        firstStep.getListOfFeatureFileNames().stream().toList();
+//        assertThat(firstStep.getListOfFeatureFileNames(), containsString("demo_2.feature"));
     }
 
     @Test
