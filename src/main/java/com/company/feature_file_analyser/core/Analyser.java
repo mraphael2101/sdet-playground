@@ -18,6 +18,7 @@ import java.util.*;
    g) Print High-level Summary
    h) Print Summary based on Thresholds
 */
+
 @Slf4j
 public class Analyser extends FilesReader implements Algorithm {
 
@@ -35,8 +36,8 @@ public class Analyser extends FilesReader implements Algorithm {
     }
 
     private void analyseData() {
-        countOverallStepRecurrences();
-        countOverallStepRecurrencesWithoutReuse();
+        countStepRecurrences();
+        countStepRecurrencesWithoutReuse();
         countTotalNumberOfScenarioRecurrences();
         countTotalNumberOfScenarioOutlineRecurrences();
         sumDataTableDrivenRowCountAcrossFilesForAllParameterisedSteps();
@@ -124,7 +125,7 @@ public class Analyser extends FilesReader implements Algorithm {
                 .filter(Step::isDataTableDriven)
                 .count();
     }
-    private long countOverallStepRecurrencesWithoutReuse(String stepName) {
+    private long countStepRecurrencesWithoutReuse(String stepName) {
         long count = listOfAllSteps.stream()
                 .filter(s -> s.getStepName().equalsIgnoreCase(stepName))
                 .count();
@@ -132,17 +133,7 @@ public class Analyser extends FilesReader implements Algorithm {
         if (count == 1) return 1;
         else return 0;
     }
-    private long countOverallStepRecurrences(String step) {
-        long count = listOfAllSteps.stream()
-                .filter(s -> s.getStepName().equalsIgnoreCase(step))
-                .count();
-        // 1st recurrence is considered when a step is encountered more than once
-        if (count > 1) {
-            count -= 1;
-        }
-        return count;
-    }
-    private long countOverallStepRecurrencesWithoutReuse() {
+    private long countStepRecurrencesWithoutReuse() {
         long count = 0, result = 0;
         for(String stepName : metrics.getSetOfDistinctStepNames()) {
             count = listOfAllSteps.stream()
@@ -158,7 +149,7 @@ public class Analyser extends FilesReader implements Algorithm {
         }
         return result;
     }
-    private long countOverallStepRecurrences() {
+    private long countStepRecurrences() {
         long count = 0;
         for(String stepName : metrics.getSetOfDistinctStepNames()) {
             count += listOfAllSteps.stream()

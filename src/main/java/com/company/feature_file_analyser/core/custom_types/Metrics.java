@@ -1,5 +1,6 @@
 package com.company.feature_file_analyser.core.custom_types;
 
+import com.company.feature_file_analyser.core.Analyser;
 import com.company.feature_file_analyser.core.file_manipulation.FilesReader;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.company.feature_file_analyser.core.constants.Frequency.*;
 import static com.company.feature_file_analyser.core.file_manipulation.FilesReader.listOfAllSteps;
 
 public class Metrics {
@@ -69,7 +71,7 @@ public class Metrics {
             System.out.println("Step { " + step.getStepName()
 //                    + " } \nFile Path { " + step.getFilePathOfStep()
                     + " } \nStep Type { " + step.getStepType()
-//                    + " } \nStep Recurrence Count { " + countStepRecurrences(step.getStepName())
+                    + " } \nStep Recurrence Count { " + countStepRecurrences(step.getStepName())
                     + " } \nStep Data driven { " + step.isDataDriven()
                     + " } \nStep DataTable driven { " + step.isDataTableDriven() + " }");
 
@@ -111,26 +113,26 @@ public class Metrics {
         int oneHundredFiftyToTwoHundredCounter = 0;
         int moreThanTwoHundredCounter = 0;
 
-//        for (String distinctStepName : setOfDistinctStepNames) {
-//            stepReuseCount = countStepRecurrences(distinctStepName);
-//            if (stepReuseCount != 0) {
-//                if (stepReuseCount < TEN)
-//                    lessThanTenCounter += 1;
-//                else if (stepReuseCount >= TEN && stepReuseCount <= TWENTY)
-//                    tenToTwentyCounter += 1;
-//                else if (stepReuseCount >= TWENTY && stepReuseCount <= FIFTY)
-//                    twentyToFiftyCounter += 1;
-//                else if (stepReuseCount >= FIFTY && stepReuseCount <= ONE_HUNDRED)
-//                    fiftyToHundredCounter += 1;
-//                else if (stepReuseCount >= ONE_HUNDRED && stepReuseCount <= ONE_HUNDRED_AND_FIFTY)
-//                    oneHundredToOneFiftyCounter += 1;
-//                else if (stepReuseCount >= ONE_HUNDRED_AND_FIFTY && stepReuseCount <= TWO_HUNDRED)
-//                    oneHundredFiftyToTwoHundredCounter += 1;
-//                else {
-//                    moreThanTwoHundredCounter += 1;
-//                }
-//            }
-//        }
+        for (String distinctStepName : setOfDistinctStepNames) {
+            long count = countStepRecurrences(distinctStepName);
+            if (count != 0) {
+                if (count < TEN)
+                    lessThanTenCounter += 1;
+                else if (count >= TEN && count <= TWENTY)
+                    tenToTwentyCounter += 1;
+                else if (count >= TWENTY && count <= FIFTY)
+                    twentyToFiftyCounter += 1;
+                else if (count >= FIFTY && count <= ONE_HUNDRED)
+                    fiftyToHundredCounter += 1;
+                else if (count >= ONE_HUNDRED && count <= ONE_HUNDRED_AND_FIFTY)
+                    oneHundredToOneFiftyCounter += 1;
+                else if (count >= ONE_HUNDRED_AND_FIFTY && count <= TWO_HUNDRED)
+                    oneHundredFiftyToTwoHundredCounter += 1;
+                else {
+                    moreThanTwoHundredCounter += 1;
+                }
+            }
+        }
         System.out.println("\nSummary based on Thresholds\n-----------------------------------");
         System.out.println("Steps Reused < 10 times { " + lessThanTenCounter + " }");
         System.out.println("Steps Reused 10 to 20 times { " + tenToTwentyCounter + " }");
@@ -152,6 +154,17 @@ public class Metrics {
         } else {
             System.out.println("The Overall Level of Code Reuse is Excellent");
         }
+    }
+
+    private long countStepRecurrences(String step) {
+        long count = listOfAllSteps.stream()
+                .filter(s -> s.getStepName().equalsIgnoreCase(step))
+                .count();
+        // 1st recurrence is considered when a step is encountered more than once
+        if (count > 1) {
+            count -= 1;
+        }
+        return count;
     }
 
 }
