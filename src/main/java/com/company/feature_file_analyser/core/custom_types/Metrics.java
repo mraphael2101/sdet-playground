@@ -39,9 +39,7 @@ public class Metrics {
     @Getter
     @Setter
     private long totalNoOfSteps = 0;
-
     Utils utils =  new Utils();
-
     public void initialiseSetOfDistinctStepNames() {
         List<String> tempList = utils.getListOfString();
 
@@ -50,21 +48,17 @@ public class Metrics {
         }
         this.setOfDistinctStepNames = new HashSet<>(tempList);
     }
-
     public void initialiseSetOfDistinctPathsString(List<String> value) {
         this.setOfDistinctFilePaths = new HashSet<>(value);
     }
-
     public void addDistinctDataTableDrivenStepName(String name) {
         this.listOfDistinctDataTableDrivenStepNames.add(name);
     }
-
     public void calculatePercentageOfCodeReuse() {
         setPercentage((float) totalNoOfReusedSteps / totalNoOfSteps * 100);
         System.out.println("Level of Overall Code Reuse based on a Step Recurrence of one or more times { "
                 + String.format("%.0f", percentage) + " % }");
     }
-
     public void printLowLevelSummary() {
         System.out.println("Low Level Summary\n-------------------------------------------------------------------------");
         for (Step step : listOfAllSteps) {
@@ -83,7 +77,6 @@ public class Metrics {
             System.out.println("-------------------------------------------------------------------------");
         }
     }
-
     public void printHighLevelSummary() {
         System.out.println("High Level Summary\n-----------------------------------");
 //        System.out.println("Total Number of Distinct Steps in the Project { " + setOfDistinctStepNames.size() + " }");
@@ -103,7 +96,6 @@ public class Metrics {
         }
         calculatePercentageOfCodeReuse();
     }
-
     public void printSummaryWithThresholds() {
         int lessThanTenCounter = 0;
         int tenToTwentyCounter = 0;
@@ -142,7 +134,6 @@ public class Metrics {
         System.out.println("Steps Reused 150 to 200 times { " + oneHundredFiftyToTwoHundredCounter + " }");
         System.out.println("Steps Reused > 200 times { " + moreThanTwoHundredCounter + " }");
     }
-
     public void printCodeReuseLevelClassification() {
         System.out.println("\n-----------------------------------");
         if (percentage <= 40) {
@@ -155,7 +146,6 @@ public class Metrics {
             System.out.println("The Overall Level of Code Reuse is Excellent");
         }
     }
-
     private long countStepRecurrences(String step) {
         long count = listOfAllSteps.stream()
                 .filter(s -> s.getStepName().equalsIgnoreCase(step))
