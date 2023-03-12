@@ -1,7 +1,6 @@
 package com.company.feature_file_analyser.core;
 
 import com.company.feature_file_analyser.core.custom_types.Step;
-import com.company.feature_file_analyser.core.custom_types.Utils;
 import com.company.feature_file_analyser.core.file_manipulation.FilesReader;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,22 +27,20 @@ public class Analyser extends FilesReader {
     }
 
     public void calculateCodeReuseForAcceptanceTesting() {
-        readFeatureFile_Path__And__Step_NameLineIndex();
-        readScenariosAndOutlines_PathNameLineIndex();
-        readKeywords();
+        extractFeatureFilesAndSteps();
+        extractScenariosAndOutlines();
+        extractToBeDetermined();
         log.info("Project data successfully extracted");
         analyseData();
         log.info("Project data successfully analysed");
     }
 
     private void analyseData() {
-
         countOverallStepRecurrences();
         countOverallStepRecurrencesWithoutReuse();
         countTotalNumberOfScenarioRecurrences();
         countTotalNumberOfScenarioOutlineRecurrences();
         sumDataTableDrivenRowCountAcrossFilesForAllParameterisedSteps();
-
     }
 
     private void calculateImpactOfBackgroundKeyword() {
@@ -53,7 +50,6 @@ public class Analyser extends FilesReader {
                 .filter(Step::isBackground)
                 .count();
     }
-
     private Map<String, Integer> sumDataTableDrivenRowCountAcrossFilesForAllParameterisedSteps() {
         int count = 0, i = 0;
         TreeMap<String, Integer> mapResults = new TreeMap<>();
@@ -81,7 +77,6 @@ public class Analyser extends FilesReader {
         }
         return mapResults;
     }
-
     private int sumDataTableDrivenRowCountAcrossFilesForSingleParameterisedStep(String stepName) {
         List<Step> filteredObjList = listOfAllSteps.stream()
                 .filter(s -> s.getStepName().equalsIgnoreCase(stepName))
@@ -94,7 +89,6 @@ public class Analyser extends FilesReader {
         }
         return count;
     }
-
     private int countAllDistinctStepDataDrivenRecurrences() {
         List<Step> filteredObjList = listOfAllSteps.stream()
                 .filter(Step::isDataDriven)
@@ -105,7 +99,6 @@ public class Analyser extends FilesReader {
         Set<String> distinctStep = new HashSet<>(utils.getListOfString());
         return distinctStep.size();
     }
-
     private int countAllDistinctStepDataTableDrivenRecurrences() {
         List<Step> filteredObjList = listOfAllSteps.stream()
                 .filter(Step::isDataTableDriven)
@@ -116,26 +109,22 @@ public class Analyser extends FilesReader {
         Set<String> distinctStep = new HashSet<>(utils.getListOfString());
         return distinctStep.size();
     }
-
     private long countAllStepDataDrivenRecurrences() {
         return listOfAllSteps.stream()
                 .filter(Step::isDataDriven)
                 .count();
     }
-
     private long countSpecificStepDataTableDrivenRecurrences(String stepName) {
         return listOfAllSteps.stream()
                 .filter(Step::isDataTableDriven)
                 .filter(s -> s.getStepName().equalsIgnoreCase(stepName))
                 .count();
     }
-
     private long countAllStepDataTableDrivenRecurrences() {
         return listOfAllSteps.stream()
                 .filter(Step::isDataTableDriven)
                 .count();
     }
-
     private long countOverallStepRecurrencesWithoutReuse(String stepName) {
         long count = listOfAllSteps.stream()
                 .filter(s -> s.getStepName().equalsIgnoreCase(stepName))
@@ -144,7 +133,6 @@ public class Analyser extends FilesReader {
         if (count == 1) return 1;
         else return 0;
     }
-
     private long countOverallStepRecurrences(String step) {
         long count = listOfAllSteps.stream()
                 .filter(s -> s.getStepName().equalsIgnoreCase(step))
@@ -155,7 +143,6 @@ public class Analyser extends FilesReader {
         }
         return count;
     }
-
     private long countOverallStepRecurrencesWithoutReuse() {
         long count = 0, result = 0;
         for(String stepName : metrics.getSetOfDistinctStepNames()) {
@@ -172,7 +159,6 @@ public class Analyser extends FilesReader {
         }
         return result;
     }
-
     private long countOverallStepRecurrences() {
         long count = 0;
         for(String stepName : metrics.getSetOfDistinctStepNames()) {
@@ -186,19 +172,16 @@ public class Analyser extends FilesReader {
         }
         return count;
     }
-
     private long countTotalNumberOfScenarioRecurrences() {
         return listOfAllFeatureFiles.stream()
                 .filter(f -> f.getScenarioRecurrenceCount() > 0)
                 .count();
     }
-
     private long countTotalNumberOfScenarioOutlineRecurrences() {
         return listOfAllFeatureFiles.stream()
                 .filter(f -> f.getScenarioOutlineRecurrenceCount() > 0)
                 .count();
     }
-
     private List<Step> getStepMetaDataListIfDataTableDriven() {
         return listOfAllSteps.stream()
                 .filter(Step::isDataTableDriven)

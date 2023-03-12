@@ -1,5 +1,6 @@
 package com.company.feature_file_analyser.core.file_manipulation;
 
+import com.company.feature_file_analyser.config.ExtractionAlgorithm;
 import com.company.feature_file_analyser.core.custom_types.*;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
-public class FilesReader {
+public class FilesReader implements ExtractionAlgorithm {
     public static final List<FeatureFile> listOfAllFeatureFiles = new ArrayList<>();
     public static final List<Step> listOfAllSteps = new ArrayList<>();
     private final String userDir = System.getProperty("user.dir");
@@ -48,7 +49,7 @@ public class FilesReader {
 
     }
 
-    protected void readFeatureFile_Path__And__Step_NameLineIndex() {
+    public void extractFeatureFilesAndSteps() {
         List<Path> paths = null;
         Path path = Paths.get(userDir + inputFilePath);
         try {
@@ -106,7 +107,7 @@ public class FilesReader {
         }
     }
 
-    protected void readScenariosAndOutlines_PathNameLineIndex() {
+    public void extractScenariosAndOutlines() {
         List<Path> paths = null;
         Path path = Paths.get(userDir + inputFilePath);
         try {
@@ -165,7 +166,7 @@ public class FilesReader {
         }
     }
 
-    protected void readKeywords() {
+    public void extractToBeDetermined() {
         List<Path> paths = null;
         Path path = Paths.get(userDir + inputFilePath);
         try {

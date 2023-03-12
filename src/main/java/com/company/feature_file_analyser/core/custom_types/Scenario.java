@@ -9,22 +9,17 @@ import java.util.List;
 
 @Slf4j
 public class Scenario {
-
     @Getter
     @Setter
     private String filePath = "";
-
     @Getter
     @Setter
     private String name = "";
-
     @Getter
     @Setter
     private int lineNumber = 0;
-
     @Getter
     private final List<String> stepNames = new ArrayList<>();
-
     public void addStepName(String name) {
         this.stepNames.add(name);
     }

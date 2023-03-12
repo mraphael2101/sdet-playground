@@ -12,38 +12,28 @@ import java.util.Set;
 import static com.company.feature_file_analyser.core.file_manipulation.FilesReader.listOfAllSteps;
 
 public class Metrics {
-
     @Getter
     @Setter
     private Set<String> setOfDistinctFilePaths = null;
-
     @Getter
     @Setter
     private Set<String> setOfDistinctStepNames = null;
-
     @Getter
     @Setter
     private List<String> listOfDistinctDataTableDrivenStepNames = new ArrayList<>();
-
     @Getter
     @Setter
     private float percentage = 0;
-
     @Getter
     private int totalNoOfReusedSteps = 0;
-
     @Getter
     private int totalNoOfStepsWithoutReuse = 0;
-
     @Getter
     private int totalNoOfDataDrivenSteps = 0;
-
     @Getter
     private int totalNoOfDataTableDrivenSteps = 0;
-
     @Getter
     private long overallStepReuseCount = 0;
-
     @Getter
     @Setter
     private long totalNoOfSteps = 0;
