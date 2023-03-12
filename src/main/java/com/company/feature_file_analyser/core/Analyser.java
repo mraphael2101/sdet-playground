@@ -1,5 +1,6 @@
 package com.company.feature_file_analyser.core;
 
+import com.company.feature_file_analyser.config.Algorithm;
 import com.company.feature_file_analyser.core.custom_types.Step;
 import com.company.feature_file_analyser.core.file_manipulation.FilesReader;
 import lombok.extern.slf4j.Slf4j;
@@ -18,9 +19,7 @@ import java.util.*;
    h) Print Summary based on Thresholds
 */
 @Slf4j
-public class Analyser extends FilesReader {
-
-    //private final Multimap<String, List<? extends Object>> allStepsMetaMultimap = LinkedHashMultimap.create();
+public class Analyser extends FilesReader implements Algorithm {
 
     public Analyser(String inputFilePath) {
         super(inputFilePath);

@@ -11,3 +11,5 @@
     public void setFilePathsDataTableRowCountsMap(String key, int value) {
         this.filePathsDataTableRowCountsMap.put(key, value);
     }
+
+    private final Multimap<String, List<? extends Object>> allStepsMetaMultimap = LinkedHashMultimap.create();
