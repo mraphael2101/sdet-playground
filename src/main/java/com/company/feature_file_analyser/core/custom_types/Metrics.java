@@ -1,7 +1,5 @@
 package com.company.feature_file_analyser.core.custom_types;
 
-import com.company.feature_file_analyser.core.Analyser;
-import com.company.feature_file_analyser.core.file_manipulation.FilesReader;
 import lombok.Getter;
 import lombok.Setter;
 
