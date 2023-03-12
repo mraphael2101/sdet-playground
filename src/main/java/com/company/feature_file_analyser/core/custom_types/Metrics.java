@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.company.feature_file_analyser.core.file_manipulation.FilesReader.listOfAllSteps;
+
 public class Metrics {
 
     @Getter
@@ -46,6 +48,17 @@ public class Metrics {
     @Setter
     private long totalNoOfSteps = 0;
 
+    Utils utils =  new Utils();
+
+    public void initialiseSetOfDistinctStepNames() {
+        List<String> tempList = utils.getListOfString();
+
+        for(Step step : listOfAllSteps) {
+            tempList.add(step.getStepName());
+        }
+        this.setOfDistinctStepNames = new HashSet<>(tempList);
+    }
+
     public void initialiseSetOfDistinctPathsString(List<String> value) {
         this.setOfDistinctFilePaths = new HashSet<>(value);
     }
@@ -62,7 +75,7 @@ public class Metrics {
 
     public void printLowLevelSummary() {
         System.out.println("Low Level Summary\n-------------------------------------------------------------------------");
-        for (Step step : FilesReader.listOfAllSteps) {
+        for (Step step : listOfAllSteps) {
             System.out.println("Step { " + step.getStepName()
 //                    + " } \nFile Path { " + step.getFilePathOfStep()
                     + " } \nStep Type { " + step.getStepType()

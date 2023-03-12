@@ -1,6 +1,7 @@
 package com.company.feature_file_analyser.core;
 
 import com.company.feature_file_analyser.core.custom_types.Step;
+import com.company.feature_file_analyser.core.custom_types.Utils;
 import com.company.feature_file_analyser.core.file_manipulation.FilesReader;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,22 +37,6 @@ public class Analyser extends FilesReader {
     }
 
     private void analyseData() {
-
-        listOfString.clear();
-
-        for (Step step : listOfAllSteps) {
-            listOfString.add(step.getStepName());
-        }
-
-        metrics.setSetOfDistinctStepNames(new HashSet<String>(listOfString));
-
-        for (Step step : listOfAllSteps) {
-            if (metrics.getSetOfDistinctStepNames().contains(step.getStepName())) {
-                step.setDataDriven((step.getStepName().chars().filter(ch -> ch == '\'').count() == 2
-                        || step.getStepName().chars().filter(ch -> ch == '\"').count() == 2));
-                step.setDataTableDriven(step.getStepName().contains("<") && step.getStepName().contains(">"));
-            }
-        }
 
         countOverallStepRecurrences();
         countOverallStepRecurrencesWithoutReuse();
@@ -114,11 +99,10 @@ public class Analyser extends FilesReader {
         List<Step> filteredObjList = listOfAllSteps.stream()
                 .filter(Step::isDataDriven)
                 .toList();
-        listOfString.clear();
         for (Step step : filteredObjList) {
-            listOfString.add(step.getStepName());
+            utils.getListOfString().add(step.getStepName());
         }
-        Set<String> distinctStep = new HashSet<>(listOfString);
+        Set<String> distinctStep = new HashSet<>(utils.getListOfString());
         return distinctStep.size();
     }
 
@@ -126,11 +110,10 @@ public class Analyser extends FilesReader {
         List<Step> filteredObjList = listOfAllSteps.stream()
                 .filter(Step::isDataTableDriven)
                 .toList();
-        listOfString.clear();
         for (Step step : filteredObjList) {
-            listOfString.add(step.getStepName());
+            utils.getListOfString().add(step.getStepName());
         }
-        Set<String> distinctStep = new HashSet<>(listOfString);
+        Set<String> distinctStep = new HashSet<>(utils.getListOfString());
         return distinctStep.size();
     }
 

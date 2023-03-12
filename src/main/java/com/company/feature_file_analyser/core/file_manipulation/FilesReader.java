@@ -18,8 +18,8 @@ import java.util.stream.Stream;
 public class FilesReader {
     public static final List<FeatureFile> listOfAllFeatureFiles = new ArrayList<>();
     public static final List<Step> listOfAllSteps = new ArrayList<>();
-    protected final List<String> listOfString = new ArrayList<>();
     private final String userDir = System.getProperty("user.dir");
+    protected Utils utils = null;
     @Getter
     protected Metrics metrics = null;
     protected Step step = null;
@@ -30,6 +30,7 @@ public class FilesReader {
 
     public FilesReader(String inputFilePath) {
         this.inputFilePath = inputFilePath;
+        this.utils = new Utils();
         this.metrics = new Metrics();
     }
 
@@ -87,6 +88,9 @@ public class FilesReader {
                         spaceIndex = trimmedLine.indexOf(" ");
                         smd.setStepType(trimmedLine.substring(0, spaceIndex));
                         smd.setLineNumber(rowIndex);
+                        smd.setDataDriven((smd.getStepName().chars().filter(ch -> ch == '\'').count() == 2
+                                || smd.getStepName().chars().filter(ch -> ch == '\"').count() == 2));
+                        smd.setDataTableDriven(smd.getStepName().contains("<") && smd.getStepName().contains(">"));
                         listOfAllSteps.add(smd);
                     }
                     rowIndex++;
@@ -95,6 +99,7 @@ public class FilesReader {
                 rowIndex = 1;
             }
             metrics.setTotalNoOfSteps(listOfAllSteps.size());
+            metrics.initialiseSetOfDistinctStepNames();
         } catch (IOException ex) {
             log.error("Exception encountered when reading in the Keywords and Parameters");
             ex.printStackTrace();
@@ -109,7 +114,6 @@ public class FilesReader {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        listOfString.clear();
         String currentPathString = "";
         String trimmedLine = "";
         int fileIndex = 0, rowIndex = 1;
@@ -137,7 +141,7 @@ public class FilesReader {
                                 file.addScenario(scenario);
                             }
 
-                            if (!trimmedLine.contains("Scenario:") && trimmedLine.contains("Scenario Outline:")) {
+                            if (trimmedLine.contains("Scenario Outline:")) {
                                 ScenarioOutline outline = new ScenarioOutline();
                                 outline.setFilePath(currentPathString);
                                 outline.setName(trimmedLine);
@@ -146,6 +150,7 @@ public class FilesReader {
                                 file.addScenarioOutlineName(trimmedLine.substring(startIndex + 1));
                                 file.addScenarioOutline(outline);
                             }
+
                         }
                     }
                     rowIndex++;
@@ -153,7 +158,7 @@ public class FilesReader {
                 fileIndex++;
                 rowIndex = 1;
             }
-            metrics.initialiseSetOfDistinctPathsString(listOfString);
+            metrics.initialiseSetOfDistinctPathsString(utils.getListOfString());
         } catch (IOException ex) {
             log.error("Exception encountered when...");
             ex.printStackTrace();
@@ -222,9 +227,8 @@ public class FilesReader {
                 fileIndex++;
                 rowIndex = 1;
             }
-            metrics.setTotalNoOfSteps(listOfAllSteps.size());
         } catch (IOException ex) {
-            log.error("Exception encountered when reading in the Keywords and Parameters");
+            log.error("Exception encountered when...");
             ex.printStackTrace();
         }
     }
