@@ -26,7 +26,7 @@ public class Analyser extends FilesReader {
         super(inputFilePath);
     }
 
-    public void calculateCodeReuseForAcceptanceTesting() {
+    public void calculateCodeReuseForAtdd() {
         extractFeatureFilesAndSteps();
         extractScenariosAndOutlines();
         extractToBeDetermined();

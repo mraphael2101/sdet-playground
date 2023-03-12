@@ -14,7 +14,7 @@ public class AnalyseFirstStep {
 
     public AnalyseFirstStep() {
         Analyser analyser = new Analyser("/src/test/resources/feature_file_analyser/features/test_data_set_1");
-        analyser.calculateCodeReuseForAcceptanceTesting();
+        analyser.calculateCodeReuseForAtdd();
         firstStep = listOfAllSteps.get(0);
     }
 
