@@ -54,10 +54,10 @@ public class Metrics {
         this.listOfDistinctDataTableDrivenStepNames.add(name);
     }
 
-    public float calculatePercentageOfCodeReuse() {
+    public void calculatePercentageOfCodeReuse() {
         setPercentage((float) totalNoOfReusedSteps / totalNoOfSteps * 100);
-        System.out.println("Level of Overall Code Reuse based on a Step Recurrence of one or more times { " + String.format("%.0f", percentage) + " % }");
-        return percentage;
+        System.out.println("Level of Overall Code Reuse based on a Step Recurrence of one or more times { "
+                + String.format("%.0f", percentage) + " % }");
     }
 
     public void printLowLevelSummary() {

@@ -26,25 +26,24 @@ public class Analyser extends FilesReader {
         super(inputFilePath);
     }
 
-    public void calculateCodeReuseAtAcceptanceTestLevel() {
+    public void calculateCodeReuseForAcceptanceTesting() {
         readFeatureFile_Path__And__Step_NameLineIndex();
         readScenariosAndOutlines_PathNameLineIndex();
         readKeywords();
+        log.info("Project data successfully extracted");
         analyseData();
         log.info("Project data successfully analysed");
-//        var result = countTotalNumberOfScenarioRecurrences();
-//        var result2 = countTotalNumberOfScenarioOutlineRecurrences();
-//        System.out.println("here");
     }
 
     private void analyseData() {
-        listTempString.clear();
+
+        listOfString.clear();
 
         for (Step step : listOfAllSteps) {
-            listTempString.add(step.getStepName());
+            listOfString.add(step.getStepName());
         }
 
-        metrics.setSetOfDistinctStepNames(new HashSet<String>(listTempString));
+        metrics.setSetOfDistinctStepNames(new HashSet<String>(listOfString));
 
         for (Step step : listOfAllSteps) {
             if (metrics.getSetOfDistinctStepNames().contains(step.getStepName())) {
@@ -56,6 +55,8 @@ public class Analyser extends FilesReader {
 
         countOverallStepRecurrences();
         countOverallStepRecurrencesWithoutReuse();
+        countTotalNumberOfScenarioRecurrences();
+        countTotalNumberOfScenarioOutlineRecurrences();
         sumDataTableDrivenRowCountAcrossFilesForAllParameterisedSteps();
 
     }
@@ -113,11 +114,11 @@ public class Analyser extends FilesReader {
         List<Step> filteredObjList = listOfAllSteps.stream()
                 .filter(Step::isDataDriven)
                 .toList();
-        listTempString.clear();
+        listOfString.clear();
         for (Step step : filteredObjList) {
-            listTempString.add(step.getStepName());
+            listOfString.add(step.getStepName());
         }
-        Set<String> distinctStep = new HashSet<>(listTempString);
+        Set<String> distinctStep = new HashSet<>(listOfString);
         return distinctStep.size();
     }
 
@@ -125,11 +126,11 @@ public class Analyser extends FilesReader {
         List<Step> filteredObjList = listOfAllSteps.stream()
                 .filter(Step::isDataTableDriven)
                 .toList();
-        listTempString.clear();
+        listOfString.clear();
         for (Step step : filteredObjList) {
-            listTempString.add(step.getStepName());
+            listOfString.add(step.getStepName());
         }
-        Set<String> distinctStep = new HashSet<>(listTempString);
+        Set<String> distinctStep = new HashSet<>(listOfString);
         return distinctStep.size();
     }
 
@@ -204,20 +205,14 @@ public class Analyser extends FilesReader {
     }
 
     private long countTotalNumberOfScenarioRecurrences() {
-        List<Step> filteredList = listOfAllSteps.stream()
-//                .filter(s -> s.getScenarioRecurrenceCountForStep() > 0)
-                .toList();
-        return filteredList.stream()
-//                .filter(s -> s.getScenarioRecurrenceCountForStep() > 0)
+        return listOfAllFeatureFiles.stream()
+                .filter(f -> f.getScenarioRecurrenceCount() > 0)
                 .count();
     }
 
     private long countTotalNumberOfScenarioOutlineRecurrences() {
-        List<Step> filteredList = listOfAllSteps.stream()
-//                .filter(s -> s.getScenarioOutlineRecurrenceCountForStep() > 0)
-                .toList();
-        return filteredList.stream()
-//                .filter(s -> s.getScenarioOutlineRecurrenceCountForStep() > 0)
+        return listOfAllFeatureFiles.stream()
+                .filter(f -> f.getScenarioOutlineRecurrenceCount() > 0)
                 .count();
     }
 

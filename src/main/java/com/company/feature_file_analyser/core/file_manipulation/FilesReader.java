@@ -16,9 +16,9 @@ import java.util.stream.Stream;
 
 @Slf4j
 public class FilesReader {
-    private static final List<FeatureFile> listOfAllFeatureFiles = new ArrayList<>();
+    public static final List<FeatureFile> listOfAllFeatureFiles = new ArrayList<>();
     public static final List<Step> listOfAllSteps = new ArrayList<>();
-    protected final List<String> listTempString = new ArrayList<>();
+    protected final List<String> listOfString = new ArrayList<>();
     private final String userDir = System.getProperty("user.dir");
     @Getter
     protected Metrics metrics = null;
@@ -27,7 +27,6 @@ public class FilesReader {
     protected GenericType<Step> genTypeStep = null;
     protected GenericType<FeatureFile> genTypeFeatureFile = null;
     protected String inputFilePath = "To be specified at Runtime";
-    protected Project project = null;
 
     public FilesReader(String inputFilePath) {
         this.inputFilePath = inputFilePath;
@@ -110,7 +109,7 @@ public class FilesReader {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        listTempString.clear();
+        listOfString.clear();
         String currentPathString = "";
         String trimmedLine = "";
         int fileIndex = 0, rowIndex = 1;
@@ -154,7 +153,7 @@ public class FilesReader {
                 fileIndex++;
                 rowIndex = 1;
             }
-            metrics.initialiseSetOfDistinctPathsString(listTempString);
+            metrics.initialiseSetOfDistinctPathsString(listOfString);
         } catch (IOException ex) {
             log.error("Exception encountered when...");
             ex.printStackTrace();
