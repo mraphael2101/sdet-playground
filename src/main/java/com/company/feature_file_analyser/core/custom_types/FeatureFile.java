@@ -26,7 +26,7 @@ public class FeatureFile {
     private final Map<String, Integer> mapOfStepNamesRowIndexes = new TreeMap<>();
     @Getter
     @Setter
-    private String filePath = "";
+    private String Path = "";
     @Getter
     @Setter
     private int scenarioRecurrenceCount = 0;

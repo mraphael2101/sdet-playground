@@ -59,7 +59,7 @@ public class Metrics {
         List<String> tempList = utils.getListOfString();
 
         for(FeatureFile file : listOfAllFeatureFiles) {
-            tempList.add(file.getFilePath());
+            tempList.add(file.getPath());
         }
         this.setOfDistinctFilePaths = new HashSet<>(tempList);
     }
@@ -139,7 +139,7 @@ public class Metrics {
         System.out.println("Low Level Summary\n-------------------------------------------------------------------------");
         for (Step step : listOfAllSteps) {
             System.out.println("Step { " + step.getStepName()
-                    + " } \nFile Path { " + step.getStepPath()
+                    + " } \nFile Path { " + step.getPath()
                     + " } \nStep Type { " + step.getStepType()
                     + " } \nStep Recurrence Count { " + countStepRecurrences(step.getStepName())
                     + " } \nStep Data driven { " + step.isDataDriven()
@@ -174,7 +174,7 @@ public class Metrics {
     }
     public void printHighLevelSummaryAtFeatureFileLevel() {
         for(FeatureFile file : listOfAllFeatureFiles) {
-            System.out.println(file.getFilePath());
+            System.out.println(file.getPath());
             System.out.println(file.getListOfScenarios());
             System.out.println(file.getListOfScenarioOutlines());
             System.out.println(file.getTotalNoOfScenarios());

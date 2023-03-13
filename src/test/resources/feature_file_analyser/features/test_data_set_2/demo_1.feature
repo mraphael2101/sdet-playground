@@ -11,6 +11,11 @@ Feature: Web Demo
   @wip
   Scenario: Registration scenario
     When I fill in the registration section with my personal details
+    And I provide my username and memorable keyword
+      | username       | keyword       |
+      | abc01          | Erik Larson   |
+      | def02          | Charles Lewis |
+      | ghi03          | Peter Thomas  |
 
   @wip
   Scenario Outline: Basket scenario

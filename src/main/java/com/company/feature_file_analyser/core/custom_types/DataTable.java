@@ -9,25 +9,31 @@ import java.util.List;
 
 @Slf4j
 public class DataTable {
-
     @Getter
     @Setter
-    private int startIndex = 0;
-
+    private String path = "";
     @Getter
     @Setter
-    private int endIndex = 0;
-
-    @Getter
+    private int startRowIndex = 0;
     @Setter
+    private int endRowIndex = 0;
+    @Getter
     private int rowCount = 0;
-
     @Getter
-    @Setter
-    private int columnCount = 0;
-
+    private String header = "";
     @Getter
-    @Setter
-    private List<String> rows = new ArrayList<>();
+    private final List<String> rows = new ArrayList<>();
 
+    public String getDataTableHeader() {
+        return this.rows.get(0);
+    }
+    public void addHeader(String line) {
+        this.header = line;
+    }
+    public void addRow(String line) {
+        this.rows.add(line);
+    }
+    private void countRows() {
+        this.rowCount = this.endRowIndex - this.startRowIndex;
+    }
 }

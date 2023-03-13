@@ -4,19 +4,17 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
-
 @Slf4j
 public class Step {
+    @Getter
+    @Setter
+    private String Path = "";
     @Getter
     @Setter
     private String stepName = "";
     @Getter
     @Setter
     private String stepType = "";
-    @Getter
-    @Setter
-    private String stepPath = "";
     @Getter
     @Setter
     private int lineNumber = 0;
@@ -33,4 +31,13 @@ public class Step {
     @Setter
     private DataTable dataTable = null;
 
+    public DataTable createDataTable() {
+        this.dataTable = new DataTable();
+        return this.dataTable;
+    }
+
+    public void setDataTableProperties(int rowStart, int rowEnd) {
+        this.dataTable.setStartRowIndex(rowStart);
+        this.dataTable.setEndRowIndex(rowEnd);
+    }
 }

@@ -20,20 +20,8 @@ public class Scenario {
     private int lineNumber = 0;
     @Getter
     private final List<String> stepNames = new ArrayList<>();
-    @Getter
-    private DataTable dataTable = null;
     public void addStepName(String name) {
         this.stepNames.add(name);
-    }
-    public void createDataTable() {
-        this.dataTable = new DataTable();
-    }
-    public void setDataTableProperties() {
-//        dataTable.setStartIndex();
-//        dataTable.setEndIndex();
-//        dataTable.setRows();
-//        dataTable.setColumnCount();
-//        dataTable.setRowCount();
     }
 
 }
