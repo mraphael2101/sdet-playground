@@ -111,7 +111,7 @@ public class FilesReader {
                 fileIndex++;
                 rowIndex = 1;
             }
-            metrics.setTotalNoOfSteps(listOfAllSteps.size());
+            metrics.setOverallNoOfSteps(listOfAllSteps.size());
             metrics.initialiseSetOfDistinctStepNames();
         } catch (IOException ex) {
             log.error("Exception encountered when...");
@@ -169,6 +169,7 @@ public class FilesReader {
                     // Populate the total number of Scenarios and Scenario Outlines in each Feature File
                     metrics.initialiseSetOfDistinctPathsString();
                     for(int i = 0; i < metrics.getSetOfDistinctFilePaths().size(); i++) {
+                        listOfAllFeatureFiles.get(fileIndex).setTotalNoOfStepsInFile(listOfAllSteps.size());
                         listOfAllFeatureFiles.get(fileIndex).setScenarioRecurrenceCount(i);
                         listOfAllFeatureFiles.get(fileIndex).setScenarioOutlineRecurrenceCount(i);
                     }

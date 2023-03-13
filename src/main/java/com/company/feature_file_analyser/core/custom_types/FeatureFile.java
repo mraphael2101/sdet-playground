@@ -36,8 +36,6 @@ public class FeatureFile {
     @Getter
     @Setter
     private int totalNoOfStepsInFile = 0;
-    private int totalNoOfScenarios = 0;
-    private int totalNoOfScenarioOutlines = 0;
 
     public Scenario getScenario(String scenarioName) {
         return listOfScenarios.stream()
@@ -77,9 +75,9 @@ public class FeatureFile {
         this.mapOfStepNamesRowIndexes.put(name, index);
     }
     public int getTotalNoOfScenarios() {
-        return totalNoOfScenarios = listOfScenarios.size();
+        return scenarioRecurrenceCount = listOfScenarios.size();
     }
     public int getTotalNoOfScenarioOutlines() {
-        return totalNoOfScenarioOutlines = listOfScenarioOutlines.size();
+        return scenarioOutlineRecurrenceCount = listOfScenarioOutlines.size();
     }
 }

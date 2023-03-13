@@ -40,8 +40,8 @@ public class Analyser extends FilesReader {
         int recurCount = 0;
         int distinctStepsSize = metrics.getSetOfDistinctStepNames().size();
         for (int i = 0; i < distinctStepsSize; i++) {
-            recurCount = metrics.getTotalNoOfReusedSteps();
-            metrics.setTotalNoOfReusedSteps(recurCount += countStepRecurrences(metrics.getSetOfDistinctStepNames().toArray()[i].toString()));
+            recurCount = metrics.getOverallNoOfReusedStepsOneOrMoreTimes();
+            metrics.setOverallNoOfReusedStepsOneOrMoreTimes(recurCount += countStepRecurrences(metrics.getSetOfDistinctStepNames().toArray()[i].toString()));
         }
     }
 
@@ -68,7 +68,7 @@ public class Analyser extends FilesReader {
         TreeMap<String, Integer> mapResults = new TreeMap<>();
         TreeMap<String, Integer> mapPathsEncountered = new TreeMap<>();
 
-        for (Step step : getStepMetaDataListIfDataTableDriven()) {
+        for (Step step : getStepListIfDataTableDriven()) {
             metrics.addDistinctDataTableDrivenStepName(step.getStepName());
         }
 
@@ -76,7 +76,7 @@ public class Analyser extends FilesReader {
             mapPathsEncountered.put(distinctDataTableDrivenStep, 0);
         }
 
-        for (Step step : getStepMetaDataListIfDataTableDriven()) {
+        for (Step step : getStepListIfDataTableDriven()) {
             long recurrences = countSpecificStepDataTableDrivenRecurrences(step.getStepName());
             if (mapPathsEncountered.get(step.getStepName()) == 0) {
                 count = 0;
@@ -133,7 +133,7 @@ public class Analyser extends FilesReader {
 //        else return 0;
 //    }
 
-    private List<Step> getStepMetaDataListIfDataTableDriven() {
+    private List<Step> getStepListIfDataTableDriven() {
         return listOfAllSteps.stream()
                 .filter(Step::isDataTableDriven)
                 .toList();
