@@ -37,7 +37,6 @@ public class FilesReader {
     private Stream<Path> walk(Path start, int maxDepth, FileVisitOption... options) throws IOException {
         return walk(start, Integer.MAX_VALUE, options);
     }
-
     private List<Path> listFiles(Path path) throws IOException {
         List<Path> result;
         try (Stream<Path> walk = Files.walk(path)) {
@@ -47,7 +46,16 @@ public class FilesReader {
         return result;
 
     }
-
+    private boolean isFeatureFilePathAlreadyPresent(String filePath) {
+        long count = listOfAllFeatureFiles.stream()
+                .filter(f -> f.getFilePath().equalsIgnoreCase(filePath))
+                .count();
+        if (count == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     public void extractFeatureFilesAndSteps() {
         List<Path> paths = null;
         Path path = Paths.get(userDir + inputFilePath);
@@ -59,6 +67,7 @@ public class FilesReader {
         String currentPathString = "";
         String trimmedLine = "";
         int fileIndex = 0, rowIndex = 1, spaceIndex = 0, i = 0;
+        FeatureFile fmd = null;
 
         try {
             while (true) {
@@ -73,7 +82,7 @@ public class FilesReader {
                     if (i == 0 || !isFeatureFilePathAlreadyPresent(currentPathString)) {
                         featureFile = new FeatureFile();
                         genTypeFeatureFile = new GenericType<FeatureFile>(featureFile);
-                        FeatureFile fmd = genTypeFeatureFile.getObj();
+                        fmd = genTypeFeatureFile.getObj();
                         fmd.setFilePath(currentPathString);
                         listOfAllFeatureFiles.add(fmd);
                         i++;
@@ -85,6 +94,7 @@ public class FilesReader {
                         genTypeStep = new GenericType<Step>(step);
                         Step smd = genTypeStep.getObj();
                         smd.setStepName(trimmedLine);
+                        smd.setStepPath(currentPathString);
                         spaceIndex = trimmedLine.indexOf(" ");
                         smd.setStepType(trimmedLine.substring(0, spaceIndex));
                         smd.setLineNumber(rowIndex);
@@ -92,6 +102,9 @@ public class FilesReader {
                                 || smd.getStepName().chars().filter(ch -> ch == '\"').count() == 2));
                         smd.setDataTableDriven(smd.getStepName().contains("<") && smd.getStepName().contains(">"));
                         listOfAllSteps.add(smd);
+
+                        fmd.addStep(step);
+                        fmd.putStepNameRowIndex(trimmedLine, rowIndex);
                     }
                     rowIndex++;
                 }
@@ -101,11 +114,10 @@ public class FilesReader {
             metrics.setTotalNoOfSteps(listOfAllSteps.size());
             metrics.initialiseSetOfDistinctStepNames();
         } catch (IOException ex) {
-            log.error("Exception encountered when reading in the Keywords and Parameters");
+            log.error("Exception encountered when...");
             ex.printStackTrace();
         }
     }
-
     public void extractScenariosAndOutlines() {
         List<Path> paths = null;
         Path path = Paths.get(userDir + inputFilePath);
@@ -164,7 +176,6 @@ public class FilesReader {
             ex.printStackTrace();
         }
     }
-
     public void extractToBeDetermined() {
         List<Path> paths = null;
         Path path = Paths.get(userDir + inputFilePath);
@@ -226,17 +237,6 @@ public class FilesReader {
         } catch (IOException ex) {
             log.error("Exception encountered when...");
             ex.printStackTrace();
-        }
-    }
-
-    private boolean isFeatureFilePathAlreadyPresent(String filePath) {
-        long count = listOfAllFeatureFiles.stream()
-                .filter(f -> f.getFilePath().equalsIgnoreCase(filePath))
-                .count();
-        if (count == 1) {
-            return true;
-        } else {
-            return false;
         }
     }
 

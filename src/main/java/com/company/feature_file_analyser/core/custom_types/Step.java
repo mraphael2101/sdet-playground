@@ -9,15 +9,14 @@ import java.util.List;
 @Slf4j
 public class Step {
     @Getter
-    private final List<FeatureFile> listOfFeatureFiles = null;
-    @Getter
-    private final List<String> listOfFeatureFileNames = null;
-    @Getter
     @Setter
     private String stepName = "";
     @Getter
     @Setter
     private String stepType = "";
+    @Getter
+    @Setter
+    private String stepPath = "";
     @Getter
     @Setter
     private int lineNumber = 0;
@@ -33,13 +32,5 @@ public class Step {
     @Getter
     @Setter
     private DataTable dataTable = null;
-
-    public void addFeatureFile(FeatureFile file) {
-        this.listOfFeatureFiles.add(file);
-    }
-
-    public void addFeatureFileName(String name) {
-        this.listOfFeatureFileNames.add(name);
-    }
 
 }

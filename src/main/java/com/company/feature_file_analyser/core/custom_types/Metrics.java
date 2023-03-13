@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.company.feature_file_analyser.core.constants.Frequency.*;
+import static com.company.feature_file_analyser.core.file_manipulation.FilesReader.listOfAllFeatureFiles;
 import static com.company.feature_file_analyser.core.file_manipulation.FilesReader.listOfAllSteps;
 
 public class Metrics {
@@ -25,6 +26,13 @@ public class Metrics {
     @Setter
     private float percentage = 0;
     @Getter
+    @Setter
+    private long overallScenarioRecurrencesCount = 0;
+    @Getter
+    @Setter
+    private long overallScenarioOutlineRecurrencesCount = 0;
+    @Getter
+    @Setter
     private int totalNoOfReusedSteps = 0;
     @Getter
     private int totalNoOfStepsWithoutReuse = 0;
@@ -33,11 +41,10 @@ public class Metrics {
     @Getter
     private int totalNoOfDataTableDrivenSteps = 0;
     @Getter
-    private long overallStepReuseCount = 0;
-    @Getter
     @Setter
     private long totalNoOfSteps = 0;
     Utils utils =  new Utils();
+
     public void initialiseSetOfDistinctStepNames() {
         List<String> tempList = utils.getListOfString();
 
@@ -61,7 +68,7 @@ public class Metrics {
         System.out.println("Low Level Summary\n-------------------------------------------------------------------------");
         for (Step step : listOfAllSteps) {
             System.out.println("Step { " + step.getStepName()
-//                    + " } \nFile Path { " + step.getFilePathOfStep()
+                    + " } \nFile Path { " + step.getStepPath()
                     + " } \nStep Type { " + step.getStepType()
                     + " } \nStep Recurrence Count { " + countStepRecurrences(step.getStepName())
                     + " } \nStep Data driven { " + step.isDataDriven()
@@ -77,15 +84,15 @@ public class Metrics {
     }
     public void printHighLevelSummary() {
         System.out.println("High Level Summary\n-----------------------------------");
-//        System.out.println("Total Number of Distinct Steps in the Project { " + setOfDistinctStepNames.size() + " }");
-//        System.out.println("Total Number of Distinct Data Driven Steps in the Project { " + countAllDistinctStepDataDrivenRecurrences() + " }");
+        System.out.println("Total Number of Distinct Steps in the Project { " + setOfDistinctStepNames.size() + " }");
+        System.out.println("Total Number of Distinct Data Driven Steps in the Project { " + countAllDistinctStepDataDrivenRecurrences() + " }");
 //        System.out.println("Total Number of Distinct DataTable Driven Steps in the Project { " + countAllDistinctStepDataTableDrivenRecurrences() + " }");
         System.out.println("Total Number of Steps in the Project { " + totalNoOfSteps + " }");
-        System.out.println("Total Number of Steps Reused one or more times { " + totalNoOfSteps + " }");
-        System.out.println("Total Number of Steps Not Reused one or more times { " + totalNoOfStepsWithoutReuse + " }");
-        System.out.println("Total Number of Data Driven Steps { " + totalNoOfDataDrivenSteps + " }");
-//        System.out.println("Total Number of Scenarios TBU { " + scenarioRecurrenceCount + " }");
-//        System.out.println("Total Number of Scenario Outlines TBU { " + scenarioOutlineRecurrenceCount + " }");
+        System.out.println("Total Number of Steps Reused one or more times { " + totalNoOfReusedSteps + " }");
+        System.out.println("Total Number of Steps Not Reused one or more times { " + countStepRecurrencesWithoutReuse() + " }");
+        System.out.println("Total Number of Data Driven Steps { " + countAllStepDataDrivenRecurrences() + " }");
+        System.out.println("Total Number of Scenarios { " + countTotalNumberOfScenarioRecurrences() + " }");
+        System.out.println("Total Number of Scenario Outlines { " + countTotalNumberOfScenarioOutlineRecurrences() + " }");
         if (totalNoOfDataDrivenSteps > 0) {
             System.out.println("DataTable Driven Reuse for Specific Steps");
 //            for (Map.Entry<String, Integer> entry : sumDataTableDrivenRowCountAcrossFilesForAllParameterisedSteps().entrySet()) {
@@ -149,9 +156,59 @@ public class Metrics {
                 .filter(s -> s.getStepName().equalsIgnoreCase(step))
                 .count();
         // 1st recurrence is considered when a step is encountered more than once
-        if (count > 1) {
+        if (count >= 1) {
             count -= 1;
         }
+        return count;
+    }
+    private long countStepRecurrencesWithoutReuse() {
+        long count = 0, result = 0;
+        for(String stepName : setOfDistinctStepNames) {
+            count = listOfAllSteps.stream()
+                    .filter(s -> s.getStepName().equalsIgnoreCase(stepName))
+                    .count();
+            // Increment the counter everytime only one recurrence is identified
+            if (count == 1) {
+                result += 1;
+            }
+            else {
+                result += 0;
+            }
+        }
+        return result;
+    }
+    private long countAllStepDataDrivenRecurrences() {
+        return listOfAllSteps.stream()
+                .filter(Step::isDataDriven)
+                .count();
+    }
+    private int countAllDistinctStepDataDrivenRecurrences() {
+        List<Step> filteredObjList = listOfAllSteps.stream()
+                .filter(Step::isDataDriven)
+                .toList();
+        utils.clearListOfString();
+        for (Step step : filteredObjList) {
+            utils.addString(step.getStepName());
+        }
+        Set<String> distinctStep = new HashSet<>(utils.getListOfString());
+        return distinctStep.size();
+    }
+
+//    private long countAllStepDataTableDrivenRecurrences() {}
+
+//    private int countAllDistinctStepDataTableDrivenRecurrences() {}
+    private long countTotalNumberOfScenarioRecurrences() {
+        long count = listOfAllFeatureFiles.stream()
+                .filter(f -> f.getScenarioRecurrenceCount() > 0)
+                .count();
+        setOverallScenarioRecurrencesCount(count);
+        return count;
+    }
+    private long countTotalNumberOfScenarioOutlineRecurrences() {
+        long count = listOfAllFeatureFiles.stream()
+                .filter(f -> f.getScenarioOutlineRecurrenceCount() > 0)
+                .count();
+        setOverallScenarioOutlineRecurrencesCount(count);
         return count;
     }
 
