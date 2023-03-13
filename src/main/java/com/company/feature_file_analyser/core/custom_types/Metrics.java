@@ -46,6 +46,7 @@ public class Metrics {
     Utils utils =  new Utils();
 
     public void initialiseSetOfDistinctStepNames() {
+        utils.clearListOfString();
         List<String> tempList = utils.getListOfString();
 
         for(Step step : listOfAllSteps) {
@@ -53,8 +54,14 @@ public class Metrics {
         }
         this.setOfDistinctStepNames = new HashSet<>(tempList);
     }
-    public void initialiseSetOfDistinctPathsString(List<String> value) {
-        this.setOfDistinctFilePaths = new HashSet<>(value);
+    public void initialiseSetOfDistinctPathsString() {
+        utils.clearListOfString();
+        List<String> tempList = utils.getListOfString();
+
+        for(FeatureFile file : listOfAllFeatureFiles) {
+            tempList.add(file.getFilePath());
+        }
+        this.setOfDistinctFilePaths = new HashSet<>(tempList);
     }
     public void addDistinctDataTableDrivenStepName(String name) {
         this.listOfDistinctDataTableDrivenStepNames.add(name);

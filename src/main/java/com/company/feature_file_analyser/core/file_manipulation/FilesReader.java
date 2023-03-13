@@ -165,12 +165,18 @@ public class FilesReader {
 
                         }
                     }
+
+                    // Populate the total number of Scenarios and Scenario Outlines in each Feature File
+                    metrics.initialiseSetOfDistinctPathsString();
+                    for(int i = 0; i < metrics.getSetOfDistinctFilePaths().size(); i++) {
+                        listOfAllFeatureFiles.get(fileIndex).setScenarioRecurrenceCount(i);
+                        listOfAllFeatureFiles.get(fileIndex).setScenarioOutlineRecurrenceCount(i);
+                    }
                     rowIndex++;
                 }
                 fileIndex++;
                 rowIndex = 1;
             }
-            metrics.initialiseSetOfDistinctPathsString(utils.getListOfString());
         } catch (IOException ex) {
             log.error("Exception encountered when...");
             ex.printStackTrace();

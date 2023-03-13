@@ -28,6 +28,7 @@ public class FeatureFile {
     @Setter
     private String filePath = "";
     @Getter
+    @Setter
     private int scenarioRecurrenceCount = 0;
     @Getter
     @Setter
