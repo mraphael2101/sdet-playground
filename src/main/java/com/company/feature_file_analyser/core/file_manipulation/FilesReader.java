@@ -24,12 +24,10 @@ public class FilesReader {
     @Getter
     protected Metrics metrics = null;
     protected Step step = null;
-    protected FeatureFile featureFile = null;
+    protected FeatureFile file = null;
     protected GenericType<Step> genTypeStep = null;
     protected GenericType<FeatureFile> genTypeFeatureFile = null;
     protected String inputFilePath = "To be specified at Runtime";
-    private String currentPathString = "", trimmedLine = "";
-    private int fileIndex = 0, rowIndex = 1, i = 0;
 
     public FilesReader(String inputFilePath) {
         this.inputFilePath = inputFilePath;
@@ -40,6 +38,7 @@ public class FilesReader {
     private Stream<Path> walk(Path start, int maxDepth, FileVisitOption... options) throws IOException {
         return walk(start, Integer.MAX_VALUE, options);
     }
+
     private List<Path> listFiles(Path path) throws IOException {
         List<Path> result;
         try (Stream<Path> walk = Files.walk(path)) {
@@ -49,6 +48,7 @@ public class FilesReader {
         return result;
 
     }
+
     private boolean isFeatureFilePathAlreadyPresent(String filePath) {
         long count = listOfAllFeatureFiles.stream()
                 .filter(f -> f.getPath().equalsIgnoreCase(filePath))
@@ -59,6 +59,7 @@ public class FilesReader {
             return false;
         }
     }
+
     public void extractFeatureAndStepsToFeatureFile() {
         List<Path> paths = null;
         Path path = Paths.get(userDir + inputFilePath);
@@ -67,11 +68,13 @@ public class FilesReader {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        int spaceIndex = 0;
+        String currentPathString = "";
+        String trimmedLine = "";
+        int fileIndex = 0, rowIndex = 1, spaceIndex = 0, i = 0;
         FeatureFile fmd = null;
         Step smd = null;
         DataTable dt = null;
-        int tableRowCount = 0;
+        int firstOccurrence = 0;
 
         try {
             while (true) {
@@ -84,8 +87,8 @@ public class FilesReader {
                     trimmedLine = line.trim();
 
                     if (i == 0 || !isFeatureFilePathAlreadyPresent(currentPathString)) {
-                        featureFile = new FeatureFile();
-                        genTypeFeatureFile = new GenericType<FeatureFile>(featureFile);
+                        file = new FeatureFile();
+                        genTypeFeatureFile = new GenericType<FeatureFile>(file);
                         fmd = genTypeFeatureFile.getObj();
                         fmd.setPath(currentPathString);
                         listOfAllFeatureFiles.add(fmd);
@@ -93,52 +96,47 @@ public class FilesReader {
                     }
 
                     if (trimmedLine.startsWith("Given") || trimmedLine.startsWith("When")
-                            || trimmedLine.startsWith("Then") || line.contains("And")
-                            || trimmedLine.chars().filter(ch -> ch == '|').count() >= 2
-                            || trimmedLine.startsWith("Examples:")) {
+                            || trimmedLine.startsWith("Then") || line.contains("And")) {
 
                         step = new Step();
                         genTypeStep = new GenericType<Step>(step);
                         smd = genTypeStep.getObj();
+                        smd.setStepName(trimmedLine);
+                        smd.setLineNumber(rowIndex);
+                        smd.setDataDriven((smd.getStepName().chars().filter(ch -> ch == '\'').count() == 2
+                                || smd.getStepName().chars().filter(ch -> ch == '\"').count() == 2));
+                        smd.setDataTableDriven(smd.getStepName().contains("<") && smd.getStepName().contains(">"));
                         smd.setPath(currentPathString);
-
-                        // If a step has an in-line data table, record it as so
-                        if (!trimmedLine.startsWith("Examples:")) {
-                            if (trimmedLine.chars().filter(ch -> ch == '|').count() >= 2) {
-                                smd.setStepType("In-line");
-                                smd.setLineNumber(rowIndex);
-                                if (tableRowCount == 0) {
-                                    dt = smd.createDataTable();
-                                    dt.setPath(currentPathString);
-                                    dt.addHeader(trimmedLine);
-                                    dt.setStartRowIndex(rowIndex);
-                                    ++tableRowCount;
-                                } else {
-                                    dt.addRow(trimmedLine);
-                                }
-                            }
-                        }
-                        if (trimmedLine.startsWith("Examples:")) {
-                            break;
-                        } else {
-                            if(trimmedLine.contains("|")) {
-                                smd.setStepType("In-line");
-                            } else {
-                                spaceIndex = trimmedLine.indexOf(" ");
-                                smd.setStepType(trimmedLine.substring(0, spaceIndex));
-                            }
-                            smd.setStepName(trimmedLine);
-                            smd.setLineNumber(rowIndex);
-                            smd.setDataDriven((smd.getStepName().chars().filter(ch -> ch == '\'').count() == 2
-                                    || smd.getStepName().chars().filter(ch -> ch == '\"').count() == 2));
-                            smd.setDataTableDriven(smd.getStepName().contains("<") && smd.getStepName().contains(">"));
-                        }
-
+                        spaceIndex = trimmedLine.indexOf(" ");
+                        smd.setStepType(trimmedLine.substring(0, spaceIndex));
                         listOfAllSteps.add(smd);
 
                         fmd.addStep(step);
                         fmd.putStepNameRowIndex(trimmedLine, rowIndex);
                     }
+
+                    if (trimmedLine.startsWith("Examples:")) {
+                        break;
+                    }
+
+                    // When an In-line data-table is identified, capture it and append it to the previous step
+                    if (trimmedLine.chars().filter(ch -> ch == '|').count() >= 2) {
+                        if (firstOccurrence == 0) {
+                            dt = new DataTable();
+                            dt.setPath(currentPathString);
+                            dt.addHeader(trimmedLine);
+                            dt.setStartRowIndex(rowIndex);
+                            setPreviousStepTypeToInline(file, step, dt);
+                            Step previous = getPreviousStep(step, dt);
+                            Objects.requireNonNull(previous).setDataTable(dt);
+                            firstOccurrence++;
+                        } else {
+                            dt.addRow(trimmedLine);
+                        }
+                    }
+
+                    //TODO Accommodate Examples Data table
+
                     rowIndex++;
                 }
                 fileIndex++;
@@ -151,6 +149,7 @@ public class FilesReader {
             ex.printStackTrace();
         }
     }
+
     public void extractScenariosAndOutlinesToFeatureFile() {
         List<Path> paths = null;
         Path path = Paths.get(userDir + inputFilePath);
@@ -159,6 +158,9 @@ public class FilesReader {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        String currentPathString = "";
+        String trimmedLine = "";
+        int fileIndex = 0, rowIndex = 1;
 
         try {
             while (true) {
@@ -220,6 +222,9 @@ public class FilesReader {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        String currentPathString = "";
+        String trimmedLine = "";
+        int fileIndex = 0, rowIndex = 1, i = 0;
         DataTable dt = null;
 
         try {
@@ -232,25 +237,7 @@ public class FilesReader {
                 for (String line : allLinesOfSpecificFile) {
                     trimmedLine = line.trim();
 
-                    for (FeatureFile file : listOfAllFeatureFiles) {
-                        for (Step step : listOfAllSteps) {
-                            dt = step.getDataTable();
-                            int stepPredecessorLineNo = 0;
-                            int lineNoDifference = 0;
-                            if (file.getPath().equals(step.getPath()) && dt != null) {
-                                lineNoDifference = dt.getStartRowIndex();
-                                stepPredecessorLineNo = Objects.requireNonNull(getStepByLineIndexAndDtPath(dt.getPath(),
-                                        lineNoDifference -= 1)).getLineNumber();
-                                step = getStepByLineIndexAndDtPath(dt.getPath(), lineNoDifference);
-                                lineNoDifference = dt.getStartRowIndex() - stepPredecessorLineNo;
-                                if (lineNoDifference == 1) {
-                                    Objects.requireNonNull(step).setStepType("In-line");
-                                }
-                            }
-                        }
-                    }
-
-                    for (ScenarioOutline outline : featureFile.getListOfScenarioOutlines()) {
+                    for (ScenarioOutline outline : file.getListOfScenarioOutlines()) {
                         System.out.println(outline.getName());
                         System.out.println(outline.getFilePath());
                         System.out.println(outline.getLineNumber());
@@ -264,7 +251,7 @@ public class FilesReader {
                         }
                     }
 
-                    for (Scenario scenario : featureFile.getListOfScenarios()) {
+                    for (Scenario scenario : file.getListOfScenarios()) {
                         System.out.println(scenario.getName());
                         System.out.println(scenario.getFilePath());
                         System.out.println(scenario.getLineNumber());
@@ -290,5 +277,33 @@ public class FilesReader {
             return null;
         }
     }
+    private Step getPreviousStep(Step targetStep, DataTable dt) {
+        int lineNoOfPriorStep = 0, differenceInLines = 0;
+        if (targetStep.getPath().equals(dt.getPath())) {
+            differenceInLines = dt.getStartRowIndex();
+            lineNoOfPriorStep = Objects.requireNonNull(getStepByLineIndexAndDtPath(dt.getPath(),
+                    differenceInLines -= 1)).getLineNumber();
+            targetStep = getStepByLineIndexAndDtPath(dt.getPath(), differenceInLines);
+            differenceInLines = dt.getStartRowIndex() - lineNoOfPriorStep;
 
+            if (differenceInLines == 1) {
+                return targetStep;
+            }
+        }
+        return null;
+    }
+    private void setPreviousStepTypeToInline(FeatureFile file, Step targetStep, DataTable dt) {
+        int lineNoOfPriorStep = 0, differenceInLines = 0;
+        if (file.getPath().equals(targetStep.getPath()) && dt != null) {
+            differenceInLines = dt.getStartRowIndex();
+            lineNoOfPriorStep = Objects.requireNonNull(getStepByLineIndexAndDtPath(dt.getPath(),
+                    differenceInLines -= 1)).getLineNumber();
+            targetStep = getStepByLineIndexAndDtPath(dt.getPath(), differenceInLines);
+            differenceInLines = dt.getStartRowIndex() - lineNoOfPriorStep;
+
+            if (differenceInLines == 1) {
+                Objects.requireNonNull(targetStep).setStepType("In-line");
+            }
+        }
+    }
 }

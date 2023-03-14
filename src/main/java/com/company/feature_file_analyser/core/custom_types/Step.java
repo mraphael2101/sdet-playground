@@ -30,12 +30,6 @@ public class Step {
     @Getter
     @Setter
     private DataTable dataTable = null;
-
-    public DataTable createDataTable() {
-        this.dataTable = new DataTable();
-        return this.dataTable;
-    }
-
     public void setDataTableProperties(int rowStart, int rowEnd) {
         this.dataTable.setStartRowIndex(rowStart);
         this.dataTable.setEndRowIndex(rowEnd);
