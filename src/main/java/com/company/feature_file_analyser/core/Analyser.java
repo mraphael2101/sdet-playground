@@ -20,7 +20,6 @@ import java.util.*;
 
 @Slf4j
 public class Analyser extends FilesReader {
-
     public Analyser(String inputFilePath) {
         super(inputFilePath);
     }
@@ -28,23 +27,25 @@ public class Analyser extends FilesReader {
     public void calculateCodeReuseForAtdd() {
         extractFeatureAndStepsToFeatureFile();
         extractScenariosAndOutlinesToFeatureFile();
-        extractToBeDetermined();
         log.info("Project data successfully extracted");
+
+        enrichData();
+        log.info("Project data successfully enriched");
+
         analyseData();
         log.info("Project data successfully analysed");
     }
 
     private void analyseData() {
 //        sumDataTableDrivenRowCountAcrossFilesForAllParameterisedSteps();
-
         int recurCount = 0;
         int distinctStepsSize = metrics.getSetOfDistinctStepNames().size();
         for (int i = 0; i < distinctStepsSize; i++) {
             recurCount = metrics.getOverallNoOfReusedStepsOneOrMoreTimes();
-            metrics.setOverallNoOfReusedStepsOneOrMoreTimes(recurCount += countStepRecurrences(metrics.getSetOfDistinctStepNames().toArray()[i].toString()));
+            metrics.setOverallNoOfReusedStepsOneOrMoreTimes(recurCount +=
+                    countStepRecurrences(metrics.getSetOfDistinctStepNames().toArray()[i].toString()));
         }
     }
-
     private long countStepRecurrences(String step) {
         long count = listOfAllSteps.stream()
                 .filter(s -> s.getStepName().equalsIgnoreCase(step))
@@ -55,7 +56,6 @@ public class Analyser extends FilesReader {
         }
         return count;
     }
-
     private void calculateImpactOfBackgroundKeyword() {
         //TODO for each step that isBackground
         // multiply 1 x no of occurrences of scenario keyword
@@ -90,49 +90,47 @@ public class Analyser extends FilesReader {
         }
         return mapResults;
     }
-//    private int sumDataTableDrivenRowCountAcrossFilesForSingleParameterisedStep(String stepName) {
-//        List<Step> filteredObjList = listOfAllSteps.stream()
-//                .filter(s -> s.getStepName().equalsIgnoreCase(stepName))
-//                .toList();
-//        int count = 0;
-//        for (Step step : filteredObjList) {
-//            if (step.isDataTableDriven()) {
-////                count += step.getFilePathDataTableDrivenCountForStep();
-//            }
-//        }
-//        return count;
-//    }
-//
-//    private int countAllDistinctStepDataTableDrivenRecurrences() {
-//        List<Step> filteredObjList = listOfAllSteps.stream()
-//                .filter(Step::isDataTableDriven)
-//                .toList();
-//        for (Step step : filteredObjList) {
-//            utils.getListOfString().add(step.getStepName());
-//        }
-//        Set<String> distinctStep = new HashSet<>(utils.getListOfString());
-//        return distinctStep.size();
-//    }
+    private int sumDataTableDrivenRowCountAcrossFilesForSingleParameterisedStep(String stepName) {
+        List<Step> filteredObjList = listOfAllSteps.stream()
+                .filter(s -> s.getStepName().equalsIgnoreCase(stepName))
+                .toList();
+        int count = 0;
+        for (Step step : filteredObjList) {
+            if (step.isDataTableDriven()) {
+//                count += step.getFilePathDataTableDrivenCountForStep();
+            }
+        }
+        return count;
+    }
+    private int countAllDistinctStepDataTableDrivenRecurrences() {
+        List<Step> filteredObjList = listOfAllSteps.stream()
+                .filter(Step::isDataTableDriven)
+                .toList();
+        for (Step step : filteredObjList) {
+            utils.getListOfString().add(step.getStepName());
+        }
+        Set<String> distinctStep = new HashSet<>(utils.getListOfString());
+        return distinctStep.size();
+    }
     private long countSpecificStepDataTableDrivenRecurrences(String stepName) {
         return listOfAllSteps.stream()
                 .filter(Step::isDataTableDriven)
                 .filter(s -> s.getStepName().equalsIgnoreCase(stepName))
                 .count();
     }
-//    private long countAllStepDataTableDrivenRecurrences() {
-//        return listOfAllSteps.stream()
-//                .filter(Step::isDataTableDriven)
-//                .count();
-//    }
-//    private long countStepRecurrencesWithoutReuse(String stepName) {
-//        long count = listOfAllSteps.stream()
-//                .filter(s -> s.getStepName().equalsIgnoreCase(stepName))
-//                .count();
-//        // Increment the counter everytime only one recurrence is identified
-//        if (count == 1) return 1;
-//        else return 0;
-//    }
-
+    private long countAllStepDataTableDrivenRecurrences() {
+        return listOfAllSteps.stream()
+                .filter(Step::isDataTableDriven)
+                .count();
+    }
+    private long countStepRecurrencesWithoutReuse(String stepName) {
+        long count = listOfAllSteps.stream()
+                .filter(s -> s.getStepName().equalsIgnoreCase(stepName))
+                .count();
+        // Increment the counter everytime only one recurrence is identified
+        if (count == 1) return 1;
+        else return 0;
+    }
     private List<Step> getStepListIfDataTableDriven() {
         return listOfAllSteps.stream()
                 .filter(Step::isDataTableDriven)

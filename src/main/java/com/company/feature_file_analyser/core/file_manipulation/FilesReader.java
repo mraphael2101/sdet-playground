@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -27,6 +28,8 @@ public class FilesReader {
     protected GenericType<Step> genTypeStep = null;
     protected GenericType<FeatureFile> genTypeFeatureFile = null;
     protected String inputFilePath = "To be specified at Runtime";
+    private String currentPathString = "", trimmedLine = "";
+    private int fileIndex = 0, rowIndex = 1, i = 0;
 
     public FilesReader(String inputFilePath) {
         this.inputFilePath = inputFilePath;
@@ -37,7 +40,6 @@ public class FilesReader {
     private Stream<Path> walk(Path start, int maxDepth, FileVisitOption... options) throws IOException {
         return walk(start, Integer.MAX_VALUE, options);
     }
-
     private List<Path> listFiles(Path path) throws IOException {
         List<Path> result;
         try (Stream<Path> walk = Files.walk(path)) {
@@ -47,7 +49,6 @@ public class FilesReader {
         return result;
 
     }
-
     private boolean isFeatureFilePathAlreadyPresent(String filePath) {
         long count = listOfAllFeatureFiles.stream()
                 .filter(f -> f.getPath().equalsIgnoreCase(filePath))
@@ -58,7 +59,6 @@ public class FilesReader {
             return false;
         }
     }
-
     public void extractFeatureAndStepsToFeatureFile() {
         List<Path> paths = null;
         Path path = Paths.get(userDir + inputFilePath);
@@ -67,9 +67,7 @@ public class FilesReader {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        String currentPathString = "";
-        String trimmedLine = "";
-        int fileIndex = 0, rowIndex = 1, spaceIndex = 0, i = 0;
+        int spaceIndex = 0;
         FeatureFile fmd = null;
         Step smd = null;
         DataTable dt = null;
@@ -104,7 +102,7 @@ public class FilesReader {
                         smd = genTypeStep.getObj();
                         smd.setPath(currentPathString);
 
-                        // If a step has an in-line data table record it as so
+                        // If a step has an in-line data table, record it as so
                         if (!trimmedLine.startsWith("Examples:")) {
                             if (trimmedLine.chars().filter(ch -> ch == '|').count() >= 2) {
                                 smd.setStepType("In-line");
@@ -123,9 +121,13 @@ public class FilesReader {
                         if (trimmedLine.startsWith("Examples:")) {
                             break;
                         } else {
+                            if(trimmedLine.contains("|")) {
+                                smd.setStepType("In-line");
+                            } else {
+                                spaceIndex = trimmedLine.indexOf(" ");
+                                smd.setStepType(trimmedLine.substring(0, spaceIndex));
+                            }
                             smd.setStepName(trimmedLine);
-                            spaceIndex = trimmedLine.indexOf(" ");
-                            smd.setStepType(trimmedLine.substring(0, spaceIndex));
                             smd.setLineNumber(rowIndex);
                             smd.setDataDriven((smd.getStepName().chars().filter(ch -> ch == '\'').count() == 2
                                     || smd.getStepName().chars().filter(ch -> ch == '\"').count() == 2));
@@ -149,7 +151,6 @@ public class FilesReader {
             ex.printStackTrace();
         }
     }
-
     public void extractScenariosAndOutlinesToFeatureFile() {
         List<Path> paths = null;
         Path path = Paths.get(userDir + inputFilePath);
@@ -158,9 +159,6 @@ public class FilesReader {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        String currentPathString = "";
-        String trimmedLine = "";
-        int fileIndex = 0, rowIndex = 1;
 
         try {
             while (true) {
@@ -168,6 +166,7 @@ public class FilesReader {
                 if (!(fileIndex < paths.size())) break;
                 currentPathString = paths.get(fileIndex).toString();
                 List<String> allLinesOfSpecificFile = Files.readAllLines(Paths.get(currentPathString));
+
                 for (String line : allLinesOfSpecificFile) {
                     trimmedLine = line.trim();
                     int startIndex = trimmedLine.indexOf(":");
@@ -213,8 +212,7 @@ public class FilesReader {
             ex.printStackTrace();
         }
     }
-
-    public void extractToBeDetermined() {
+    public void enrichData() {
         List<Path> paths = null;
         Path path = Paths.get(userDir + inputFilePath);
         try {
@@ -222,9 +220,6 @@ public class FilesReader {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        String currentPathString = "";
-        String trimmedLine = "";
-        int fileIndex = 0, rowIndex = 1, i = 0;
         DataTable dt = null;
 
         try {
@@ -240,15 +235,16 @@ public class FilesReader {
                     for (FeatureFile file : listOfAllFeatureFiles) {
                         for (Step step : listOfAllSteps) {
                             dt = step.getDataTable();
-                            int stepPredecessor = 0;
-                            int difference = 0;
+                            int stepPredecessorLineNo = 0;
+                            int lineNoDifference = 0;
                             if (file.getPath().equals(step.getPath()) && dt != null) {
-                                difference = dt.getStartRowIndex() - 0;
-                                stepPredecessor = getStepByLineIndexAndDtPath(dt.getPath(), difference -= 1).getLineNumber();
-                                step = getStepByLineIndexAndDtPath(dt.getPath(), difference);
-                                difference = dt.getStartRowIndex() - stepPredecessor;
-                                if (difference == 1) {
-                                    step.setStepType("In-line");
+                                lineNoDifference = dt.getStartRowIndex();
+                                stepPredecessorLineNo = Objects.requireNonNull(getStepByLineIndexAndDtPath(dt.getPath(),
+                                        lineNoDifference -= 1)).getLineNumber();
+                                step = getStepByLineIndexAndDtPath(dt.getPath(), lineNoDifference);
+                                lineNoDifference = dt.getStartRowIndex() - stepPredecessorLineNo;
+                                if (lineNoDifference == 1) {
+                                    Objects.requireNonNull(step).setStepType("In-line");
                                 }
                             }
                         }
@@ -284,7 +280,6 @@ public class FilesReader {
             ex.printStackTrace();
         }
     }
-
     private Step getStepByLineIndexAndDtPath(String dtPath, int lineIndex) {
         try {
             return (Step) listOfAllSteps.stream()
@@ -295,4 +290,5 @@ public class FilesReader {
             return null;
         }
     }
+
 }

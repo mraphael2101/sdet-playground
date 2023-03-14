@@ -23,7 +23,6 @@ public class DataTable {
     private String header = "";
     @Getter
     private final List<String> rows = new ArrayList<>();
-
     public String getDataTableHeader() {
         return this.rows.get(0);
     }
@@ -36,4 +35,5 @@ public class DataTable {
     private void countRows() {
         this.rowCount = this.endRowIndex - this.startRowIndex;
     }
+
 }
