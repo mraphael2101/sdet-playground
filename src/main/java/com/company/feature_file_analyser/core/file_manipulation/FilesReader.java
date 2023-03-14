@@ -202,9 +202,8 @@ public class FilesReader {
 
                                 if (file.getPath().equalsIgnoreCase(currentPathString)
                                         && outline.getPath().equals(file.getPath())) {
-//                                        && outline.getLineNumber() == getPreviousStep().getLineNumber()) {
 
-//                                    outline.getLineNumber();
+                                    getDataTableDrivenStepsForScenarioOutline(outline);
 
                                     dt = outline.getDataTable();
                                     if (dt != null) {
