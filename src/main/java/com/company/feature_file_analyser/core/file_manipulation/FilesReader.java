@@ -157,9 +157,6 @@ public class FilesReader {
                         fmd.addScenarioOutline(outline);
                     }
 
-
-                    //TODO Accommodate Examples Data tables (There may be many in a file)
-
                     rowIndex++;
                 }
                 fileIndex++;
@@ -196,18 +193,27 @@ public class FilesReader {
                 for (String line : allLinesOfSpecificFile) {
 
                     for (FeatureFile file : listOfAllFeatureFiles) {
+
                         for (ScenarioOutline outline : file.getListOfScenarioOutlines()) {
 
-                            if (file.getPath().equalsIgnoreCase(currentPathString)
-                                    && outline.getPath().equals(file.getPath())) {
-                                outline.getLineNumber();
+                            for(Step step : listOfAllSteps) {
 
-                                dt = outline.getDataTable();
-                                if (dt != null) {
-                                    for (int k = 0; k < dt.getRowCount(); k++) {
-                                        dt.addRow("dt value");
+                                //TODO You are here -> Populate Examples Data tables (more than one in a file)
+
+                                if (file.getPath().equalsIgnoreCase(currentPathString)
+                                        && outline.getPath().equals(file.getPath())) {
+//                                        && outline.getLineNumber() == getPreviousStep().getLineNumber()) {
+
+//                                    outline.getLineNumber();
+
+                                    dt = outline.getDataTable();
+                                    if (dt != null) {
+                                        for (int k = 0; k < dt.getRowCount(); k++) {
+                                            dt.addRow("dt value");
+                                        }
                                     }
                                 }
+
                             }
                         }
 
@@ -221,6 +227,11 @@ public class FilesReader {
             log.error("Exception encountered when...");
             ex.printStackTrace();
         }
+    }
+
+    //TODO You are here
+    private List<Step> getDataTableDrivenStepsForScenarioOutline(ScenarioOutline outline) {
+        return null;
     }
 
     private Step getStepByLineIndexAndDtPath(String dtPath, int lineIndex) {
@@ -264,4 +275,5 @@ public class FilesReader {
             }
         }
     }
+
 }

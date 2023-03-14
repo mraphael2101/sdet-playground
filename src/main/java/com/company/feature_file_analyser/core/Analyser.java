@@ -25,6 +25,7 @@ public class Analyser extends FilesReader {
     }
 
     public void calculateCodeReuseForAtdd() {
+
         extractFeatureFilesScenariosAndStepsIncludesInline();
         log.info("Project data successfully extracted");
 
@@ -33,6 +34,7 @@ public class Analyser extends FilesReader {
 
         analyseData();
         log.info("Project data successfully analysed");
+
     }
 
     private void analyseData() {
