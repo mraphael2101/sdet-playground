@@ -16,6 +16,7 @@
 
 
 
+OLD ALGORITHM TO BE DELETED
                 for (String line : allLinesOfSpecificFile) {
                     trimmedLine = line.trim();
 

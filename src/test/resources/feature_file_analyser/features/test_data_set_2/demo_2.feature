@@ -5,7 +5,7 @@ Feature: Web Demo
   I want to ...
 
   @wip
-  Scenario Outline: Sample scenario
+  Scenario Outline: Sample scenario outline
     Given I have details of a 'new' user
     And my application opens
     And I have launched a 'Chrome' browser

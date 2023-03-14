@@ -12,7 +12,7 @@ public class ScenarioOutline {
 
     @Getter
     @Setter
-    private String filePath = "";
+    private String Path = "";
 
     @Getter
     @Setter

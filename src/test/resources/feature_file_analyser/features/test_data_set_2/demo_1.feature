@@ -18,7 +18,7 @@ Feature: Web Demo
       | ghi03          | Peter Thomas  |
 
   @wip
-  Scenario Outline: Basket scenario
+  Scenario Outline: Basket scenario outline
     When I fill in the Basket textfield with details <"column_4">
 
     Examples:
