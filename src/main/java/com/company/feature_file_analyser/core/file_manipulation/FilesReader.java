@@ -127,7 +127,7 @@ public class FilesReader {
                             dt.setPath(currentPathString);
                             dt.addHeader(trimmedLine);
                             dt.setStartRowIndex(rowIndex);
-                            setPreviousStepTypeToInline(file, step, dt);
+                            setPreviousStepType(file, step, dt, "In-line");
                             Step previous = getPreviousStep(step, dt);
                             Objects.requireNonNull(previous).setDataTable(dt);
                             previous.setDataTableDriven(true);
@@ -260,7 +260,7 @@ public class FilesReader {
         return null;
     }
 
-    private void setPreviousStepTypeToInline(FeatureFile file, Step targetStep, DataTable dt) {
+    private void setPreviousStepType(FeatureFile file, Step targetStep, DataTable dt, String value) {
         int lineNoOfPriorStep = 0, differenceInLines = 0;
         if (file.getPath().equals(targetStep.getPath()) && dt != null) {
             differenceInLines = dt.getStartRowIndex();
@@ -270,7 +270,7 @@ public class FilesReader {
             differenceInLines = dt.getStartRowIndex() - lineNoOfPriorStep;
 
             if (differenceInLines == 1) {
-                Objects.requireNonNull(targetStep).setStepType("In-line");
+                Objects.requireNonNull(targetStep).setStepType(value);
             }
         }
     }
