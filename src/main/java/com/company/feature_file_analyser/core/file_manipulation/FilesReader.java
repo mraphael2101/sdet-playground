@@ -20,9 +20,9 @@ public class FilesReader {
     public static final List<FeatureFile> listOfAllFeatureFiles = new ArrayList<>();
     public static final List<Step> listOfAllSteps = new ArrayList<>();
     private final String userDir = System.getProperty("user.dir");
-    protected Utils utils = null;
     @Getter
     protected Metrics metrics = null;
+    protected Utils utils = null;
     protected Step step = null;
     protected FeatureFile file = null;
     protected GenericType<Step> genTypeStep = null;
@@ -120,7 +120,7 @@ public class FilesReader {
                         break;
                     }
 
-                    // When an In-line data-table is identified, capture it and append it to the previous step
+                    // When an In-line Data Table is identified, capture and append it to the Previous Step
                     if (trimmedLine.chars().filter(ch -> ch == '|').count() >= 2) {
                         if (firstOccurrence == 0) {
                             dt = new DataTable();
