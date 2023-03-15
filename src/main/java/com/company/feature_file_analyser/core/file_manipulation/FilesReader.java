@@ -70,11 +70,12 @@ public class FilesReader {
         }
         String currentPathString = "";
         String trimmedLine = "";
-        int fileIndex = 0, rowIndex = 1, spaceIndex = 0, i = 0, l = 0;
+        int fileIndex = 0, rowIndex = 1, spaceIndex = 0, i = 0, j = 0, k = 0;
         FeatureFile fmd = null;
         Step smd = null;
         DataTable dt = null;
         ScenarioOutline lastOutline = null;
+        int indexOfLastScenarioOutline = 0;
         int inlineOccurrenceCount = 0;
         int outlineOccurrenceCount = 0;
 
@@ -118,11 +119,11 @@ public class FilesReader {
                         fmd.putStepNameRowIndex(trimmedLine, rowIndex);
                     }
 
-                    // Get the lastOutline created ScenarioOutline object and set isDataTableEncountered true
+                    // Get the last created ScenarioOutline object and set flag to true when table encountered
                     if (trimmedLine.startsWith("Examples:")) {
-                        int indexOfLastScenarioOutline = fmd.getListOfScenarioOutlines().size() - 1;
-                        lastOutline = fmd.getScenarioOutlineByIndex(indexOfLastScenarioOutline);
+                        lastOutline = fmd.getLastScenarioOutline();
                         lastOutline.setDataTableEncountered(true);
+                        outlineOccurrenceCount = 0;
                         rowIndex++;
                         continue;
                     }
@@ -163,9 +164,9 @@ public class FilesReader {
                                 outlineOccurrenceCount++;
                         }
                         else if(dt.getRows().size() > 1 && trimmedLine.equals("")) {
-                            if(l == 0) {
+                            if(j == 0) {
                                 dt.setEndRowIndex(dt.getRows().size());
-                                l++;
+                                j++;
                             }
                             lastOutline.setDataTableParsingComplete(true);
                         }

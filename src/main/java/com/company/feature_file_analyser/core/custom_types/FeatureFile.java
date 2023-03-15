@@ -11,7 +11,6 @@ import java.util.TreeMap;
 
 @Slf4j
 public class FeatureFile {
-
     @Getter
     private final List<Scenario> listOfScenarios = new ArrayList<>();
     @Getter
@@ -43,12 +42,21 @@ public class FeatureFile {
                 .toList()
                 .get(0);
     }
+    public Scenario getLastScenario() {
+        return this.getListOfScenarios().get(listOfScenarios.size() -1);
+    }
     public ScenarioOutline getScenarioOutline(String scenarioOutlineName) {
         return listOfScenarioOutlines.stream()
                 .filter(s -> s.getName()
                         .equals(scenarioOutlineName))
                 .toList()
                 .get(0);
+    }
+    public ScenarioOutline getScenarioOutlineByIndex(int index) {
+        return this.getListOfScenarioOutlines().get(index);
+    }
+    public ScenarioOutline getLastScenarioOutline() {
+        return this.getListOfScenarioOutlines().get(listOfScenarioOutlines.size() -1);
     }
     public void addScenario(Scenario scenario) {
         this.listOfScenarios.add(scenario);
@@ -79,9 +87,6 @@ public class FeatureFile {
     }
     public int getTotalNoOfScenarioOutlines() {
         return scenarioOutlineRecurrenceCount = listOfScenarioOutlines.size();
-    }
-    public ScenarioOutline getScenarioOutlineByIndex(int index) {
-        return this.getListOfScenarioOutlines().get(index);
     }
 
 }
