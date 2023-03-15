@@ -4,6 +4,7 @@ import com.company.feature_file_analyser.core.custom_types.*;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
@@ -60,7 +61,7 @@ public class FilesReader {
         }
     }
 
-    public void extractFeatureFilesScenariosAndStepsIncludesInline() {
+    public void extractFeatureFilesScenarioTypesAndStepsIncludesInline() {
         List<Path> paths = null;
         Path path = Paths.get(userDir + inputFilePath);
         try {
@@ -70,7 +71,7 @@ public class FilesReader {
         }
         String currentPathString = "";
         String trimmedLine = "";
-        int fileIndex = 0, rowIndex = 1, spaceIndex = 0, i = 0, j = 0, k = 0;
+        int currentFileIndex = 0, rowIndex = 1, spaceIndex = 0, i = 0, j = 0, nextFileIndex = 0;
         FeatureFile fmd = null;
         Step smd = null;
         DataTable dt = null;
@@ -82,8 +83,8 @@ public class FilesReader {
         try {
             while (true) {
                 assert paths != null;
-                if (!(fileIndex < paths.size())) break;
-                currentPathString = paths.get(fileIndex).toString();
+                if (!(currentFileIndex < paths.size())) break;
+                currentPathString = paths.get(currentFileIndex).toString();
                 List<String> allLinesOfSpecificFile = Files.readAllLines(Paths.get(currentPathString));
 
                 for (String line : allLinesOfSpecificFile) {
@@ -132,7 +133,10 @@ public class FilesReader {
                     // Alternatively, when an In-line Data Table is identified, capture and append it to the Previous Step
                     if (trimmedLine.chars().filter(ch -> ch == '|').count() >= 2
                             && lastOutline != null && !lastOutline.isDataTableEncountered()
-                            && !lastOutline.isDataTableParsingComplete()) {
+                            && !lastOutline.isDataTableParsingComplete()
+                            || trimmedLine.chars().filter(ch -> ch == '|').count() >= 2
+                            && lastOutline != null && lastOutline.isDataTableEncountered()
+                            && lastOutline.isDataTableParsingComplete()) {
 
                         if (inlineOccurrenceCount == 0) {
                             dt = new DataTable();
@@ -147,9 +151,12 @@ public class FilesReader {
                         } else {
                             dt.addRow(trimmedLine);
                         }
+
                     }
+
                     if(lastOutline != null && lastOutline.isDataTableEncountered()
                             && !lastOutline.isDataTableParsingComplete()) {
+
                         if (outlineOccurrenceCount == 0) {
                             if(!trimmedLine.equals("")) {
                                 dt = Objects.requireNonNull(lastOutline).getDataTable();
@@ -159,17 +166,23 @@ public class FilesReader {
                                 outlineOccurrenceCount++;
                             }
                         }
-                        else if(!trimmedLine.equals("")) {
+
+                        // Perform the algorithm only if the line is not blank and the currentFileIndex is the
+                        // same as the next File index
+                        else if(!trimmedLine.equals("") && currentFileIndex == nextFileIndex) {
                                 dt.addRow(trimmedLine);
                                 outlineOccurrenceCount++;
                         }
+
                         else if(dt.getRows().size() > 1 && trimmedLine.equals("")) {
                             if(j == 0) {
                                 dt.setEndRowIndex(dt.getRows().size());
                                 j++;
                             }
                             lastOutline.setDataTableParsingComplete(true);
+                            nextFileIndex++;
                         }
+
                     }
 
 
@@ -194,7 +207,7 @@ public class FilesReader {
                     }
                     rowIndex++;
                 }
-                fileIndex++;
+                currentFileIndex++;
                 rowIndex = 1;
             }
             metrics.setOverallNoOfSteps(listOfAllSteps.size());

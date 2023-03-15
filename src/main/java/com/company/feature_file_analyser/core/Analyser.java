@@ -26,7 +26,7 @@ public class Analyser extends FilesReader {
 
     public void calculateCodeReuseForAtdd() {
 
-        extractFeatureFilesScenariosAndStepsIncludesInline();
+        extractFeatureFilesScenarioTypesAndStepsIncludesInline();
         log.info("Project data successfully extracted");
 
         enrichData();
@@ -38,17 +38,18 @@ public class Analyser extends FilesReader {
     }
 
     private void analyseData() {
-//        sumDataTableDrivenRowCountAcrossFilesForAllParameterisedSteps();
 
-        int recurCount = 0;
+        //sumDataTableDrivenRowCountAcrossFilesForAllParameterisedSteps();
+
+        int recurrenceCount = 0;
         int distinctStepsSize = metrics.getSetOfDistinctStepNames().size();
         for (int i = 0; i < distinctStepsSize; i++) {
-            recurCount = metrics.getOverallNoOfReusedStepsOneOrMoreTimes();
-            metrics.setOverallNoOfReusedStepsOneOrMoreTimes(recurCount +=
+            recurrenceCount = metrics.getOverallNoOfReusedStepsOneOrMoreTimes();
+            metrics.setOverallNoOfReusedStepsOneOrMoreTimes(recurrenceCount +=
                     countStepRecurrences(metrics.getSetOfDistinctStepNames().toArray()[i].toString()));
         }
 
-        // Populate the total number of Scenarios and Scenario Outlines in each Feature File
+        // Populate the total number of Scenarios/Outlines in every Feature File
         metrics.initialiseSetOfDistinctPathsString();
         int noOfFiles = metrics.getSetOfDistinctFilePaths().size();
         for (int i = 0; i < noOfFiles;  i++) {
@@ -56,6 +57,7 @@ public class Analyser extends FilesReader {
             listOfAllFeatureFiles.get(i).setScenarioRecurrenceCount(i);
             listOfAllFeatureFiles.get(i).setScenarioOutlineRecurrenceCount(i);
         }
+
     }
     private long countStepRecurrences(String step) {
         long count = listOfAllSteps.stream()

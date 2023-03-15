@@ -4,10 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 @Slf4j
 public class FeatureFile {
@@ -35,6 +32,28 @@ public class FeatureFile {
     @Getter
     @Setter
     private int totalNoOfStepsInFile = 0;
+
+    @Override
+    public boolean equals(Object o) {
+        // If the object is compared with itself then return true
+        if (o == this) {
+            return true;
+        }
+        /* Check if o is an instance of FeatureFile or not
+          "null instanceof [type]" also returns false */
+        if (!(o instanceof FeatureFile)) {
+            return false;
+        }
+        // typecast o to FeatureFile so that we can compare data members
+        FeatureFile file = (FeatureFile) o;
+
+        return file.getPath().equals(getPath()) ;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getPath().hashCode());
+    }
 
     public Scenario getScenario(String scenarioName) {
         return listOfScenarios.stream()
