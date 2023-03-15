@@ -129,8 +129,9 @@ public class FilesReader {
                         continue;
                     }
 
-                    // Ignore this block if a Scenario Outline Data Table was encountered
-                    // Alternatively, when an In-line Data Table is identified, capture and append it to the Previous Step
+                    // Create Scenario Outline Data Table when encountering and parsing >=2 '|'
+                    // Create In-line Data Table when Outline Data table is not encountered and not parsed
+                    // Append In-line Data Table rows to the Previous Step
                     if (trimmedLine.chars().filter(ch -> ch == '|').count() >= 2
                             && lastOutline != null && !lastOutline.isDataTableEncountered()
                             && !lastOutline.isDataTableParsingComplete()
