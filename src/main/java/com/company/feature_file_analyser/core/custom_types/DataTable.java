@@ -31,7 +31,7 @@ public class DataTable {
     public void addRow(String line) {
         this.rows.add(line);
     }
-    private int countRows() {
+    public int countRows() {
         return this.rowCount = this.endRowIndex - this.startRowIndex;
     }
     public void setEndRowIndex(int val) {

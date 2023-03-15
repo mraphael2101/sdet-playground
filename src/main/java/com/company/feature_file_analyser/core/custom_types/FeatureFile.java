@@ -61,6 +61,9 @@ public class FeatureFile {
                 .toList()
                 .get(0);
     }
+    public Scenario getScenarioByIndex(int index) {
+        return this.getListOfScenarios().get(index);
+    }
     public Scenario getLastScenario() {
         return this.getListOfScenarios().get(listOfScenarios.size() -1);
     }

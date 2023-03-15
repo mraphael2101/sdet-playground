@@ -174,11 +174,11 @@ public class FilesReader {
                         // same as the next File index
                         else if(!trimmedLine.equals("") && currentFileIndex == nextFileIndex) {
                                 dt.addRow(trimmedLine);
+                                dt.setEndRowIndex(dt.getRows().size());
                                 outlineOccurrenceCount++;
                         }
 
                         else if(trimmedLine.equals("") && dt.getRows().size() > 0) {
-                            dt.setEndRowIndex(dt.getRows().size());
                             lastOutline.setDataTableParsingComplete(true);
                             nextFileIndex++;
                         }
