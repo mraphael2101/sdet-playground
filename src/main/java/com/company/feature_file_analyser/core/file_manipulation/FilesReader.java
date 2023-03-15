@@ -71,12 +71,11 @@ public class FilesReader {
         }
         String currentPathString = "";
         String trimmedLine = "";
-        int currentFileIndex = 0, rowIndex = 1, spaceIndex = 0, i = 0, j = 0, nextFileIndex = 0;
+        int currentFileIndex = 0, rowIndex = 1, spaceIndex = 0, i = 0, nextFileIndex = 0;
         FeatureFile fmd = null;
         Step smd = null;
         DataTable dt = null;
         ScenarioOutline lastOutline = null;
-        int indexOfLastScenarioOutline = 0;
         int inlineOccurrenceCount = 0;
         int outlineOccurrenceCount = 0;
 
@@ -131,7 +130,7 @@ public class FilesReader {
 
                     // Create Scenario Outline Data Table when encountering and parsing >=2 '|'
                     // Create In-line Data Table when Outline Data table is not encountered and not parsed
-                    // Append In-line Data Table rows to the Previous Step
+                    // Append Data Table rows to the Previous Step
                     if (trimmedLine.chars().filter(ch -> ch == '|').count() >= 2
                             && lastOutline != null && !lastOutline.isDataTableEncountered()
                             && !lastOutline.isDataTableParsingComplete()
@@ -149,8 +148,11 @@ public class FilesReader {
                             Objects.requireNonNull(previous).setDataTable(dt);
                             previous.setDataTableDriven(true);
                             inlineOccurrenceCount++;
-                        } else {
+                        }
+
+                        else if(!trimmedLine.equals("")) {
                             dt.addRow(trimmedLine);
+                            dt.setEndRowIndex(dt.getRows().size());
                         }
 
                     }
@@ -175,11 +177,8 @@ public class FilesReader {
                                 outlineOccurrenceCount++;
                         }
 
-                        else if(dt.getRows().size() > 1 && trimmedLine.equals("")) {
-                            if(j == 0) {
-                                dt.setEndRowIndex(dt.getRows().size());
-                                j++;
-                            }
+                        else if(trimmedLine.equals("") && dt.getRows().size() > 0) {
+                            dt.setEndRowIndex(dt.getRows().size());
                             lastOutline.setDataTableParsingComplete(true);
                             nextFileIndex++;
                         }
