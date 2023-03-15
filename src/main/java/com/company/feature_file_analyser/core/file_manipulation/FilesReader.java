@@ -198,6 +198,16 @@ public class FilesReader {
 
                             for(Step step : listOfAllSteps) {
 
+                                //TODO Revise for in-line 1 line
+                                if (file.getPath().equalsIgnoreCase(currentPathString)
+                                        && outline.getPath().equals(file.getPath())
+                                        && step.isDataTableDriven()) {
+                                    if(step.getDataTable().getRowCount() == 0) {
+                                        step.setDataTableProperties(0, 0);
+                                    }
+
+                                }
+
                                 //TODO You are here -> Populate Examples Data tables (more than one in a file)
 
                                 if (file.getPath().equalsIgnoreCase(currentPathString)

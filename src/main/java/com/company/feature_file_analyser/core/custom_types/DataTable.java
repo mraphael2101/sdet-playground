@@ -18,7 +18,7 @@ public class DataTable {
     @Setter
     private int endRowIndex = 0;
     @Getter
-    private int rowCount = 0;
+    private int rowCount = this.countRows();
     @Getter
     private String header = "";
     @Getter
@@ -32,8 +32,8 @@ public class DataTable {
     public void addRow(String line) {
         this.rows.add(line);
     }
-    private void countRows() {
-        this.rowCount = this.endRowIndex - this.startRowIndex;
+    private int countRows() {
+        return this.rowCount = this.rows.size() - this.startRowIndex;
     }
 
 }
