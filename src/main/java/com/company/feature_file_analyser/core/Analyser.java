@@ -53,7 +53,7 @@ public class Analyser extends FilesReader {
         metrics.initialiseSetOfDistinctPathsString();
         int noOfFiles = metrics.getSetOfDistinctFilePaths().size();
         for (int i = 0; i < noOfFiles;  i++) {
-            listOfAllFeatureFiles.get(i).setTotalNoOfStepsInFile(listOfAllSteps.size());
+            listOfAllFeatureFiles.get(i).setTotalNoOfStepsInFile(listOfAllFeatureFiles.get(i).getListOfSteps().size());
             listOfAllFeatureFiles.get(i).setScenarioRecurrenceCount(i);
             listOfAllFeatureFiles.get(i).setScenarioOutlineRecurrenceCount(i);
         }
