@@ -233,7 +233,7 @@ public class FilesReader {
         return null;
     }
 
-    private Step getStepByLineIndexAndDtPath(String dtPath, int lineIndex) {
+    private Step getStepByRowIndexAndDataTablePath(String dtPath, int lineIndex) {
         try {
             return (Step) listOfAllSteps.stream()
                     .filter(s -> s.getLineNumber() == lineIndex)
@@ -248,9 +248,9 @@ public class FilesReader {
         int lineNoOfPriorStep = 0, differenceInLines = 0;
         if (targetStep.getPath().equals(dt.getPath())) {
             differenceInLines = dt.getStartRowIndex();
-            lineNoOfPriorStep = Objects.requireNonNull(getStepByLineIndexAndDtPath(dt.getPath(),
+            lineNoOfPriorStep = Objects.requireNonNull(getStepByRowIndexAndDataTablePath(dt.getPath(),
                     differenceInLines -= 1)).getLineNumber();
-            targetStep = getStepByLineIndexAndDtPath(dt.getPath(), differenceInLines);
+            targetStep = getStepByRowIndexAndDataTablePath(dt.getPath(), differenceInLines);
             differenceInLines = dt.getStartRowIndex() - lineNoOfPriorStep;
 
             if (differenceInLines == 1) {
@@ -262,17 +262,19 @@ public class FilesReader {
 
     private void setPreviousStepType(FeatureFile file, Step targetStep, DataTable dt, String value) {
         int lineNoOfPriorStep = 0, differenceInLines = 0;
+
         if (file.getPath().equals(targetStep.getPath()) && dt != null) {
             differenceInLines = dt.getStartRowIndex();
-            lineNoOfPriorStep = Objects.requireNonNull(getStepByLineIndexAndDtPath(dt.getPath(),
+            lineNoOfPriorStep = Objects.requireNonNull(getStepByRowIndexAndDataTablePath(dt.getPath(),
                     differenceInLines -= 1)).getLineNumber();
-            targetStep = getStepByLineIndexAndDtPath(dt.getPath(), differenceInLines);
+            targetStep = getStepByRowIndexAndDataTablePath(dt.getPath(), differenceInLines);
             differenceInLines = dt.getStartRowIndex() - lineNoOfPriorStep;
 
             if (differenceInLines == 1) {
                 Objects.requireNonNull(targetStep).setStepType(value);
             }
         }
+
     }
 
 }
