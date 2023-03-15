@@ -15,7 +15,6 @@ public class DataTable {
     @Getter
     @Setter
     private int startRowIndex = 0;
-    @Setter
     private int endRowIndex = 0;
     @Getter
     private int rowCount = this.countRows();
@@ -33,7 +32,9 @@ public class DataTable {
         this.rows.add(line);
     }
     private int countRows() {
-        return this.rowCount = this.rows.size() - this.startRowIndex;
+        return this.rowCount = this.endRowIndex - this.startRowIndex;
     }
-
+    public void setEndRowIndex(int val) {
+        this.endRowIndex = this.startRowIndex + val;
+    }
 }

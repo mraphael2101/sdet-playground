@@ -27,6 +27,14 @@ public class ScenarioOutline {
 
     @Getter
     @Setter
+    private boolean isDataTableEncountered = false;
+
+    @Getter
+    @Setter
+    private boolean isDataTableParsingComplete = false;
+
+    @Getter
+    @Setter
     private DataTable dataTable = new DataTable();
 
     public void addStepName(String name) {

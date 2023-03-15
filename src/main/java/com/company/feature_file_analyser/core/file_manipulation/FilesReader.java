@@ -70,11 +70,13 @@ public class FilesReader {
         }
         String currentPathString = "";
         String trimmedLine = "";
-        int fileIndex = 0, rowIndex = 1, spaceIndex = 0, i = 0;
+        int fileIndex = 0, rowIndex = 1, spaceIndex = 0, i = 0, l = 0;
         FeatureFile fmd = null;
         Step smd = null;
         DataTable dt = null;
-        int firstOccurrence = 0;
+        ScenarioOutline lastOutline = null;
+        int inlineOccurrenceCount = 0;
+        int outlineOccurrenceCount = 0;
 
         try {
             while (true) {
@@ -116,13 +118,22 @@ public class FilesReader {
                         fmd.putStepNameRowIndex(trimmedLine, rowIndex);
                     }
 
+                    // Get the lastOutline created ScenarioOutline object and set isDataTableEncountered true
                     if (trimmedLine.startsWith("Examples:")) {
-                        break;
+                        int indexOfLastScenarioOutline = fmd.getListOfScenarioOutlines().size() - 1;
+                        lastOutline = fmd.getScenarioOutlineByIndex(indexOfLastScenarioOutline);
+                        lastOutline.setDataTableEncountered(true);
+                        rowIndex++;
+                        continue;
                     }
 
-                    // When an In-line Data Table is identified, capture and append it to the Previous Step
-                    if (trimmedLine.chars().filter(ch -> ch == '|').count() >= 2) {
-                        if (firstOccurrence == 0) {
+                    // Ignore this block if a Scenario Outline Data Table was encountered
+                    // Alternatively, when an In-line Data Table is identified, capture and append it to the Previous Step
+                    if (trimmedLine.chars().filter(ch -> ch == '|').count() >= 2
+                            && lastOutline != null && !lastOutline.isDataTableEncountered()
+                            && !lastOutline.isDataTableParsingComplete()) {
+
+                        if (inlineOccurrenceCount == 0) {
                             dt = new DataTable();
                             dt.setPath(currentPathString);
                             dt.addHeader(trimmedLine);
@@ -131,11 +142,35 @@ public class FilesReader {
                             Step previous = getPreviousStep(step, dt);
                             Objects.requireNonNull(previous).setDataTable(dt);
                             previous.setDataTableDriven(true);
-                            firstOccurrence++;
+                            inlineOccurrenceCount++;
                         } else {
                             dt.addRow(trimmedLine);
                         }
                     }
+                    if(lastOutline != null && lastOutline.isDataTableEncountered()
+                            && !lastOutline.isDataTableParsingComplete()) {
+                        if (outlineOccurrenceCount == 0) {
+                            if(!trimmedLine.equals("")) {
+                                dt = Objects.requireNonNull(lastOutline).getDataTable();
+                                dt.setPath(currentPathString);
+                                dt.addHeader(trimmedLine);
+                                dt.setStartRowIndex(rowIndex);
+                                outlineOccurrenceCount++;
+                            }
+                        }
+                        else if(!trimmedLine.equals("")) {
+                                dt.addRow(trimmedLine);
+                                outlineOccurrenceCount++;
+                        }
+                        else if(dt.getRows().size() > 1 && trimmedLine.equals("")) {
+                            if(l == 0) {
+                                dt.setEndRowIndex(dt.getRows().size());
+                                l++;
+                            }
+                            lastOutline.setDataTableParsingComplete(true);
+                        }
+                    }
+
 
                     if (!trimmedLine.contains("Scenario Outline:") && trimmedLine.contains("Scenario")) {
                         Scenario scenario = new Scenario();
@@ -156,7 +191,6 @@ public class FilesReader {
                         fmd.addScenarioOutlineName(name);
                         fmd.addScenarioOutline(outline);
                     }
-
                     rowIndex++;
                 }
                 fileIndex++;
@@ -200,13 +234,10 @@ public class FilesReader {
 
                                 //TODO Revise for in-line 1 line
                                 if (file.getPath().equalsIgnoreCase(currentPathString)
-                                        && outline.getPath().equals(file.getPath())
-                                        && step.isDataTableDriven()) {
-                                    if(step.getDataTable().getRowCount() == 0) {
-                                        step.setDataTableProperties(0, 0);
-                                    }
-
+                                        && outline.getPath().equals(file.getPath())) {
+                                    System.out.println(step);
                                 }
+                                System.out.println("");
 
                                 //TODO You are here -> Populate Examples Data tables (more than one in a file)
 

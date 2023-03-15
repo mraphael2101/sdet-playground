@@ -20,6 +20,7 @@ Feature: Web Demo
       |Val W   |Val X   |Val Y   |Val Z   |
       |Val 1   |Val 2   |Val 3   |Val 4   |
 
+  @regression
   Scenario Outline: Sample scenario outline 2
     Given I have details of a 'new' user
     When I fill in the form with user details

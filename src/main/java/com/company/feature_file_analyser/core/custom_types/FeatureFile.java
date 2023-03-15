@@ -80,5 +80,8 @@ public class FeatureFile {
     public int getTotalNoOfScenarioOutlines() {
         return scenarioOutlineRecurrenceCount = listOfScenarioOutlines.size();
     }
+    public ScenarioOutline getScenarioOutlineByIndex(int index) {
+        return this.getListOfScenarioOutlines().get(index);
+    }
 
 }
