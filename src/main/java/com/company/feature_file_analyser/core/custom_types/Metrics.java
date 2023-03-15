@@ -35,11 +35,11 @@ public class Metrics {
     @Setter
     private int overallNoOfReusedStepsOneOrMoreTimes = 0;
     @Getter
-    private int overallNoOfStepsWithoutReuse = 0;
+    private final int overallNoOfStepsWithoutReuse = 0;
     @Getter
-    private int overallNoOfDataDrivenSteps = 0;
+    private final int overallNoOfDataDrivenSteps = 0;
     @Getter
-    private int overallNoOfDataTableDrivenSteps = 0;
+    private final int overallNoOfDataTableDrivenSteps = 0;
     @Getter
     @Setter
     private long overallNoOfSteps = 0;
@@ -120,16 +120,24 @@ public class Metrics {
 
 //    private int countAllDistinctStepDataTableDrivenRecurrences() {}
     private long countTotalNumberOfScenarioRecurrences() {
-        long count = listOfAllFeatureFiles.stream()
+        long count = 0;
+        List<FeatureFile> filteredList = listOfAllFeatureFiles.stream()
                 .filter(f -> f.getScenarioRecurrenceCount() > 0)
-                .count();
+                .toList();
+        for(FeatureFile file : listOfAllFeatureFiles) {
+            count += file.getScenarioRecurrenceCount();
+        }
         setOverallScenarioRecurrencesCount(count);
         return count;
     }
     private long countTotalNumberOfScenarioOutlineRecurrences() {
-        long count = listOfAllFeatureFiles.stream()
+        long count = 0;
+        List<FeatureFile> filteredList = listOfAllFeatureFiles.stream()
                 .filter(f -> f.getScenarioOutlineRecurrenceCount() > 0)
-                .count();
+                .toList();
+        for(FeatureFile file : listOfAllFeatureFiles) {
+            count += file.getScenarioOutlineRecurrenceCount();
+        }
         setOverallScenarioOutlineRecurrencesCount(count);
         return count;
     }
