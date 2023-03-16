@@ -277,15 +277,15 @@ public class FilesReader {
         }
     }
     //TODO You are here
+    private DataTable getDataTableForInlineStep(Step step) {
+        return null;
+    }
+    //TODO You are here
     private DataTable getDataTableForScenarioOutline(ScenarioOutline outline) {
         return null;
     }
     //TODO You are here
     private List<Step> getDataTableDrivenStepsForScenarioOutline(ScenarioOutline outline) {
-        return null;
-    }
-    //TODO You are here
-    private DataTable getDataTableForInlineStep(Step step) {
         return null;
     }
     private Step getStepByRowIndexAndDataTablePath(String dtPath, int lineIndex) {
