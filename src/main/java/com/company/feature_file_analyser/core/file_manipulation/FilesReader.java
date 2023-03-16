@@ -29,13 +29,11 @@ public class FilesReader {
     protected GenericType<Step> genTypeStep = null;
     protected GenericType<FeatureFile> genTypeFeatureFile = null;
     protected String inputFilePath = "To be specified at Runtime";
-
     public FilesReader(String inputFilePath) {
         this.inputFilePath = inputFilePath;
         this.utils = new Utils();
         this.metrics = new Metrics();
     }
-
     private Stream<Path> walk(Path start, int maxDepth, FileVisitOption... options) throws IOException {
         return walk(start, Integer.MAX_VALUE, options);
     }
