@@ -39,7 +39,6 @@ public class FilesReader {
     private Stream<Path> walk(Path start, int maxDepth, FileVisitOption... options) throws IOException {
         return walk(start, Integer.MAX_VALUE, options);
     }
-
     private List<Path> listFiles(Path path) throws IOException {
         List<Path> result;
         try (Stream<Path> walk = Files.walk(path)) {
@@ -49,7 +48,6 @@ public class FilesReader {
         return result;
 
     }
-
     private boolean isFeatureFilePathAlreadyPresent(String filePath) {
         long count = listOfAllFeatureFiles.stream()
                 .filter(f -> f.getPath().equalsIgnoreCase(filePath))
@@ -60,7 +58,6 @@ public class FilesReader {
             return false;
         }
     }
-
     public void extractFeatureFilesScenarioTypesAndStepsIncludingInline() {
         List<Path> paths = null;
         Path path = Paths.get(userDir + inputFilePath);
@@ -217,7 +214,6 @@ public class FilesReader {
             ex.printStackTrace();
         }
     }
-
     public void enrichData() {
         List<Path> paths = null;
         Path path = Paths.get(userDir + inputFilePath);
@@ -282,12 +278,18 @@ public class FilesReader {
             ex.printStackTrace();
         }
     }
-
+    //TODO You are here
+    private DataTable getDataTableForScenarioOutline(ScenarioOutline outline) {
+        return null;
+    }
     //TODO You are here
     private List<Step> getDataTableDrivenStepsForScenarioOutline(ScenarioOutline outline) {
         return null;
     }
-
+    //TODO You are here
+    private DataTable getDataTableForInlineStep(Step step) {
+        return null;
+    }
     private Step getStepByRowIndexAndDataTablePath(String dtPath, int lineIndex) {
         try {
             return (Step) listOfAllSteps.stream()
@@ -298,7 +300,7 @@ public class FilesReader {
             return null;
         }
     }
-
+    //TODO Should file param be here - to be analysed
     private Step getPreviousStep(Step targetStep, DataTable dt) {
         int lineNoOfPriorStep = 0, differenceInLines = 0;
         if (targetStep.getPath().equals(dt.getPath())) {
@@ -314,7 +316,6 @@ public class FilesReader {
         }
         return null;
     }
-
     private void setPreviousStepType(FeatureFile file, Step targetStep, DataTable dt, String value) {
         int lineNoOfPriorStep = 0, differenceInLines = 0;
 
