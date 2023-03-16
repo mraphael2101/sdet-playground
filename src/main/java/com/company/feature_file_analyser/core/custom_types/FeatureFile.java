@@ -5,10 +5,11 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class FeatureFile {
+    @Getter
+    private final List<BackgroundStep> listOfBackgroundSteps = new ArrayList<>();
     @Getter
     private final List<Scenario> listOfScenarios = new ArrayList<>();
     @Getter
@@ -18,7 +19,7 @@ public class FeatureFile {
     @Getter
     private final List<String> listOfScenarioOutlineNames = new ArrayList<>();
     @Getter
-    private final List<Step> listOfSteps = new ArrayList<>();
+    private final List<Step> listOfStepsAtFileLevel = new ArrayList<>();
     @Getter
     private final Map<String, Integer> mapOfStepNamesRowIndexes = new TreeMap<>();
     @Getter
@@ -100,7 +101,7 @@ public class FeatureFile {
         this.scenarioOutlineRecurrenceCount += 1;
     }
     public void addStep(Step step) {
-        this.listOfSteps.add(step);
+        this.listOfStepsAtFileLevel.add(step);
     }
     public void putStepNameRowIndex(String name, Integer index) {
         this.mapOfStepNamesRowIndexes.put(name, index);

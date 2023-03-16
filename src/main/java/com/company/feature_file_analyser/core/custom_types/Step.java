@@ -29,9 +29,12 @@ public class Step {
     private boolean isDataTableDriven = false;
     @Getter
     @Setter
+    private boolean isBoundToOutline = false;
+    @Getter
+    @Setter
+    private boolean isBoundToScenario = false;
+    @Getter
+    @Setter
     private DataTable dataTable = null;
-    public void setDataTableProperties(int rowStart, int rowEnd) {
-        this.dataTable.setStartRowIndex(rowStart);
-        this.dataTable.setEndRowIndex(rowEnd);
-    }
+
 }

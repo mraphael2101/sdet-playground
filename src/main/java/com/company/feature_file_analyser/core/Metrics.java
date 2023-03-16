@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Set;
 
 import static com.company.feature_file_analyser.core.constants.Frequency.*;
-import static com.company.feature_file_analyser.core.file_manipulation.FilesReader.listOfAllFeatureFiles;
-import static com.company.feature_file_analyser.core.file_manipulation.FilesReader.listOfAllSteps;
+import static com.company.feature_file_analyser.core.file_manipulation.FilesReader.LIST_OF_ALL_FEATURE_FILES;
+import static com.company.feature_file_analyser.core.file_manipulation.FilesReader.LIST_OF_ALL_STEPS;
 
 @Slf4j
 public class Metrics {
@@ -54,7 +54,7 @@ public class Metrics {
         utils.clearListOfString();
         List<String> tempList = utils.getListOfString();
 
-        for(Step step : listOfAllSteps) {
+        for(Step step : LIST_OF_ALL_STEPS) {
             tempList.add(step.getStepName());
         }
         this.setOfDistinctStepNames = new HashSet<>(tempList);
@@ -63,7 +63,7 @@ public class Metrics {
         utils.clearListOfString();
         List<String> tempList = utils.getListOfString();
 
-        for(FeatureFile file : listOfAllFeatureFiles) {
+        for(FeatureFile file : LIST_OF_ALL_FEATURE_FILES) {
             tempList.add(file.getPath());
         }
         this.setOfDistinctFilePaths = new HashSet<>(tempList);
@@ -77,7 +77,7 @@ public class Metrics {
                 + String.format("%.0f", percentage) + " % }");
     }
     private long countStepRecurrences(String step) {
-        long count = listOfAllSteps.stream()
+        long count = LIST_OF_ALL_STEPS.stream()
                 .filter(s -> s.getStepName().equalsIgnoreCase(step))
                 .count();
         // 1st recurrence is considered when a step is encountered more than once
@@ -89,7 +89,7 @@ public class Metrics {
     private long countStepRecurrencesWithoutReuse() {
         long count = 0, result = 0;
         for(String stepName : setOfDistinctStepNames) {
-            count = listOfAllSteps.stream()
+            count = LIST_OF_ALL_STEPS.stream()
                     .filter(s -> s.getStepName().equalsIgnoreCase(stepName))
                     .count();
             // Increment the counter everytime only one recurrence is identified
@@ -103,12 +103,12 @@ public class Metrics {
         return result;
     }
     private long countAllStepDataDrivenRecurrences() {
-        return listOfAllSteps.stream()
+        return LIST_OF_ALL_STEPS.stream()
                 .filter(Step::isDataDriven)
                 .count();
     }
     private int countAllDistinctStepDataDrivenRecurrences() {
-        List<Step> filteredObjList = listOfAllSteps.stream()
+        List<Step> filteredObjList = LIST_OF_ALL_STEPS.stream()
                 .filter(Step::isDataDriven)
                 .toList();
         utils.clearListOfString();
@@ -124,10 +124,10 @@ public class Metrics {
 //    private int countAllDistinctStepDataTableDrivenRecurrences() {}
     private long countTotalNumberOfScenarioRecurrences() {
         long count = 0;
-        List<FeatureFile> filteredList = listOfAllFeatureFiles.stream()
+        List<FeatureFile> filteredList = LIST_OF_ALL_FEATURE_FILES.stream()
                 .filter(f -> f.getScenarioRecurrenceCount() > 0)
                 .toList();
-        for(FeatureFile file : listOfAllFeatureFiles) {
+        for(FeatureFile file : LIST_OF_ALL_FEATURE_FILES) {
             count += file.getScenarioRecurrenceCount();
         }
         setOverallScenarioRecurrencesCount(count);
@@ -135,10 +135,10 @@ public class Metrics {
     }
     private long countTotalNumberOfScenarioOutlineRecurrences() {
         long count = 0;
-        List<FeatureFile> filteredList = listOfAllFeatureFiles.stream()
+        List<FeatureFile> filteredList = LIST_OF_ALL_FEATURE_FILES.stream()
                 .filter(f -> f.getScenarioOutlineRecurrenceCount() > 0)
                 .toList();
-        for(FeatureFile file : listOfAllFeatureFiles) {
+        for(FeatureFile file : LIST_OF_ALL_FEATURE_FILES) {
             count += file.getScenarioOutlineRecurrenceCount();
         }
         setOverallScenarioOutlineRecurrencesCount(count);
@@ -146,7 +146,7 @@ public class Metrics {
     }
     public void printLowLevelSummary() {
         System.out.println("Low Level Summary\n-------------------------------------------------------------------------");
-        for (Step step : listOfAllSteps) {
+        for (Step step : LIST_OF_ALL_STEPS) {
             System.out.println("Step { " + step.getStepName()
                     + " } \nFile Path { " + step.getPath()
                     + " } \nStep Type { " + step.getStepType()
@@ -182,7 +182,7 @@ public class Metrics {
         calculatePercentageForReusedStepsOneOrMoreTimes();
     }
     public void printHighLevelSummaryAtFeatureFileLevel() {
-        for(FeatureFile file : listOfAllFeatureFiles) {
+        for(FeatureFile file : LIST_OF_ALL_FEATURE_FILES) {
             System.out.println(file.getPath());
             System.out.println(file.getListOfScenarios());
             System.out.println(file.getListOfScenarioOutlines());

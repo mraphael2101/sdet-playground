@@ -4,7 +4,7 @@ import com.company.feature_file_analyser.core.Analyser;
 import com.company.feature_file_analyser.core.custom_types.Step;
 import org.junit.Test;
 
-import static com.company.feature_file_analyser.core.file_manipulation.FilesReader.listOfAllSteps;
+import static com.company.feature_file_analyser.core.file_manipulation.FilesReader.LIST_OF_ALL_STEPS;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -15,7 +15,7 @@ public class AnalyseFirstStep {
     public AnalyseFirstStep() {
         Analyser analyser = new Analyser("/src/test/resources/feature_file_analyser/features/test_data_set_1");
         analyser.calculateCodeReuseForAtdd();
-        firstStep = listOfAllSteps.get(0);
+        firstStep = LIST_OF_ALL_STEPS.get(0);
     }
 
     @Test

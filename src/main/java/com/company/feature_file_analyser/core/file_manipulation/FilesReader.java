@@ -18,21 +18,27 @@ import java.util.stream.Stream;
 
 @Slf4j
 public class FilesReader {
-    public static final List<FeatureFile> listOfAllFeatureFiles = new ArrayList<>();
-    public static final List<Step> listOfAllSteps = new ArrayList<>();
+    public static final List<FeatureFile> LIST_OF_ALL_FEATURE_FILES = new ArrayList<>();
+    public static final List<BackgroundStep> LIST_OF_BACKGROUND_STEPS = new ArrayList<>();
+    public static final List<Step> LIST_OF_ALL_STEPS = new ArrayList<>();
     private final String userDir = System.getProperty("user.dir");
+    private boolean isOutline = false, isScenario = false, isBackground = false;
     @Getter
     protected Metrics metrics = null;
     protected Utils utils = null;
+
     protected Step step = null;
+    protected BackgroundStep backgroundStep = null;
     protected FeatureFile file = null;
     protected GenericType<Step> genTypeStep = null;
+    protected GenericType<BackgroundStep> genTypeBackground = null;
     protected GenericType<FeatureFile> genTypeFeatureFile = null;
     protected String inputFilePath = "To be specified at Runtime";
     public FilesReader(String inputFilePath) {
         this.inputFilePath = inputFilePath;
         this.utils = new Utils();
         this.metrics = new Metrics();
+        this.backgroundStep = new BackgroundStep();
     }
     private Stream<Path> walk(Path start, int maxDepth, FileVisitOption... options) throws IOException {
         return walk(start, Integer.MAX_VALUE, options);
@@ -47,7 +53,7 @@ public class FilesReader {
 
     }
     private boolean isFeatureFilePathAlreadyPresent(String filePath) {
-        long count = listOfAllFeatureFiles.stream()
+        long count = LIST_OF_ALL_FEATURE_FILES.stream()
                 .filter(f -> f.getPath().equalsIgnoreCase(filePath))
                 .count();
         if (count == 1) {
@@ -69,6 +75,7 @@ public class FilesReader {
         int currentFileIndex = 0, rowIndex = 1, spaceIndex = 0, i = 0, nextFileIndex = 0;
         FeatureFile fmd = null;
         Step smd = null;
+        BackgroundStep bmd = null;
         DataTable dt = null;
         ScenarioOutline lastOutline = null;
         int inlineOccurrenceCount = 0;
@@ -90,7 +97,7 @@ public class FilesReader {
                         genTypeFeatureFile = new GenericType<FeatureFile>(file);
                         fmd = genTypeFeatureFile.getObj();
                         fmd.setPath(currentPathString);
-                        listOfAllFeatureFiles.add(fmd);
+                        LIST_OF_ALL_FEATURE_FILES.add(fmd);
                         i++;
                     }
 
@@ -107,7 +114,23 @@ public class FilesReader {
                         smd.setPath(currentPathString);
                         spaceIndex = trimmedLine.indexOf(" ");
                         smd.setStepType(trimmedLine.substring(0, spaceIndex));
-                        listOfAllSteps.add(smd);
+                        if(this.isOutline) {
+                            smd.setBoundToOutline(true);
+                        }
+                        if(this.isScenario) {
+                            smd.setBoundToScenario(true);
+                        }
+                        if(this.isBackground) {
+                            smd.setBackground(true);
+                        }
+                        LIST_OF_ALL_STEPS.add(smd);
+
+//                        genTypeBackground = new GenericType<>(backgroundStep);
+//                        bmd = genTypeBackground.getObj();
+//                        bmd.addStepName();
+//                        bmd.addStep();
+//                        bmd.setPath();
+//                        bmd.setLineNumber();
 
                         fmd.addStep(step);
                         fmd.putStepNameRowIndex(trimmedLine, rowIndex);
@@ -181,12 +204,15 @@ public class FilesReader {
 
                     if (!trimmedLine.contains("Scenario Outline:") && trimmedLine.contains("Scenario")) {
                         Scenario scenario = new Scenario();
-                        scenario.setFilePath(currentPathString);
+                        scenario.setPath(currentPathString);
                         scenario.setName(name);
                         scenario.setLineNumber(rowIndex);
                         fmd.incrementScenarioRecurrenceCount();
                         fmd.addScenarioName(name);
                         fmd.addScenario(scenario);
+                        this.isScenario = true;
+                        this.isOutline = false;
+                        this.isBackground = false;
                     }
 
                     if (trimmedLine.contains("Scenario Outline:")) {
@@ -197,6 +223,13 @@ public class FilesReader {
                         fmd.incrementScenarioOutlineRecurrenceCount();
                         fmd.addScenarioOutlineName(name);
                         fmd.addScenarioOutline(outline);
+                        this.isOutline = true;
+                        this.isScenario = false;
+                        this.isBackground = false;
+                    }
+
+                    if (trimmedLine.startsWith("Background")) {
+                        this.isBackground = true;
                     }
 
                     rowIndex++;
@@ -208,7 +241,7 @@ public class FilesReader {
 
             }
 
-            metrics.setOverallNoOfSteps(listOfAllSteps.size());
+            metrics.setOverallNoOfSteps(LIST_OF_ALL_STEPS.size());
             metrics.initialiseSetOfDistinctStepNames();
 
         } catch (IOException ex) {
@@ -216,9 +249,11 @@ public class FilesReader {
             ex.printStackTrace();
         }
     }
+
     public void enrichData() {
         List<Path> paths = null;
         Path path = Paths.get(userDir + inputFilePath);
+
         try {
             paths = listFiles(path);
         } catch (IOException ex) {
@@ -226,59 +261,81 @@ public class FilesReader {
         }
         String currentPathString = "";
         String trimmedLine = "";
-        int fileIndex = 0, rowIndex = 1, i = 0;
+        int currentFileIndex = 0, rowIndex = 1, i = 0;
         DataTable dt = null;
 
         try {
             while (true) {
                 assert paths != null;
-                if (!(fileIndex < paths.size())) break;
-                currentPathString = paths.get(fileIndex).toString();
+                if (!(currentFileIndex < paths.size())) break;
+                currentPathString = paths.get(currentFileIndex).toString();
                 List<String> allLinesOfSpecificFile = Files.readAllLines(Paths.get(currentPathString));
 
                 for (String line : allLinesOfSpecificFile) {
 
-                    for (FeatureFile file : listOfAllFeatureFiles) {
-
-                        for (ScenarioOutline outline : file.getListOfScenarioOutlines()) {
-
-                            for(Step step : listOfAllSteps) {
-
-                                //TODO Revise for in-line 1 line
-                                if (file.getPath().equalsIgnoreCase(currentPathString)
-                                        && outline.getPath().equals(file.getPath())) {
-                                    System.out.println(step);
-                                }
-                                System.out.println("");
-
-                                //TODO You are here -> Populate Examples Data tables (more than one in a file)
-
-                                if (file.getPath().equalsIgnoreCase(currentPathString)
-                                        && outline.getPath().equals(file.getPath())) {
-
-                                    getDataTableDrivenStepsForScenarioOutline(outline);
-
-                                    dt = outline.getDataTable();
-                                    if (dt != null) {
-                                        for (int k = 0; k < dt.getRowCount(); k++) {
-                                            dt.addRow("dt value");
-                                        }
-                                    }
-                                }
-
-                            }
-                        }
-
-                        rowIndex++;
-                    }
+                    currentFileIndex++;
+                    rowIndex = 1;
                 }
-                fileIndex++;
-                rowIndex = 1;
             }
         } catch (IOException ex) {
             log.error("Exception encountered when...");
             ex.printStackTrace();
         }
+
+        for (FeatureFile file : LIST_OF_ALL_FEATURE_FILES) {
+
+            List<Step> stepListAtFileLevel = file.getListOfStepsAtFileLevel();
+
+            for (ScenarioOutline outline : file.getListOfScenarioOutlines()) {
+
+                for(Step stepFromFile : stepListAtFileLevel) {
+
+                    if (outline.getPath().equals(stepFromFile.getPath())) {
+
+                        if(stepFromFile.isBoundToOutline() && !stepFromFile.isBoundToScenario()
+                           && !stepFromFile.isBackground()) {
+                            outline.addStep(stepFromFile);
+                        }
+
+                    }
+
+                }
+            }
+
+            for (Scenario scenario : file.getListOfScenarios()) {
+
+                for (Step stepFromFile : stepListAtFileLevel) {
+
+                    if (scenario.getPath().equals(stepFromFile.getPath())) {
+
+                        if (stepFromFile.isBoundToScenario() && !stepFromFile.isBoundToOutline()
+                            && !stepFromFile.isBackground()) {
+                            scenario.addStep(stepFromFile);
+                        }
+
+                    }
+
+                }
+            }
+
+            for (BackgroundStep backgroundStep : file.getListOfBackgroundSteps()) {
+
+                for (Step stepFromFile : stepListAtFileLevel) {
+
+                    if (backgroundStep.getPath().equals(stepFromFile.getPath())) {
+
+                        if (!stepFromFile.isBoundToScenario() && !stepFromFile.isBoundToOutline()
+                                && stepFromFile.isBackground()) {
+                            backgroundStep.addStep(stepFromFile);
+                        }
+
+                    }
+
+                }
+            }
+
+        }
+
     }
     private DataTable getDataTableForInlineStep(FeatureFile file, Step step) {
         if(file.getPath().equals(step.getPath())
@@ -292,7 +349,7 @@ public class FilesReader {
     }
     private List<DataTable> getDataTableListForAllScenarioOutlines() {
         List<ScenarioOutline> overallOutlineList = new ArrayList<>();
-        for(FeatureFile file : listOfAllFeatureFiles) {
+        for(FeatureFile file : LIST_OF_ALL_FEATURE_FILES) {
             Stream.of(file.getListOfScenarioOutlines())
                     .forEach(overallOutlineList::addAll);
         }
@@ -303,11 +360,11 @@ public class FilesReader {
         return overallDataTableList;
     }
     private List<Step> getDataTableDrivenStepsForScenarioOutline(ScenarioOutline outline) {
-        return outline.getSteps();
+        return outline.getStepsAtOutlineLevel();
     }
     private Step getStepByRowIndexAndDataTablePath(String dtPath, int lineIndex) {
         try {
-            return (Step) listOfAllSteps.stream()
+            return (Step) LIST_OF_ALL_STEPS.stream()
                     .filter(s -> s.getLineNumber() == lineIndex)
                     .filter(f -> f.getPath().equals(dtPath))
                     .toArray()[0];

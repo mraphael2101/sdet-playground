@@ -21,7 +21,7 @@ public class ScenarioOutline {
     @Getter
     private final List<String> stepNames = new ArrayList<>();
     @Getter
-    private final List<Step> steps = new ArrayList<>();
+    private final List<Step> stepsAtOutlineLevel = new ArrayList<>();
     @Getter
     @Setter
     private boolean isDataTableEncountered = false;
@@ -35,7 +35,7 @@ public class ScenarioOutline {
         this.stepNames.add(name);
     }
     public void addStep(Step step) {
-        this.steps.add(step);
+        this.stepsAtOutlineLevel.add(step);
     }
 
 }
