@@ -1,10 +1,10 @@
 package com.company.feature_file_analyser.core.file_manipulation;
 
+import com.company.feature_file_analyser.core.Metrics;
 import com.company.feature_file_analyser.core.custom_types.*;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
@@ -61,7 +61,7 @@ public class FilesReader {
         }
     }
 
-    public void extractFeatureFilesScenarioTypesAndStepsIncludesInline() {
+    public void extractFeatureFilesScenarioTypesAndStepsIncludingInline() {
         List<Path> paths = null;
         Path path = Paths.get(userDir + inputFilePath);
         try {

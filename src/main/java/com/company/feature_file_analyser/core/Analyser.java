@@ -26,7 +26,7 @@ public class Analyser extends FilesReader {
 
     public void calculateCodeReuseForAtdd() {
 
-        extractFeatureFilesScenarioTypesAndStepsIncludesInline();
+        extractFeatureFilesScenarioTypesAndStepsIncludingInline();
         log.info("Project data successfully extracted");
 
         enrichData();

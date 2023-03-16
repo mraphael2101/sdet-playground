@@ -1,5 +1,8 @@
-package com.company.feature_file_analyser.core.custom_types;
+package com.company.feature_file_analyser.core;
 
+import com.company.feature_file_analyser.core.custom_types.FeatureFile;
+import com.company.feature_file_analyser.core.custom_types.Step;
+import com.company.feature_file_analyser.core.custom_types.Utils;
 import lombok.Getter;
 import lombok.Setter;
 
