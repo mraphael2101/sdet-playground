@@ -69,9 +69,7 @@ public class Metrics {
     public void addDistinctDataTableDrivenStepName(String name) {
         this.listOfDistinctDataTableDrivenStepNames.add(name);
     }
-
-
-    public void calculatePercentageOfCodeReuse() {
+    public void calculatePercentageForReusedStepsOneOrMoreTimes() {
         setPercentage((float) overallNoOfReusedStepsOneOrMoreTimes / overallNoOfSteps * 100);
         System.out.println("Level of Overall Code Reuse based on a Step Recurrence of one or more times { "
                 + String.format("%.0f", percentage) + " % }");
@@ -144,8 +142,6 @@ public class Metrics {
         setOverallScenarioOutlineRecurrencesCount(count);
         return count;
     }
-
-
     public void printLowLevelSummary() {
         System.out.println("Low Level Summary\n-------------------------------------------------------------------------");
         for (Step step : listOfAllSteps) {
@@ -181,7 +177,7 @@ public class Metrics {
 //                System.out.println("DataTable Driven Reuse { " + entry.getKey() + " { " + entry.getValue() + " } }");
 //            }
         }
-        calculatePercentageOfCodeReuse();
+        calculatePercentageForReusedStepsOneOrMoreTimes();
     }
     public void printHighLevelSummaryAtFeatureFileLevel() {
         for(FeatureFile file : listOfAllFeatureFiles) {
@@ -243,4 +239,5 @@ public class Metrics {
             System.out.println("The Overall Level of Code Reuse is Excellent");
         }
     }
+
 }

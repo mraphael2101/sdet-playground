@@ -56,7 +56,7 @@ public class Analyser extends FilesReader {
             listOfAllFeatureFiles.get(i).setTotalNoOfStepsInFile(listOfAllFeatureFiles.get(i).getListOfSteps().size());
             listOfAllFeatureFiles.get(i).setScenarioRecurrenceCount(i);
             listOfAllFeatureFiles.get(i).setScenarioOutlineRecurrenceCount(i);
-            listOfAllFeatureFiles.get(i).getScenarioOutlineByIndex(i).getDataTable().countRows();
+//            listOfAllFeatureFiles.get(i).getScenarioOutlineByIndex(i).getDataTable().countRows();
         }
 
         //TODO a) Data table row counts for in-line steps
