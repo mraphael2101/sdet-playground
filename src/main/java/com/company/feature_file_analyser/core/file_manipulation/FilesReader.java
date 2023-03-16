@@ -96,7 +96,6 @@ public class FilesReader {
 
                     if (trimmedLine.startsWith("Given") || trimmedLine.startsWith("When")
                             || trimmedLine.startsWith("Then") || line.contains("And")) {
-
                         step = new Step();
                         genTypeStep = new GenericType<Step>(step);
                         smd = genTypeStep.getObj();
@@ -180,7 +179,6 @@ public class FilesReader {
 
                     }
 
-
                     if (!trimmedLine.contains("Scenario Outline:") && trimmedLine.contains("Scenario")) {
                         Scenario scenario = new Scenario();
                         scenario.setFilePath(currentPathString);
@@ -200,13 +198,19 @@ public class FilesReader {
                         fmd.addScenarioOutlineName(name);
                         fmd.addScenarioOutline(outline);
                     }
+
                     rowIndex++;
+
                 }
+
                 currentFileIndex++;
                 rowIndex = 1;
+
             }
+
             metrics.setOverallNoOfSteps(listOfAllSteps.size());
             metrics.initialiseSetOfDistinctStepNames();
+
         } catch (IOException ex) {
             log.error("Exception encountered when...");
             ex.printStackTrace();
