@@ -138,7 +138,7 @@ public class FilesReader {
                             dt.addHeader(trimmedLine);
                             dt.setStartRowIndex(rowIndex);
                             setPreviousStepType(file, step, dt, "In-line");
-                            Step previous = getPreviousStep(step, dt);
+                            Step previous = getPreviousStep(file, step, dt);
                             Objects.requireNonNull(previous).setDataTable(dt);
                             previous.setDataTableDriven(true);
                             inlineOccurrenceCount++;
@@ -280,17 +280,30 @@ public class FilesReader {
             ex.printStackTrace();
         }
     }
-    //TODO You are here
-    private DataTable getDataTableForInlineStep(Step step) {
+    private DataTable getDataTableForInlineStep(FeatureFile file, Step step) {
+        if(file.getPath().equals(step.getPath())
+                && step.getStepType().equals("Inline")) {
+            return step.getDataTable();
+        }
         return null;
     }
-    //TODO You are here
-    private DataTable getDataTableForScenarioOutline(ScenarioOutline outline) {
-        return null;
+    private DataTable getDataTableForScenarioOutline(FeatureFile file, String outlineName) {
+        return file.getScenarioOutline(outlineName).getDataTable();
     }
-    //TODO You are here
+    private List<DataTable> getDataTableListForAllScenarioOutlines() {
+        List<ScenarioOutline> overallOutlineList = new ArrayList<>();
+        for(FeatureFile file : listOfAllFeatureFiles) {
+            Stream.of(file.getListOfScenarioOutlines())
+                    .forEach(overallOutlineList::addAll);
+        }
+        List<DataTable> overallDataTableList = new ArrayList<>();
+        for(ScenarioOutline outline : overallOutlineList) {
+            overallDataTableList.add(outline.getDataTable());
+        }
+        return overallDataTableList;
+    }
     private List<Step> getDataTableDrivenStepsForScenarioOutline(ScenarioOutline outline) {
-        return null;
+        return outline.getSteps();
     }
     private Step getStepByRowIndexAndDataTablePath(String dtPath, int lineIndex) {
         try {
@@ -302,7 +315,6 @@ public class FilesReader {
             return null;
         }
     }
-    //TODO Should file param be here - to be analysed
     private Step getPreviousStep(Step targetStep, DataTable dt) {
         int lineNoOfPriorStep = 0, differenceInLines = 0;
         if (targetStep.getPath().equals(dt.getPath())) {
@@ -318,6 +330,24 @@ public class FilesReader {
         }
         return null;
     }
+    private Step getPreviousStep(FeatureFile file, Step targetStep, DataTable dt) {
+        int lineNoOfPriorStep = 0, differenceInLines = 0;
+
+        if (file.getPath().equals(targetStep.getPath())
+                && targetStep.getPath().equals(dt.getPath())) {
+            differenceInLines = dt.getStartRowIndex();
+            lineNoOfPriorStep = Objects.requireNonNull(getStepByRowIndexAndDataTablePath(dt.getPath(),
+                    differenceInLines -= 1)).getLineNumber();
+            targetStep = getStepByRowIndexAndDataTablePath(dt.getPath(), differenceInLines);
+            differenceInLines = dt.getStartRowIndex() - lineNoOfPriorStep;
+
+            if (differenceInLines == 1) {
+                return targetStep;
+            }
+        }
+        return null;
+    }
+
     private void setPreviousStepType(FeatureFile file, Step targetStep, DataTable dt, String value) {
         int lineNoOfPriorStep = 0, differenceInLines = 0;
 

@@ -1,5 +1,6 @@
 package com.company.feature_file_analyser.core;
 
+import com.company.feature_file_analyser.core.custom_types.FeatureFile;
 import com.company.feature_file_analyser.core.custom_types.Step;
 import com.company.feature_file_analyser.core.file_manipulation.FilesReader;
 import lombok.extern.slf4j.Slf4j;
@@ -62,6 +63,19 @@ public class Analyser extends FilesReader {
         //TODO a) Data table row counts for in-line steps
         // b) Recurrence Counts in Feature files
 //        listOfAllSteps.stream().filter(s -> s.getStepType().equals("In-line")).filter(s -> s.getDataTable().getRows())
+
+        for(FeatureFile file : listOfAllFeatureFiles) {
+            int scenarioCount = file.getListOfScenarios().size();
+            int outlineCount = file.getListOfScenarioOutlines().size();
+
+            for(int i = 0; i < scenarioCount; i++) {
+
+            }
+
+            for(int i = 0; i < outlineCount; i++) {
+                file.getScenarioOutlineByIndex(i).getDataTable().countRows();
+            }
+        }
 
     }
     private long countStepRecurrences(String step) {
