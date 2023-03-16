@@ -5,6 +5,7 @@ import com.company.feature_file_analyser.core.custom_types.Step;
 import com.company.feature_file_analyser.core.custom_types.Utils;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -15,6 +16,7 @@ import static com.company.feature_file_analyser.core.constants.Frequency.*;
 import static com.company.feature_file_analyser.core.file_manipulation.FilesReader.listOfAllFeatureFiles;
 import static com.company.feature_file_analyser.core.file_manipulation.FilesReader.listOfAllSteps;
 
+@Slf4j
 public class Metrics {
     @Getter
     @Setter
