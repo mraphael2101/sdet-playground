@@ -19,26 +19,21 @@ import java.util.stream.Stream;
 @Slf4j
 public class FilesReader {
     public static final List<FeatureFile> LIST_OF_ALL_FEATURE_FILES = new ArrayList<>();
-    public static final List<BackgroundStep> LIST_OF_BACKGROUND_STEPS = new ArrayList<>();
     public static final List<Step> LIST_OF_ALL_STEPS = new ArrayList<>();
     private final String userDir = System.getProperty("user.dir");
     private boolean isOutline = false, isScenario = false, isBackground = false;
     @Getter
     protected Metrics metrics = null;
     protected Utils utils = null;
-
     protected Step step = null;
-    protected BackgroundStep backgroundStep = null;
     protected FeatureFile file = null;
     protected GenericType<Step> genTypeStep = null;
-    protected GenericType<BackgroundStep> genTypeBackground = null;
     protected GenericType<FeatureFile> genTypeFeatureFile = null;
     protected String inputFilePath = "To be specified at Runtime";
     public FilesReader(String inputFilePath) {
         this.inputFilePath = inputFilePath;
         this.utils = new Utils();
         this.metrics = new Metrics();
-        this.backgroundStep = new BackgroundStep();
     }
     private Stream<Path> walk(Path start, int maxDepth, FileVisitOption... options) throws IOException {
         return walk(start, Integer.MAX_VALUE, options);
@@ -75,7 +70,6 @@ public class FilesReader {
         int currentFileIndex = 0, rowIndex = 1, spaceIndex = 0, i = 0, nextFileIndex = 0;
         FeatureFile fmd = null;
         Step smd = null;
-        BackgroundStep bmd = null;
         DataTable dt = null;
         ScenarioOutline lastOutline = null;
         int inlineOccurrenceCount = 0;
@@ -124,13 +118,6 @@ public class FilesReader {
                             smd.setBackground(true);
                         }
                         LIST_OF_ALL_STEPS.add(smd);
-
-//                        genTypeBackground = new GenericType<>(backgroundStep);
-//                        bmd = genTypeBackground.getObj();
-//                        bmd.addStepName();
-//                        bmd.addStep();
-//                        bmd.setPath();
-//                        bmd.setLineNumber();
 
                         fmd.addStep(step);
                         fmd.putStepNameRowIndex(trimmedLine, rowIndex);
@@ -297,6 +284,11 @@ public class FilesReader {
                             outline.addStep(stepFromFile);
                         }
 
+                        if (stepFromFile.isBoundToOutline() && !stepFromFile.isBoundToScenario()
+                                && stepFromFile.isBackground()) {
+                            outline.addBackgroundStep(stepFromFile);
+                        }
+
                     }
 
                 }
@@ -313,20 +305,9 @@ public class FilesReader {
                             scenario.addStep(stepFromFile);
                         }
 
-                    }
-
-                }
-            }
-
-            for (BackgroundStep backgroundStep : file.getListOfBackgroundSteps()) {
-
-                for (Step stepFromFile : stepListAtFileLevel) {
-
-                    if (backgroundStep.getPath().equals(stepFromFile.getPath())) {
-
-                        if (!stepFromFile.isBoundToScenario() && !stepFromFile.isBoundToOutline()
+                        if (stepFromFile.isBoundToScenario() && !stepFromFile.isBoundToOutline()
                                 && stepFromFile.isBackground()) {
-                            backgroundStep.addStep(stepFromFile);
+                            scenario.addBackgroundStep(stepFromFile);
                         }
 
                     }

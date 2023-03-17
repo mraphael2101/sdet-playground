@@ -23,6 +23,10 @@ public class ScenarioOutline {
     @Getter
     private final List<Step> stepsAtOutlineLevel = new ArrayList<>();
     @Getter
+    private final List<String> backgroundStepNames = new ArrayList<>();
+    @Getter
+    private final List<Step> stepsAtBackgroundLevel = new ArrayList<>();
+    @Getter
     @Setter
     private boolean isDataTableEncountered = false;
     @Getter
@@ -36,6 +40,12 @@ public class ScenarioOutline {
     }
     public void addStep(Step step) {
         this.stepsAtOutlineLevel.add(step);
+    }
+    public void addBackgroundStepName(String name) {
+        this.backgroundStepNames.add(name);
+    }
+    public void addBackgroundStep(Step step) {
+        this.stepsAtBackgroundLevel.add(step);
     }
 
 }
