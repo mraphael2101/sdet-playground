@@ -20,7 +20,8 @@ public class StepBackground {
     @Setter
     private boolean isDataTableDriven = false;
 
-    //todo could be bound to more than one outline or scenario - how to capture the scope
+    //todo could be bound to more than one outline or scenario
+    // - scope should be applied to all scenarios and outlines in file
 //    @Getter
 //    @Setter
 //    private boolean isBoundToOutline = false;
