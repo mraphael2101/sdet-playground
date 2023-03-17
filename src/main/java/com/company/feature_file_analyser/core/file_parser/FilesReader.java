@@ -20,12 +20,14 @@ import java.util.stream.Stream;
 public class FilesReader {
     public static final List<FeatureFile> LIST_OF_ALL_FEATURE_FILES = new ArrayList<>();
     public static final List<Step> LIST_OF_ALL_STEPS = new ArrayList<>();
+    public static final List<StepBackground> LIST_OF_ALL_BACKGROUND_STEPS = new ArrayList<>();
     private final String userDir = System.getProperty("user.dir");
     private boolean isOutline = false, isScenario = false, isBackground = false;
     @Getter
     protected Metrics metrics = null;
     protected Utils utils = null;
     protected Step step = null;
+
     protected FeatureFile file = null;
     protected GenericType<Step> genTypeStep = null;
     protected GenericType<FeatureFile> genTypeFeatureFile = null;
@@ -57,7 +59,7 @@ public class FilesReader {
             return false;
         }
     }
-    public void extractFeatureFilesScenarioTypesAndStepsIncludingInline() {
+    protected void extractFeatureFilesScenarioTypesAndStepsIncludingInline() {
         List<Path> paths = null;
         Path path = Paths.get(userDir + inputFilePath);
         try {
@@ -236,7 +238,7 @@ public class FilesReader {
             ex.printStackTrace();
         }
     }
-    public void enrichData() {
+    protected void enrichData() {
         List<Path> paths = null;
         Path path = Paths.get(userDir + inputFilePath);
 
