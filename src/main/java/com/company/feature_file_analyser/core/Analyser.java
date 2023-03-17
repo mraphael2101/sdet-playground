@@ -2,7 +2,7 @@ package com.company.feature_file_analyser.core;
 
 import com.company.feature_file_analyser.core.custom_types.FeatureFile;
 import com.company.feature_file_analyser.core.custom_types.Step;
-import com.company.feature_file_analyser.core.file_manipulation.FilesReader;
+import com.company.feature_file_analyser.core.file_parser.FilesReader;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;

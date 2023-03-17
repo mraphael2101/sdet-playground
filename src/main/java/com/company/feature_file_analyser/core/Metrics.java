@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Set;
 
 import static com.company.feature_file_analyser.core.constants.Frequency.*;
-import static com.company.feature_file_analyser.core.file_manipulation.FilesReader.LIST_OF_ALL_FEATURE_FILES;
-import static com.company.feature_file_analyser.core.file_manipulation.FilesReader.LIST_OF_ALL_STEPS;
+import static com.company.feature_file_analyser.core.file_parser.FilesReader.LIST_OF_ALL_FEATURE_FILES;
+import static com.company.feature_file_analyser.core.file_parser.FilesReader.LIST_OF_ALL_STEPS;
 
 @Slf4j
 public class Metrics {

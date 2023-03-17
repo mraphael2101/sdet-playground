@@ -4,7 +4,7 @@ import com.company.feature_file_analyser.core.Analyser;
 import com.company.feature_file_analyser.core.custom_types.Step;
 import org.junit.Test;
 
-import static com.company.feature_file_analyser.core.file_manipulation.FilesReader.LIST_OF_ALL_STEPS;
+import static com.company.feature_file_analyser.core.file_parser.FilesReader.LIST_OF_ALL_STEPS;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;

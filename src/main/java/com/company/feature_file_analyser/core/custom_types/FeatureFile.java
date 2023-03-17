@@ -9,13 +9,15 @@ import java.util.*;
 @Slf4j
 public class FeatureFile {
     @Getter
-    private final List<BackgroundStep> listOfBackgroundSteps = new ArrayList<>();
+    private final List<StepBackground> listOfBackgroundSteps = new ArrayList<>();
     @Getter
     private final List<Scenario> listOfScenarios = new ArrayList<>();
     @Getter
-    private final List<String> listOfScenarioNames = new ArrayList<>();
-    @Getter
     private final List<ScenarioOutline> listOfScenarioOutlines = new ArrayList<>();
+    @Getter
+    private final List<String> listOfBackgroundStepNames = new ArrayList<>();
+    @Getter
+    private final List<String> listOfScenarioNames = new ArrayList<>();
     @Getter
     private final List<String> listOfScenarioOutlineNames = new ArrayList<>();
     @Getter
@@ -102,6 +104,12 @@ public class FeatureFile {
     }
     public void addStep(Step step) {
         this.listOfStepsAtFileLevel.add(step);
+    }
+    public void addBackgroundStepName(String name) {
+        this.listOfBackgroundStepNames.add(name);
+    }
+    public void addBackgroundStep(StepBackground step) {
+        this.listOfBackgroundSteps.add(step);
     }
     public void putStepNameRowIndex(String name, Integer index) {
         this.mapOfStepNamesRowIndexes.put(name, index);

@@ -1,4 +1,4 @@
-package com.company.feature_file_analyser.core.file_manipulation;
+package com.company.feature_file_analyser.core.file_parser;
 
 import com.company.feature_file_analyser.core.Metrics;
 import com.company.feature_file_analyser.core.custom_types.*;
@@ -236,7 +236,6 @@ public class FilesReader {
             ex.printStackTrace();
         }
     }
-
     public void enrichData() {
         List<Path> paths = null;
         Path path = Paths.get(userDir + inputFilePath);
@@ -385,7 +384,6 @@ public class FilesReader {
         }
         return null;
     }
-
     private void setPreviousStepType(FeatureFile file, Step targetStep, DataTable dt, String value) {
         int lineNoOfPriorStep = 0, differenceInLines = 0;
 
