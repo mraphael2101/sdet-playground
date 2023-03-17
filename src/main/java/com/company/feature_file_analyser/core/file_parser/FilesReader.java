@@ -354,21 +354,6 @@ public class FilesReader {
             return null;
         }
     }
-    private Step getPreviousStep(Step targetStep, DataTable dt) {
-        int lineNoOfPriorStep = 0, differenceInLines = 0;
-        if (targetStep.getPath().equals(dt.getPath())) {
-            differenceInLines = dt.getStartRowIndex();
-            lineNoOfPriorStep = Objects.requireNonNull(getStepByRowIndexAndDataTablePath(dt.getPath(),
-                    differenceInLines -= 1)).getLineNumber();
-            targetStep = getStepByRowIndexAndDataTablePath(dt.getPath(), differenceInLines);
-            differenceInLines = dt.getStartRowIndex() - lineNoOfPriorStep;
-
-            if (differenceInLines == 1) {
-                return targetStep;
-            }
-        }
-        return null;
-    }
     private Step getPreviousStep(FeatureFile file, Step targetStep, DataTable dt) {
         int lineNoOfPriorStep = 0, differenceInLines = 0;
 
