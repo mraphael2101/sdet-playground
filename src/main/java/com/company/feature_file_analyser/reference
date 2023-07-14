@@ -1,89 +1,26 @@
-    public String getFilePathOfStep() {
-        Optional<String> key = Optional.ofNullable(filePathsDataTableRowCountsMap.firstKey());
-        return key.orElse("Something has gone wrong");
+public String getFilePathOfStep() {
+    Optional<String> key = Optional.ofNullable(filePathsDataTableRowCountsMap.firstKey());
+    return key.orElse("Something has gone wrong");
+}
+
+public int getFilePathDataTableDrivenCountForStep() {
+    Optional<Integer> value = filePathsDataTableRowCountsMap.values().stream().findFirst();
+    return value.orElse(0);
+}
+
+public void setFilePathsDataTableRowCountsMap(String key, int value) {
+   this.filePathsDataTableRowCountsMap.put(key, value);
+}
+
+private final Multimap<String, List<? extends Object>> allStepsMetaMultimap = LinkedHashMultimap.create();
+
+private final TreeMap<String, List<? extends Object>> stepsReuseMetrics = new TreeMap<>();
+
+stepsReuseMetrics.put(step, new ArrayList<>() {
+    {
+        add(countForStep + 1);
+        add(dataDriven);
     }
-
-    public int getFilePathDataTableDrivenCountForStep() {
-        Optional<Integer> value = filePathsDataTableRowCountsMap.values().stream().findFirst();
-        return value.orElse(0);
-    }
-
-    public void setFilePathsDataTableRowCountsMap(String key, int value) {
-        this.filePathsDataTableRowCountsMap.put(key, value);
-    }
-
-    private final Multimap<String, List<? extends Object>> allStepsMetaMultimap = LinkedHashMultimap.create();
+});
 
 
-
-
-//        metrics.setOverallNoOfDataTableDrivenSteps(mapResults.values()
-//                .stream()
-//                .mapToInt(Integer::valueOf)
-//                .sum());
-
-
-
-
-OLD ALGORITHM TO BE DELETED
-                for (String line : allLinesOfSpecificFile) {
-                    trimmedLine = line.trim();
-
-                    if (i == 0 || !isFeatureFilePathAlreadyPresent(currentPathString)) {
-                        file = new FeatureFile();
-                        genTypeFeatureFile = new GenericType<FeatureFile>(file);
-                        fmd = genTypeFeatureFile.getObj();
-                        fmd.setPath(currentPathString);
-                        listOfAllFeatureFiles.add(fmd);
-                        i++;
-                    }
-
-
-                    if (trimmedLine.startsWith("Given") || trimmedLine.startsWith("When")
-                            || trimmedLine.startsWith("Then") || line.contains("And")
-                            || trimmedLine.chars().filter(ch -> ch == '|').count() >= 2
-                            || trimmedLine.startsWith("Examples:")) {
-
-                        step = new Step();
-                        genTypeStep = new GenericType<Step>(step);
-                        smd = genTypeStep.getObj();
-                        smd.setPath(currentPathString);
-
-
-                        if (!trimmedLine.startsWith("Examples:")) {
-                            if (trimmedLine.chars().filter(ch -> ch == '|').count() >= 2) {
-                                smd.setStepType("In-line");
-                                smd.setLineNumber(rowIndex);
-                                if (tableRowCount == 0) {
-                                    dt = smd.createDataTable();
-                                    dt.setPath(currentPathString);
-                                    dt.addHeader(trimmedLine);
-                                    dt.setStartRowIndex(rowIndex);
-                                    ++tableRowCount;
-                                } else {
-                                    dt.addRow(trimmedLine);
-                                }
-                            }
-                        }
-
-                        if (trimmedLine.startsWith("Examples:")) {
-                            break;
-                        } else {
-                            if(trimmedLine.contains("|")) {
-                                smd.setStepType("In-line");
-                            } else {
-                                spaceIndex = trimmedLine.indexOf(" ");
-                                smd.setStepType(trimmedLine.substring(0, spaceIndex));
-                            }
-                            smd.setStepName(trimmedLine);
-                            smd.setLineNumber(rowIndex);
-                            smd.setDataDriven((smd.getStepName().chars().filter(ch -> ch == '\'').count() == 2
-                                    || smd.getStepName().chars().filter(ch -> ch == '\"').count() == 2));
-                            smd.setDataTableDriven(smd.getStepName().contains("<") && smd.getStepName().contains(">"));
-                        }
-                        listOfAllSteps.add(smd);
-                        fmd.addStep(step);
-                        fmd.putStepNameRowIndex(trimmedLine, rowIndex);
-                    }
-                    rowIndex++;
-                }
