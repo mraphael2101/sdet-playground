@@ -16,6 +16,15 @@
 
 
 
+
+//        metrics.setOverallNoOfDataTableDrivenSteps(mapResults.values()
+//                .stream()
+//                .mapToInt(Integer::valueOf)
+//                .sum());
+
+
+
+
 OLD ALGORITHM TO BE DELETED
                 for (String line : allLinesOfSpecificFile) {
                     trimmedLine = line.trim();

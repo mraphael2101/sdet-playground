@@ -19,8 +19,8 @@ import java.util.stream.Stream;
 @Slf4j
 public class FilesReader {
     public static final List<FeatureFile> LIST_OF_ALL_FEATURE_FILES = new ArrayList<>();
-    public static final List<Step> LIST_OF_ALL_STEPS = new ArrayList<>();
     public static final List<StepBackground> LIST_OF_ALL_BACKGROUND_STEPS = new ArrayList<>();
+    public static final List<Step> LIST_OF_ALL_STEPS = new ArrayList<>();
     private final String userDir = System.getProperty("user.dir");
     private boolean isOutline = false, isScenario = false, isBackground = false;
     @Getter
