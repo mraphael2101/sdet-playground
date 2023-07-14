@@ -10,7 +10,6 @@ public class MyClassTest {
 
     @Test
     public void testAdd() throws Exception {
-
         MyClass myClass = new MyClass();
         Method method = MyClass.class.getDeclaredMethod("add", int.class, int.class);
         method.setAccessible(true);
