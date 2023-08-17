@@ -11,7 +11,7 @@ import static java.util.Arrays.copyOf;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 
-public class AppendDataToFeatureFile_Utility implements AppendDataProcess {
+public class AppendDataToFeatureFile implements AppendDataProcess {
     private boolean cleanseSwitch;
     private String fileName = "";
     private String excelTab = "";
@@ -22,7 +22,7 @@ public class AppendDataToFeatureFile_Utility implements AppendDataProcess {
     private String[][] inputFileSubsetAsTwoDimArr;
     private String[][] inputFileAsTwoDimArr;
 
-    public AppendDataToFeatureFile_Utility() {
+    public AppendDataToFeatureFile() {
         this.inputFileAsList = new ArrayList<>();
         this.inputFileSubsetAsList = new ArrayList<>();
     }

@@ -1,6 +1,6 @@
 package com.company.feature_file_data_appender.unit_tests.utility.capabilities;
 
-import com.company.feature_file_data_appender.config.AppendDataToFeatureFile_Utility;
+import com.company.feature_file_data_appender.config.AppendDataToFeatureFile;
 import com.company.feature_file_data_appender.config.ResultSelection;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +14,7 @@ import static java.lang.Double.parseDouble;
 import static java.lang.System.out;
 
 public class _03_PredicateFilterTests {
-    AppendDataToFeatureFile_Utility pf_utility;
+    AppendDataToFeatureFile pf_utility;
 
     String[][] array2d = {
             { "Concorde",     "74990.90",   "GBP" },
@@ -25,7 +25,7 @@ public class _03_PredicateFilterTests {
 
     @Before
     public void beforeTest() {
-        pf_utility = new AppendDataToFeatureFile_Utility();
+        pf_utility = new AppendDataToFeatureFile();
     }
 
     @Test

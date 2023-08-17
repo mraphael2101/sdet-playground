@@ -1,6 +1,6 @@
 package com.company.feature_file_data_appender.unit_tests.utility.pilot;
 
-import com.company.feature_file_data_appender.config.AppendDataToFeatureFile_Utility;
+import com.company.feature_file_data_appender.config.AppendDataToFeatureFile;
 import com.company.feature_file_data_appender.unit_tests.config.TestBase;
 import org.junit.Test;
 
@@ -9,10 +9,10 @@ import java.util.function.Predicate;
 import static org.junit.Assert.assertTrue;
 
 public class _01_Sample_Data_Tab_Tests extends TestBase {
-    private AppendDataToFeatureFile_Utility utility;
+    private AppendDataToFeatureFile utility;
 
     public _01_Sample_Data_Tab_Tests() {
-        utility = new AppendDataToFeatureFile_Utility();
+        utility = new AppendDataToFeatureFile();
         utility.setExcelTab("Sample_Data_Tab");
         utility.readCleanseDataSourceFileInto2DArray("Sample_Data.csv", true);
     }

@@ -1,6 +1,6 @@
 package com.company.feature_file_data_appender.unit_tests.config;
 
-import com.company.feature_file_data_appender.config.AppendDataToFeatureFile_Utility;
+import com.company.feature_file_data_appender.config.AppendDataToFeatureFile;
 import org.junit.Before;
 
 import java.util.Arrays;
@@ -8,12 +8,12 @@ import java.util.List;
 
 public class TestBase {
 
-    protected AppendDataToFeatureFile_Utility caps_utility;
+    protected AppendDataToFeatureFile caps_utility;
     protected String[][] rows;
 
     @Before
     public void beforeTest() {
-        caps_utility = new AppendDataToFeatureFile_Utility();
+        caps_utility = new AppendDataToFeatureFile();
         caps_utility.setExcelTab("Sample_Data_Tab");
         rows = caps_utility.readCleanseDataSourceFileInto2DArray("Sample_Data.csv", false); }
 

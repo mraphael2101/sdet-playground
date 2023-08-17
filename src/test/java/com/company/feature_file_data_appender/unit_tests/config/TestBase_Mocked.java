@@ -1,6 +1,6 @@
 package com.company.feature_file_data_appender.unit_tests.config;
 
-import com.company.feature_file_data_appender.config.AppendDataToFeatureFile_Utility;
+import com.company.feature_file_data_appender.config.AppendDataToFeatureFile;
 import com.company.feature_file_data_appender.unit_tests.config.pojo.sample_data_tab.SampleData;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -12,11 +12,11 @@ import java.util.Arrays;
 import java.util.List;
 
 public class TestBase_Mocked {
-    protected AppendDataToFeatureFile_Utility utility2;
+    protected AppendDataToFeatureFile utility2;
     protected String[][] rows;
 
     @InjectMocks
-    protected AppendDataToFeatureFile_Utility utility;
+    protected AppendDataToFeatureFile utility;
 
     @Mock
     protected SampleData sampleData;
@@ -29,7 +29,7 @@ public class TestBase_Mocked {
 
     @Before
     public void beforeTest() {
-        utility2 = new AppendDataToFeatureFile_Utility();
+        utility2 = new AppendDataToFeatureFile();
         rows = utility2.readCleanseDataSourceFileInto2DArray("Sample_Data.csv", false);
 
         //String[][] expected2DArr = new SampleData().getSampleData();
