@@ -4,7 +4,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class GenerateCumulativeRatios {
-
+    /*
+    | Level   | Ratio | Cumulative Ratio |
+    |---------|-------|------------------|
+    | 1-9     | 0.05  | 0.05             |
+    | 10-19   | 0.05  | 0.1              |
+    | 20-49   | 0.15  | 0.25             |
+    | 50-99   | 0.25  | 0.5              |
+    | 100-149 | 0.25  | 0.75             |
+    | 150-199 | 0.25  | 1                |
+    */
     public static void main(String[] args) {
         ArrayList<Integer> boundaries = createArray(300);
         System.out.println(boundaries);
