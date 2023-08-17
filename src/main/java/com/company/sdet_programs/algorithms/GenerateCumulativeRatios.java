@@ -15,7 +15,7 @@ public class GenerateCumulativeRatios {
     | 150-199 | 0.25  | 1                |
     */
     public static void main(String[] args) {
-        ArrayList<Integer> boundaries = createBoundaryValues(200);
+        ArrayList<Integer> boundaries = createBoundaryValues(300);
         System.out.println(boundaries);
 
         double[] cumulativeRatios = generateCumulativeRatios(boundaries);
@@ -24,15 +24,11 @@ public class GenerateCumulativeRatios {
 
     // A method that takes a max value parameter and returns an array list of values
     public static ArrayList<Integer> createBoundaryValues(int max) {
-        ArrayList<Integer> list = new ArrayList<Integer>();
+        ArrayList<Integer> list = new ArrayList<>();
         list.add(10);
-//        list.add(20);
-//        list.add(50);
-//        list.add(100);
-//        list.add(150);
-//        list.add(200);
+        list.add(20);
         // Add increments of 50 until the max value is reached or exceeded
-        int value = 250;
+        int value = 50;
         while (value <= max) {
             list.add(value);
             value += 50;
