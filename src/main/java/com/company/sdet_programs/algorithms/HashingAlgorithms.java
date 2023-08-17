@@ -11,7 +11,7 @@ import java.util.HashSet;
  * execution time of .add(), .contains(), .remove(), and size() to remain constant even
  * for large data sets */
 
-public class Hashing_Algorithms {
+public class HashingAlgorithms {
 
     public static void main(String[] args) {
         demoOverridingHashCode();
