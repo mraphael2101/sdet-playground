@@ -1,7 +1,7 @@
 package com.company.sdet_programs.algorithms;
 import java.util.ArrayList;
 
-public class DynamicArrayGenerator {
+public class DynamicBoundaryValueArrayGenerator {
 
   public static void main(String[] args) {
     ArrayList<Integer> boundaries = createArray(300);
