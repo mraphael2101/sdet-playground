@@ -49,25 +49,7 @@ public class GenerateCumulativeRatios {
         double divisorSum = 0.0;
         // Loop through the boundaries array list and calculate the divisors
         for (int i = 0; i < boundaries.size(); i++) {
-            int boundary = boundaries.get(i);
-            double divisor;
-            // Assign the divisor based on the boundary value
-            if (boundary == 10) {
-                divisor = 0.05;
-            } else if (boundary >= 10 && boundary <= 20) {
-                divisor = 0.05;
-            } else if (boundary > 20 && boundary <= 50) {
-                divisor = 0.15;
-            } else if (boundary > 50 && boundary <= 100) {
-                divisor = 0.25;
-            } else if (boundary > 100 && boundary <= 150) {
-                divisor = 0.25;
-            } else if (boundary > 150 && boundary <= 200) {
-                divisor = 0.25;
-            } else {
-                // For any other boundary value, use increments of 0.25
-                divisor = 0.25;
-            }
+            double divisor = getDivisor(boundaries, i);
             // Add the divisor to the sum
             divisorSum += divisor;
             // Calculate the cumulative ratio for the current level and store it in the array
@@ -76,6 +58,29 @@ public class GenerateCumulativeRatios {
         // Set the last element to one
         cumulativeRatios[cumulativeRatios.length - 1] = 1.0;
         return cumulativeRatios;
+    }
+
+    private static double getDivisor(ArrayList<Integer> boundaries, int i) {
+        int boundary = boundaries.get(i);
+        double divisor;
+        // Assign the divisor based on the boundary value
+        if (boundary == 10) {
+            divisor = 0.05;
+        } else if (boundary >= 10 && boundary <= 20) {
+            divisor = 0.05;
+        } else if (boundary > 20 && boundary <= 50) {
+            divisor = 0.15;
+        } else if (boundary > 50 && boundary <= 100) {
+            divisor = 0.25;
+        } else if (boundary > 100 && boundary <= 150) {
+            divisor = 0.25;
+        } else if (boundary > 150 && boundary <= 200) {
+            divisor = 0.25;
+        } else {
+            // For any other boundary value, use increments of 0.25
+            divisor = 0.25;
+        }
+        return divisor;
     }
 
 }
