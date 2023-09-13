@@ -1,4 +1,4 @@
-package com.company.sdet_programs.twodarrays;
+package com.company.sdet_programs.twodimarrays;
 
 import java.util.Arrays;
 
