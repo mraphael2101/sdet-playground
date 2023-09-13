@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 /**
  * Find the Integer that has the maximum value after iterating over the list
- * */
+ * using the interface that accepts a Generic Type Comparator<T> */
 public class ComparatorExample {
 
     private static final List<Integer> randomList = new ArrayList<>();
