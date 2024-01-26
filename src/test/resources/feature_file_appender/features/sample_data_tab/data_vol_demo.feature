@@ -13,4 +13,4 @@ Feature: Web Demo
     Examples:
 
 |column_1|column_2|column_3|column_4|
-|Column 1| Column 2| Column 3| Column 4|
+|Row 3 Col 1|Row 3 Col 2|Row 3 Col 3|Row 3 Col 4|
