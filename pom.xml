@@ -66,7 +66,7 @@
     </dependencies>
     <build>
 
-        <plugins>
+<!--        <plugins>-->
 <!--            <plugin>-->
 <!--                <groupId>org.NTTData</groupId>-->
 <!--                <artifactId>ica-maven-plugin</artifactId>-->
@@ -91,8 +91,8 @@
 <!--                    <printSummaryAtDynamicThresholdLevels>true</printSummaryAtDynamicThresholdLevels>-->
 <!--                    <printErrorSummary>false</printErrorSummary>-->
 <!--                    <printJsonOutput>true</printJsonOutput>-->
-<!--                    &lt;!&ndash;          Project Metadata- All fields must be populated or no values will be persisted in the DB&ndash;&gt;-->
-<!--                    <automationTeamSize>29</automationTeamSize>-->
+<!--                    &lt;!&ndash; Project Metadata- All fields must be populated or no values will be persisted in the DB&ndash;&gt;-->
+<!--                    <automationTeamSize>S</automationTeamSize>-->
 <!--                    <sizeClassification>XL</sizeClassification>-->
 <!--                    <programmingLanguage>Java</programmingLanguage>-->
 <!--                    <primaryBusinessDomain>Banking</primaryBusinessDomain>-->
@@ -105,6 +105,6 @@
 <!--                    <unitAutomationEnabled>false</unitAutomationEnabled>-->
 <!--                </configuration>-->
 <!--            </plugin>-->
-        </plugins>
+<!--        </plugins>-->
     </build>
 </project>
