@@ -9,8 +9,8 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.source>12</maven.compiler.source>
-        <maven.compiler.target>12</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -66,45 +66,45 @@
     </dependencies>
     <build>
 
-<!--        <plugins>-->
-<!--            <plugin>-->
-<!--                <groupId>org.NTTData</groupId>-->
-<!--                <artifactId>ica-maven-plugin</artifactId>-->
-<!--                <version>1.0.3</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        &lt;!&ndash;            <phase>prepare-package</phase>&ndash;&gt;-->
-<!--                        &lt;!&ndash;no need to specify any phase because our mojo is attached to the compile phase by default.&ndash;&gt;-->
-<!--                        &lt;!&ndash;                        <phase>generate-resources</phase>&ndash;&gt;-->
-<!--                        <goals>-->
-<!--                            <goal>code-analyser</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--                <configuration>-->
-<!--                    <icaOnSwitch>true</icaOnSwitch>-->
-<!--                    <inputFilePath>${project.basedir}</inputFilePath>-->
-<!--                    <outputJsonFilePath>${project.basedir}/src/test/resources/json_output5</outputJsonFilePath>-->
-<!--                    <printLowLevelSummaryAtStepLevel>false</printLowLevelSummaryAtStepLevel>-->
-<!--                    <printHighLevelSummaryAtFeatureFileLevel>false</printHighLevelSummaryAtFeatureFileLevel>-->
-<!--                    <printHighLevelSummaryAtProjectLevel>false</printHighLevelSummaryAtProjectLevel>-->
-<!--                    <printSummaryAtDynamicThresholdLevels>true</printSummaryAtDynamicThresholdLevels>-->
-<!--                    <printErrorSummary>false</printErrorSummary>-->
-<!--                    <printJsonOutput>true</printJsonOutput>-->
-<!--                    &lt;!&ndash; Project Metadata- All fields must be populated or no values will be persisted in the DB&ndash;&gt;-->
-<!--                    <automationTeamSize>S</automationTeamSize>-->
-<!--                    <sizeClassification>XL</sizeClassification>-->
-<!--                    <programmingLanguage>Java</programmingLanguage>-->
-<!--                    <primaryBusinessDomain>Banking</primaryBusinessDomain>-->
-<!--                    <clientName>JPMC</clientName>-->
-<!--                    <webAutomationEnabled>true</webAutomationEnabled>-->
-<!--                    <mobileAutomationEnabled>true</mobileAutomationEnabled>-->
-<!--                    <desktopAutomationEnabled>true</desktopAutomationEnabled>-->
-<!--                    <apiAutomationEnabled>true</apiAutomationEnabled>-->
-<!--                    <contractAutomationEnabled>false</contractAutomationEnabled>-->
-<!--                    <unitAutomationEnabled>false</unitAutomationEnabled>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
-<!--        </plugins>-->
+        <plugins>
+            <plugin>
+                <groupId>org.NTTData</groupId>
+                <artifactId>ica-maven-plugin</artifactId>
+                <version>1.0.3</version>
+                <executions>
+                    <execution>
+                        <!--            <phase>prepare-package</phase>-->
+                        <!--no need to specify any phase because our mojo is attached to the compile phase by default.-->
+                        <!--                        <phase>generate-resources</phase>-->
+                        <goals>
+                            <goal>code-analyser</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <icaOnSwitch>true</icaOnSwitch>
+                    <inputFilePath>${project.basedir}</inputFilePath>
+                    <outputJsonFilePath>${project.basedir}/src/test/resources/json_output5</outputJsonFilePath>
+                    <printLowLevelSummaryAtStepLevel>false</printLowLevelSummaryAtStepLevel>
+                    <printHighLevelSummaryAtFeatureFileLevel>false</printHighLevelSummaryAtFeatureFileLevel>
+                    <printHighLevelSummaryAtProjectLevel>false</printHighLevelSummaryAtProjectLevel>
+                    <printSummaryAtDynamicThresholdLevels>true</printSummaryAtDynamicThresholdLevels>
+                    <printErrorSummary>false</printErrorSummary>
+                    <printJsonOutput>true</printJsonOutput>
+                    <!-- Project Metadata- All fields must be populated or no values will be persisted in the DB-->
+                    <automationTeamSize>S</automationTeamSize>
+                    <sizeClassification>XL</sizeClassification>
+                    <programmingLanguage>Java</programmingLanguage>
+                    <primaryBusinessDomain>Banking</primaryBusinessDomain>
+                    <clientName>JPMC</clientName>
+                    <webAutomationEnabled>true</webAutomationEnabled>
+                    <mobileAutomationEnabled>true</mobileAutomationEnabled>
+                    <desktopAutomationEnabled>true</desktopAutomationEnabled>
+                    <apiAutomationEnabled>true</apiAutomationEnabled>
+                    <contractAutomationEnabled>false</contractAutomationEnabled>
+                    <unitAutomationEnabled>false</unitAutomationEnabled>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 </project>

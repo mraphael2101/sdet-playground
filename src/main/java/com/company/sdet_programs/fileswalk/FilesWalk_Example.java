@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class _01_FilesWalk_Example {
+public class FilesWalk_Example {
     private static final String userDir = System.getProperty("user.dir");
     private static final String inputFilePath = "/src/test/resources/features/";
 
