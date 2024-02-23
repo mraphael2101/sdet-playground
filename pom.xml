@@ -73,9 +73,9 @@
                 <version>1.0.3</version>
                 <executions>
                     <execution>
-                        <!--            <phase>prepare-package</phase>-->
-                        <!--no need to specify any phase because our mojo is attached to the compile phase by default.-->
-                        <!--                        <phase>generate-resources</phase>-->
+                        <!-- <phase>prepare-package</phase> -->
+                        <!-- no need to specify any phase because our mojo is attached to the compile phase by default -->
+                        <!-- <phase>generate-resources</phase> -->
                         <goals>
                             <goal>code-analyser</goal>
                         </goals>
@@ -91,7 +91,7 @@
                     <printSummaryAtDynamicThresholdLevels>true</printSummaryAtDynamicThresholdLevels>
                     <printErrorSummary>false</printErrorSummary>
                     <printJsonOutput>true</printJsonOutput>
-                    <!-- Project Metadata- All fields must be populated or no values will be persisted in the DB-->
+                    <!-- Project Metadata- All fields must be populated or no values will be persisted in the DB -->
                     <automationTeamSize>S</automationTeamSize>
                     <sizeClassification>XL</sizeClassification>
                     <programmingLanguage>Java</programmingLanguage>
