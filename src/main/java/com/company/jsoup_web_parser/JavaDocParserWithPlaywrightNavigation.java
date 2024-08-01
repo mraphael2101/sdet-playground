@@ -13,7 +13,7 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
-public class PageNavigator {
+public class JavaDocParserWithPlaywrightNavigation {
 
     public static void main(String[] args) throws Exception {
         // Create Playwright instance and launch Chromium browser
