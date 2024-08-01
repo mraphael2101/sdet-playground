@@ -27,10 +27,8 @@ public class JavaDocParser {
             Element headingElement = section.parent();
             //headingElement = section.parent().previousElementSibling();
 
-            // Prints first link in each section
+            // Prints first/all links in each section
             //System.out.println(headingElement.selectFirst("a").text());
-
-            // Prints all links in each section
             //System.out.println(headingElement.select("a").text());
 
             // Select elements starting with <div class="col-first">
@@ -47,7 +45,8 @@ public class JavaDocParser {
                     System.out.println("\t- Link Href: " + linkHref);
                 }
             }
-            System.out.println(); // Add newline between sections
+            // Print new line between sections
+            System.out.println();
         }
     }
 
