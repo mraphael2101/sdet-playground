@@ -58,17 +58,17 @@ public class PageNavigator {
         page.waitForLoadState();
 
         String title = page.title();
+        String content;
         System.out.println("Page Title: " + title);
 
         try {
             // Extract the content as a String
             Locator section = page.locator("section.method-details#method-detail");
-            String content = section.textContent();
+            content = section.textContent();
             System.out.println(content);
-            page.close();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-
+        page.close();
     }
 }
