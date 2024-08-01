@@ -49,5 +49,4 @@ public class JavaDocParser {
             System.out.println();
         }
     }
-
 }
