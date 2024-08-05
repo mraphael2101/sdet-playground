@@ -3,13 +3,9 @@ package com.company.jsoup_web_parser;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.SocketTimeoutException;
-import java.util.Objects;
 
 public class JavaDocParser {
 
