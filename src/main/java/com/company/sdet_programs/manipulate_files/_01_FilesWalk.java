@@ -1,4 +1,4 @@
-package com.company.sdet_programs.fileswalk;
+package com.company.sdet_programs.manipulate_files;
 
 import java.io.IOException;
 import java.nio.file.FileVisitOption;
@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class FilesWalk_Example {
+public class _01_FilesWalk {
     private static final String userDir = System.getProperty("user.dir");
     private static final String inputFilePath = "/src/test/resources/features/";
 
